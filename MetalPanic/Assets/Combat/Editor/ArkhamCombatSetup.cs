@@ -9,7 +9,7 @@ namespace MagnetPanic.Combat.Editor
 {
     public static class ArkhamCombatSetup
     {
-        const string GeneratedFolder = "Assets/MagnetPanic/Combat/Generated";
+        const string GeneratedFolder = "Assets/Combat/Generated";
         const string MaterialFolder = GeneratedFolder + "/Materials";
         const string AnimatorFolder = GeneratedFolder + "/Animators";
         const string PlayerControllerPath = AnimatorFolder + "/ArkhamPrototypePlayer.controller";
@@ -40,11 +40,16 @@ namespace MagnetPanic.Combat.Editor
             Material magnetizedMaterial = CreateMaterial("MP_Magnetized_Yellow", new Color(1f, 0.82f, 0.16f));
             Material arenaMaterial = CreateMaterial("MP_Arena_Grey", new Color(0.42f, 0.44f, 0.46f));
             Material counterMaterial = CreateMaterial("MP_Counter_Cyan", new Color(0.25f, 1f, 1f));
+            Material scrapMaterial = CreateMaterial("MP_Scrap_Steel", new Color(0.52f, 0.6f, 0.64f));
+            Material plateMaterial = CreateMaterial("MP_Plate_Teal", new Color(0.15f, 0.55f, 0.6f));
+            Material mineMaterial = CreateMaterial("MP_Mine_Orange", new Color(1f, 0.42f, 0.08f));
+            Material heavyMaterial = CreateMaterial("MP_Heavy_Dark", new Color(0.18f, 0.2f, 0.22f));
 
             GameObject root = new GameObject("Arkham Combat Demo");
             Undo.RegisterCreatedObjectUndo(root, "Create Arkham Combat Demo");
 
             CreateArena(root.transform, arenaMaterial);
+            CreateMagneticScrap(root.transform, scrapMaterial, plateMaterial, mineMaterial, heavyMaterial);
 
             GameObject cameraObject = new GameObject("Combat Camera");
             Undo.RegisterCreatedObjectUndo(cameraObject, "Create Combat Camera");
@@ -80,10 +85,12 @@ namespace MagnetPanic.Combat.Editor
                 cameraFollow,
                 player.transform.Find("Hit Point"));
 
+            player.GetComponent<MagnetismController>()?.Configure(camera, enemyManager, player.GetComponent<ArkhamPlayerMotor>());
+
             Selection.activeGameObject = root;
             EditorUtility.DisplayDialog(
                 "Arkham Combat Demo",
-                "Created a URP-safe prototype setup. Press Play, use WASD to move, left click to strike, and Space to counter.",
+                "Created a URP-safe prototype setup. Press Play, use WASD to move, hold/release left click for Pull/Repel, right click to strike, and Space to counter.",
                 "Nice");
         }
 
@@ -108,6 +115,7 @@ namespace MagnetPanic.Combat.Editor
             ArkhamPlayerMotor motor = player.AddComponent<ArkhamPlayerMotor>();
             ArkhamTargetScanner scanner = player.AddComponent<ArkhamTargetScanner>();
             ArkhamCombatController combat = player.AddComponent<ArkhamCombatController>();
+            MagnetismController magnetism = player.AddComponent<MagnetismController>();
 
             GameObject hitPoint = new GameObject("Hit Point");
             hitPoint.transform.SetParent(player.transform);
@@ -124,6 +132,7 @@ namespace MagnetPanic.Combat.Editor
 
             motor.Configure(sceneCamera, animator, 5f);
             combat.Configure(null, scanner, motor, animator, cameraFollow, hitPoint.transform);
+            magnetism.Configure(sceneCamera, null, motor);
 
             return player;
         }
@@ -178,6 +187,49 @@ namespace MagnetPanic.Combat.Editor
             floor.transform.SetParent(parent);
             floor.transform.localScale = new Vector3(1.6f, 1f, 1.6f);
             AssignMaterial(floor, material);
+        }
+
+        static void CreateMagneticScrap(
+            Transform parent,
+            Material scrapMaterial,
+            Material plateMaterial,
+            Material mineMaterial,
+            Material heavyMaterial)
+        {
+            CreateMagneticObject(parent, "Light Scrap A", MagneticObjectType.LightScrap, new Vector3(-3.5f, 0.45f, 2.2f), new Vector3(0.42f, 0.28f, 0.72f), PrimitiveType.Cube, scrapMaterial);
+            CreateMagneticObject(parent, "Light Scrap B", MagneticObjectType.LightScrap, new Vector3(3.2f, 0.45f, -1.8f), new Vector3(0.35f, 0.35f, 0.62f), PrimitiveType.Cube, scrapMaterial);
+            CreateMagneticObject(parent, "Light Scrap C", MagneticObjectType.LightScrap, new Vector3(1.2f, 0.45f, 4.2f), new Vector3(0.5f, 0.22f, 0.5f), PrimitiveType.Cube, scrapMaterial);
+            CreateMagneticObject(parent, "Metal Plate A", MagneticObjectType.Plate, new Vector3(-5f, 0.45f, -1.4f), new Vector3(1.2f, 0.16f, 0.7f), PrimitiveType.Cube, plateMaterial);
+            CreateMagneticObject(parent, "Metal Plate B", MagneticObjectType.Plate, new Vector3(4.8f, 0.45f, 2.7f), new Vector3(1.2f, 0.16f, 0.7f), PrimitiveType.Cube, plateMaterial);
+            CreateMagneticObject(parent, "Magnetic Mine", MagneticObjectType.Mine, new Vector3(-1.1f, 0.45f, -4.3f), new Vector3(0.62f, 0.62f, 0.62f), PrimitiveType.Sphere, mineMaterial);
+            CreateMagneticObject(parent, "Heavy Scrap", MagneticObjectType.Heavy, new Vector3(5.5f, 0.55f, -4.5f), new Vector3(0.9f, 0.9f, 0.9f), PrimitiveType.Cube, heavyMaterial);
+        }
+
+        static void CreateMagneticObject(
+            Transform parent,
+            string name,
+            MagneticObjectType type,
+            Vector3 position,
+            Vector3 scale,
+            PrimitiveType primitive,
+            Material material)
+        {
+            GameObject magneticObject = GameObject.CreatePrimitive(primitive);
+            Undo.RegisterCreatedObjectUndo(magneticObject, "Create Magnetic Object");
+            magneticObject.name = name;
+            magneticObject.transform.SetParent(parent);
+            magneticObject.transform.position = position;
+            magneticObject.transform.localScale = scale;
+            AssignMaterial(magneticObject, material);
+
+            Rigidbody body = magneticObject.AddComponent<Rigidbody>();
+            body.useGravity = false;
+            body.mass = Mathf.Max(1f, scale.magnitude);
+            body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+
+            MagneticObject magnet = magneticObject.AddComponent<MagneticObject>();
+            LayerMask allLayers = ~0;
+            magnet.ConfigurePrototype(type, allLayers);
         }
 
         static void CreatePlayerController()

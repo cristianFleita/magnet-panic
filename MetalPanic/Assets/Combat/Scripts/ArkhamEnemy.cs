@@ -1,11 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace MagnetPanic.Combat
 {
     [RequireComponent(typeof(CharacterController))]
-    public sealed class ArkhamEnemy : MonoBehaviour
+    public sealed class ArkhamEnemy : MonoBehaviour, IMarkable
     {
         static readonly int InputMagnitudeHash = Animator.StringToHash("InputMagnitude");
         static readonly int StrafeHash = Animator.StringToHash("Strafe");
@@ -37,6 +38,18 @@ namespace MagnetPanic.Combat
         [SerializeField] float stunDuration = 0.45f;
         [SerializeField] float knockbackDistance = 0.55f;
         [SerializeField] float knockbackDuration = 0.16f;
+        [SerializeField] bool destroyOnDeath = true;
+        [SerializeField] float deathDespawnDelay = 0.8f;
+
+        [Header("Magnetism")]
+        [SerializeField] MagneticMarkState markState = MagneticMarkState.Normal;
+        [SerializeField] float markDecayTime = 6f;
+        [SerializeField] float magneticMass = 3f;
+        [SerializeField] float magneticPullSnapSharpness = 18f;
+        [SerializeField] float magnetizedRepelDuration = 0.42f;
+        [SerializeField] float magnetizedProjectileRadius = 0.8f;
+        [SerializeField] float markedProjectileDamageMultiplier = 1.2f;
+        [SerializeField] float counterPulseDistance = 1.1f;
 
         [Header("Movement")]
         [SerializeField] float strafeSpeed = 1.25f;
@@ -65,7 +78,9 @@ namespace MagnetPanic.Combat
         bool isStunned;
         bool isDead;
         bool isMagnetized;
+        bool isMagneticallyControlled;
         bool attackHitApplied;
+        float lastMarkTime = -999f;
         MoveMode moveMode;
         Coroutine behaviorCoroutine;
         Coroutine movementCoroutine;
@@ -76,11 +91,15 @@ namespace MagnetPanic.Combat
         public bool IsAttacking => isAttacking;
         public bool IsMagnetized => isMagnetized;
         public int MagneticMarks => magneticMarks;
+        public MagneticMarkState MarkState => markState;
+        public float MagneticMass => magneticMass;
+        public bool CanBePulledByMagnet => IsAlive && markState == MagneticMarkState.Magnetized && !isLockedTarget;
 
         public bool CanDirectorSelect =>
             IsAlive &&
             !isLockedTarget &&
             !isStunned &&
+            !isMagneticallyControlled &&
             !isPreparingAttack &&
             !isAttacking &&
             !isRetreating;
@@ -118,6 +137,7 @@ namespace MagnetPanic.Combat
 
         void Update()
         {
+            DecayMagneticMark();
             FacePlayer();
             Move();
         }
@@ -187,9 +207,16 @@ namespace MagnetPanic.Combat
             isAttacking = false;
             isRetreating = false;
             isStunned = true;
+            isMagneticallyControlled = false;
+            SetMarkState(MagneticMarkState.Magnetized);
             StopMoving();
 
-            behaviorCoroutine = StartCoroutine(StunRoutine(stunDuration));
+            Vector3 direction = transform.position - attacker.transform.position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.01f)
+                direction = transform.forward;
+
+            behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, counterPulseDistance, 0.12f, stunDuration));
         }
 
         public void TakeStrike(ArkhamCombatController attacker, int damage, bool wasCounter)
@@ -207,7 +234,7 @@ namespace MagnetPanic.Combat
             isLockedTarget = false;
             StopMoving();
 
-            ApplyMagneticMark();
+            ApplyMark(1);
             health -= Mathf.Max(1, damage);
             OnDamaged.Invoke(this);
 
@@ -222,7 +249,7 @@ namespace MagnetPanic.Combat
 
             Vector3 direction = (transform.position - attacker.transform.position).normalized;
             direction.y = 0f;
-            behaviorCoroutine = StartCoroutine(HitReactionRoutine(direction));
+            behaviorCoroutine = StartCoroutine(HitReactionRoutine(direction, knockbackDistance));
         }
 
         public void HitEvent()
@@ -234,18 +261,193 @@ namespace MagnetPanic.Combat
             playerCombat.ReceiveDamage(this);
         }
 
-        void ApplyMagneticMark()
+        public void ApplyMark(int stacks)
         {
-            if (isMagnetized)
+            if (!IsAlive)
                 return;
 
-            magneticMarks++;
+            int stackCount = Mathf.Max(1, stacks);
+            magneticMarks = Mathf.Clamp(magneticMarks + stackCount, 0, magneticMarksToMagnetize);
+            lastMarkTime = Time.time;
 
             if (magneticMarks >= magneticMarksToMagnetize)
+                SetMarkState(MagneticMarkState.Magnetized);
+            else
+                SetMarkState(MagneticMarkState.Marked);
+        }
+
+        public void SetMarkState(MagneticMarkState state)
+        {
+            MagneticMarkState previous = markState;
+            markState = state;
+            lastMarkTime = Time.time;
+
+            switch (markState)
             {
-                isMagnetized = true;
-                OnMagnetized.Invoke(this);
+                case MagneticMarkState.Normal:
+                    magneticMarks = 0;
+                    break;
+                case MagneticMarkState.Marked:
+                    magneticMarks = Mathf.Max(1, Mathf.Min(magneticMarks, magneticMarksToMagnetize - 1));
+                    break;
+                case MagneticMarkState.Magnetized:
+                    magneticMarks = magneticMarksToMagnetize;
+                    break;
+                case MagneticMarkState.Stunned:
+                    break;
             }
+
+            isMagnetized = markState == MagneticMarkState.Magnetized;
+
+            if (isMagnetized && previous != MagneticMarkState.Magnetized)
+                OnMagnetized.Invoke(this);
+        }
+
+        public float GetTimeSinceLastMark()
+        {
+            return lastMarkTime < 0f ? float.PositiveInfinity : Time.time - lastMarkTime;
+        }
+
+        public void BeginMagneticPull()
+        {
+            if (!CanBePulledByMagnet)
+                return;
+
+            StopBehaviorCoroutine();
+            HideCounterCue();
+            isPreparingAttack = false;
+            isAttacking = false;
+            isRetreating = false;
+            isStunned = true;
+            isMagneticallyControlled = true;
+            StopMoving();
+        }
+
+        public void MagnetPullTowards(Vector3 point, float pullSpeed, float deltaTime)
+        {
+            if (!CanBePulledByMagnet)
+                return;
+
+            if (!isMagneticallyControlled)
+                BeginMagneticPull();
+
+            point.y = transform.position.y;
+            float speed = pullSpeed / Mathf.Max(0.5f, magneticMass);
+            Vector3 next = Vector3.MoveTowards(transform.position, point, speed * deltaTime);
+            MoveBy(next - transform.position);
+        }
+
+        public void EnterMagneticOrbit()
+        {
+            if (!IsAlive)
+                return;
+
+            SetMarkState(MagneticMarkState.Magnetized);
+            StopBehaviorCoroutine();
+            HideCounterCue();
+            isPreparingAttack = false;
+            isAttacking = false;
+            isRetreating = false;
+            isStunned = true;
+            isMagneticallyControlled = true;
+            StopMoving();
+        }
+
+        public void TickMagneticOrbit(Vector3 orbitPosition, float deltaTime)
+        {
+            if (!IsAlive || !isMagneticallyControlled)
+                return;
+
+            orbitPosition.y = transform.position.y;
+            float t = 1f - Mathf.Exp(-magneticPullSnapSharpness * deltaTime);
+            Vector3 next = Vector3.Lerp(transform.position, orbitPosition, t);
+            MoveBy(next - transform.position);
+        }
+
+        public void CancelMagneticPull()
+        {
+            if (!isMagneticallyControlled)
+                return;
+
+            isMagneticallyControlled = false;
+            isStunned = false;
+            StartIdleMovement();
+        }
+
+        public void RejectMagneticPull(Vector3 center, float speed)
+        {
+            if (!IsAlive)
+                return;
+
+            StopBehaviorCoroutine();
+            Vector3 direction = transform.position - center;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.01f)
+                direction = transform.forward;
+
+            isStunned = true;
+            isMagneticallyControlled = false;
+            behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, speed * 0.12f, 0.12f, stunDuration * 0.5f));
+        }
+
+        public void MagnetRepel(Vector3 direction, float speed, int impactDamage)
+        {
+            if (!IsAlive)
+                return;
+
+            StopBehaviorCoroutine();
+            HideCounterCue();
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.01f)
+                direction = transform.forward;
+
+            SetMarkState(MagneticMarkState.Normal);
+            isStunned = true;
+            isMagneticallyControlled = true;
+            behaviorCoroutine = StartCoroutine(MagneticRepelRoutine(direction.normalized, speed, impactDamage));
+        }
+
+        public void ReceiveMagneticImpact(int damage, Vector3 sourcePosition, float impactKnockbackDistance, bool clearsMagnetized)
+        {
+            if (!IsAlive)
+                return;
+
+            StopBehaviorCoroutine();
+            HideCounterCue();
+            isPreparingAttack = false;
+            isAttacking = false;
+            isRetreating = false;
+            isLockedTarget = false;
+            isStunned = true;
+            isMagneticallyControlled = false;
+            StopMoving();
+
+            float multiplier = markState == MagneticMarkState.Marked || markState == MagneticMarkState.Magnetized
+                ? markedProjectileDamageMultiplier
+                : 1f;
+            int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * multiplier));
+            health -= finalDamage;
+
+            if (clearsMagnetized && markState == MagneticMarkState.Magnetized)
+                SetMarkState(MagneticMarkState.Normal);
+
+            OnDamaged.Invoke(this);
+
+            if (health <= 0)
+            {
+                Die();
+                return;
+            }
+
+            if (animator != null)
+                animator.SetTrigger(HitHash);
+
+            Vector3 direction = transform.position - sourcePosition;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.01f)
+                direction = transform.forward;
+
+            behaviorCoroutine = StartCoroutine(HitReactionRoutine(direction.normalized, impactKnockbackDistance));
         }
 
         IEnumerator AttackRoutine()
@@ -297,10 +499,10 @@ namespace MagnetPanic.Combat
             behaviorCoroutine = null;
         }
 
-        IEnumerator HitReactionRoutine(Vector3 direction)
+        IEnumerator HitReactionRoutine(Vector3 direction, float distance)
         {
             float elapsed = 0f;
-            Vector3 totalOffset = direction * knockbackDistance;
+            Vector3 totalOffset = direction * distance;
             Vector3 applied = Vector3.zero;
 
             while (elapsed < knockbackDuration)
@@ -308,11 +510,47 @@ namespace MagnetPanic.Combat
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / knockbackDuration);
                 Vector3 next = Vector3.Lerp(Vector3.zero, totalOffset, t);
-                characterController.Move(next - applied);
+                MoveBy(next - applied);
                 applied = next;
                 yield return null;
             }
 
+            yield return StunRoutine(stunDuration);
+        }
+
+        IEnumerator MagneticPushRoutine(Vector3 direction, float distance, float duration, float finalStunDuration)
+        {
+            float elapsed = 0f;
+            Vector3 totalOffset = direction * distance;
+            Vector3 applied = Vector3.zero;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                Vector3 next = Vector3.Lerp(Vector3.zero, totalOffset, t);
+                MoveBy(next - applied);
+                applied = next;
+                yield return null;
+            }
+
+            yield return StunRoutine(finalStunDuration);
+        }
+
+        IEnumerator MagneticRepelRoutine(Vector3 direction, float speed, int impactDamage)
+        {
+            float elapsed = 0f;
+            HashSet<ArkhamEnemy> hitEnemies = new HashSet<ArkhamEnemy>();
+
+            while (elapsed < magnetizedRepelDuration && IsAlive)
+            {
+                elapsed += Time.deltaTime;
+                MoveBy(direction * speed * Time.deltaTime);
+                DamageEnemiesTouchedByMagneticProjectile(hitEnemies, impactDamage);
+                yield return null;
+            }
+
+            isMagneticallyControlled = false;
             yield return StunRoutine(stunDuration);
         }
 
@@ -326,7 +564,7 @@ namespace MagnetPanic.Combat
 
         void StartIdleMovement()
         {
-            if (!IsAlive || !isActiveAndEnabled || isLockedTarget || isStunned)
+            if (!IsAlive || !isActiveAndEnabled || isLockedTarget || isStunned || isMagneticallyControlled)
                 return;
 
             if (movementCoroutine != null)
@@ -368,7 +606,7 @@ namespace MagnetPanic.Combat
 
         void Move()
         {
-            if (!IsAlive || playerCombat == null || isLockedTarget || isStunned)
+            if (!IsAlive || playerCombat == null || isLockedTarget || isStunned || isMagneticallyControlled)
             {
                 AnimateMove(0f, false, 0f);
                 return;
@@ -409,7 +647,7 @@ namespace MagnetPanic.Combat
             }
 
             if (direction.sqrMagnitude > 0.01f)
-                characterController.Move(direction * speed * Time.deltaTime);
+                MoveBy(direction * speed * Time.deltaTime);
 
             AnimateMove(speed / approachSpeed, strafing, strafeDirection);
         }
@@ -443,6 +681,52 @@ namespace MagnetPanic.Combat
             movementCoroutine = null;
         }
 
+        void DecayMagneticMark()
+        {
+            if (isMagneticallyControlled || markState == MagneticMarkState.Normal || markState == MagneticMarkState.Stunned)
+                return;
+
+            if (GetTimeSinceLastMark() < markDecayTime)
+                return;
+
+            if (markState == MagneticMarkState.Magnetized)
+                SetMarkState(MagneticMarkState.Marked);
+            else
+                SetMarkState(MagneticMarkState.Normal);
+        }
+
+        void DamageEnemiesTouchedByMagneticProjectile(HashSet<ArkhamEnemy> hitEnemies, int impactDamage)
+        {
+            if (manager == null)
+                return;
+
+            IReadOnlyList<ArkhamEnemy> enemies = manager.Enemies;
+            float radiusSqr = magnetizedProjectileRadius * magnetizedProjectileRadius;
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ArkhamEnemy enemy = enemies[i];
+                if (enemy == null || enemy == this || !enemy.IsAlive || hitEnemies.Contains(enemy))
+                    continue;
+
+                Vector3 delta = enemy.transform.position - transform.position;
+                delta.y = 0f;
+                if (delta.sqrMagnitude > radiusSqr)
+                    continue;
+
+                hitEnemies.Add(enemy);
+                enemy.ReceiveMagneticImpact(impactDamage, transform.position, knockbackDistance * 1.5f, false);
+            }
+        }
+
+        void MoveBy(Vector3 displacement)
+        {
+            if (characterController != null && characterController.enabled)
+                characterController.Move(displacement);
+            else
+                transform.position += displacement;
+        }
+
         void Die()
         {
             isDead = true;
@@ -458,6 +742,9 @@ namespace MagnetPanic.Combat
                 characterController.enabled = false;
 
             enabled = false;
+
+            if (destroyOnDeath)
+                Destroy(gameObject, deathDespawnDelay);
         }
 
         float DistanceToPlayer()

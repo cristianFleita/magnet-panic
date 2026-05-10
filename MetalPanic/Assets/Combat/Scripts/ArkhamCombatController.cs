@@ -32,6 +32,7 @@ namespace MagnetPanic.Combat
         [Header("Counter")]
         [SerializeField] float counterCooldown = 0.65f;
         [SerializeField] float counterDodgeDuration = 0.16f;
+        [SerializeField] float counterRadius = 4f;
 
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnTrajectory = new UnityEvent<ArkhamEnemy>();
@@ -106,6 +107,12 @@ namespace MagnetPanic.Combat
                 AttackCheck();
         }
 
+        public void OnStrike(InputValue value)
+        {
+            if (value.isPressed)
+                AttackCheck();
+        }
+
         public void OnAttack()
         {
             AttackCheck();
@@ -123,6 +130,12 @@ namespace MagnetPanic.Combat
         }
 
         public void OnJump(InputValue value)
+        {
+            if (value.isPressed)
+                CounterCheck();
+        }
+
+        public void OnDodge(InputValue value)
         {
             if (value.isPressed)
                 CounterCheck();
@@ -151,7 +164,7 @@ namespace MagnetPanic.Combat
             if (isCountering || isAttackingEnemy || Time.time < nextCounterTime || enemyManager == null)
                 return;
 
-            ArkhamEnemy target = enemyManager.ClosestCounterableEnemy(transform.position);
+            ArkhamEnemy target = enemyManager.ClosestCounterableEnemy(transform.position, counterRadius);
             if (target == null)
                 return;
 

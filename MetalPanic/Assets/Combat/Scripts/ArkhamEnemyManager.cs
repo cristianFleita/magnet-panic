@@ -89,10 +89,11 @@ namespace MagnetPanic.Combat
             return false;
         }
 
-        public ArkhamEnemy ClosestCounterableEnemy(Vector3 position)
+        public ArkhamEnemy ClosestCounterableEnemy(Vector3 position, float maxDistance = float.PositiveInfinity)
         {
             ArkhamEnemy closest = null;
             float closestDistance = float.PositiveInfinity;
+            float maxDistanceSqr = maxDistance * maxDistance;
 
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -101,6 +102,9 @@ namespace MagnetPanic.Combat
                     continue;
 
                 float distance = Vector3.SqrMagnitude(enemy.transform.position - position);
+                if (distance > maxDistanceSqr)
+                    continue;
+
                 if (distance < closestDistance)
                 {
                     closest = enemy;
