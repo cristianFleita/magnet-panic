@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 
 namespace MagnetPanic.Combat
 {
@@ -13,6 +12,7 @@ namespace MagnetPanic.Combat
         [SerializeField] ArkhamPlayerMotor motor;
         [SerializeField] ArkhamEnemyManager enemyManager;
         [SerializeField] Transform orbitCenter;
+        [SerializeField] GameInputProvider inputProvider;
 
         [Header("Pull")]
         [SerializeField] float pullRadius = 5f;
@@ -86,11 +86,16 @@ namespace MagnetPanic.Combat
             if (orbitCenter == null)
                 orbitCenter = transform;
 
+            if (inputProvider == null)
+                inputProvider = GameInputProvider.EnsureOn(gameObject);
+
             EnsureAimIndicator();
         }
 
         void Update()
         {
+            PumpInput();
+
             if (pullHeld && Time.time >= nextRepelTime)
                 TickPull();
 
@@ -105,24 +110,16 @@ namespace MagnetPanic.Combat
             enemyManager = manager;
             motor = playerMotor;
             orbitCenter = transform;
+            if (inputProvider == null)
+                inputProvider = GameInputProvider.EnsureOn(gameObject);
+
             EnsureAimIndicator();
         }
 
-        public void OnPull(InputValue value)
+        void OnApplicationFocus(bool hasFocus)
         {
-            if (value.isPressed)
-                TogglePullRepel();
-        }
-
-        public void OnPullRelease()
-        {
-            ReleasePull();
-        }
-
-        public void OnInteract(InputValue value)
-        {
-            if (value.isPressed)
-                TogglePullRepel();
+            if (!hasFocus)
+                CancelPullWithoutRepel();
         }
 
         public void StartPull()
@@ -192,6 +189,15 @@ namespace MagnetPanic.Combat
             }
 
             StartPull();
+        }
+
+        void PumpInput()
+        {
+            if (inputProvider == null || Time.time < nextRepelTime)
+                return;
+
+            if (inputProvider.ConsumeBuffered(GameInputIntent.PullToggle))
+                TogglePullRepel();
         }
 
         void TickPull()
@@ -383,6 +389,17 @@ namespace MagnetPanic.Combat
             attractingObjects.Clear();
         }
 
+        void CancelPullWithoutRepel()
+        {
+            bool wasPulling = pullActive || pullHeld;
+            pullHeld = false;
+            pullActive = false;
+            CancelAttractingPayload();
+
+            if (wasPulling)
+                OnPullStopped.Invoke();
+        }
+
         Vector3 OrbitPosition()
         {
             Vector3 center = orbitCenter != null ? orbitCenter.position : transform.position;
@@ -409,20 +426,8 @@ namespace MagnetPanic.Combat
 
         Vector3 AimDirection()
         {
-            Camera sceneCamera = cameraOverride != null ? cameraOverride : Camera.main;
-            if (sceneCamera != null && Mouse.current != null)
-            {
-                Ray ray = sceneCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-                Plane plane = new Plane(Vector3.up, transform.position);
-                if (plane.Raycast(ray, out float distance))
-                {
-                    Vector3 hit = ray.GetPoint(distance);
-                    Vector3 aim = hit - transform.position;
-                    aim.y = 0f;
-                    if (aim.sqrMagnitude > 0.01f)
-                        return aim.normalized;
-                }
-            }
+            if (inputProvider != null && inputProvider.AimWorldDirection.sqrMagnitude > 0.01f)
+                return inputProvider.AimWorldDirection.normalized;
 
             if (motor != null && motor.WorldMoveDirection.sqrMagnitude > 0.01f)
                 return motor.WorldMoveDirection.normalized;

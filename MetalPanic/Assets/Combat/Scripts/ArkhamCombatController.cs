@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 
 namespace MagnetPanic.Combat
 {
@@ -20,6 +19,7 @@ namespace MagnetPanic.Combat
         [SerializeField] Animator animator;
         [SerializeField] Transform hitPoint;
         [SerializeField] ArkhamSimpleCameraFollow cameraRig;
+        [SerializeField] GameInputProvider inputProvider;
 
         [Header("Health")]
         [SerializeField] CombatHealth health;
@@ -87,8 +87,16 @@ namespace MagnetPanic.Combat
             if (health == null)
                 health = gameObject.AddComponent<CombatHealth>();
 
+            if (inputProvider == null)
+                inputProvider = GameInputProvider.EnsureOn(gameObject);
+
             health.Configure(maxHealth, true);
             characterController = GetComponent<CharacterController>();
+        }
+
+        void Update()
+        {
+            PumpInput();
         }
 
         public void Configure(
@@ -110,6 +118,9 @@ namespace MagnetPanic.Combat
 
             if (health == null)
                 health = GetComponent<CombatHealth>();
+
+            if (inputProvider == null)
+                inputProvider = GameInputProvider.EnsureOn(gameObject);
         }
 
         void EnsureEvents()
@@ -119,46 +130,6 @@ namespace MagnetPanic.Combat
             OnCounterAttack ??= new UnityEvent<ArkhamEnemy>();
             OnDamaged ??= new UnityEvent<ArkhamEnemy>();
             OnDeath ??= new UnityEvent();
-        }
-
-        public void OnAttack(InputValue value)
-        {
-            if (value.isPressed)
-                AttackCheck();
-        }
-
-        public void OnStrike(InputValue value)
-        {
-            if (value.isPressed)
-                AttackCheck();
-        }
-
-        public void OnAttack()
-        {
-            AttackCheck();
-        }
-
-        public void OnCounter(InputValue value)
-        {
-            if (value.isPressed)
-                CounterCheck();
-        }
-
-        public void OnCounter()
-        {
-            CounterCheck();
-        }
-
-        public void OnJump(InputValue value)
-        {
-            if (value.isPressed)
-                CounterCheck();
-        }
-
-        public void OnDodge(InputValue value)
-        {
-            if (value.isPressed)
-                CounterCheck();
         }
 
         public void AttackCheck()
@@ -223,6 +194,35 @@ namespace MagnetPanic.Combat
         public bool Heal(int amount)
         {
             return health != null && health.Heal(amount);
+        }
+
+        void PumpInput()
+        {
+            if (inputProvider == null)
+                return;
+
+            if (CanAcceptCounterInput() && inputProvider.ConsumeBuffered(GameInputIntent.Counter))
+            {
+                CounterCheck();
+                return;
+            }
+
+            if (CanAcceptStrikeInput() && inputProvider.ConsumeBuffered(GameInputIntent.Strike))
+                AttackCheck();
+        }
+
+        bool CanAcceptStrikeInput()
+        {
+            return IsAlive && !isAttackingEnemy;
+        }
+
+        bool CanAcceptCounterInput()
+        {
+            return IsAlive
+                && !isCountering
+                && !isAttackingEnemy
+                && Time.time >= nextCounterTime
+                && enemyManager != null;
         }
 
         void StartAttack(ArkhamEnemy target, bool counterAttack)

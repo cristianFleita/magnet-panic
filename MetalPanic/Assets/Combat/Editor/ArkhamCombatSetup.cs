@@ -204,6 +204,7 @@ namespace MagnetPanic.Combat.Editor
             ArkhamTargetScanner scanner = player.AddComponent<ArkhamTargetScanner>();
             ArkhamCombatController combat = player.AddComponent<ArkhamCombatController>();
             MagnetismController magnetism = player.AddComponent<MagnetismController>();
+            GameInputProvider inputProvider = player.AddComponent<GameInputProvider>();
 
             GameObject hitPoint = new GameObject("Hit Point");
             hitPoint.transform.SetParent(player.transform);
@@ -219,6 +220,7 @@ namespace MagnetPanic.Combat.Editor
             }
 
             health.Configure(6, true);
+            inputProvider.Configure(sceneCamera);
             motor.Configure(sceneCamera, animator, 5f);
             combat.Configure(null, scanner, motor, animator, cameraFollow, hitPoint.transform);
             magnetism.Configure(sceneCamera, null, motor);

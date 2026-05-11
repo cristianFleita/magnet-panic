@@ -2,7 +2,7 @@
 
 > **Última actualización:** 2026-05-10
 > **Fuente:** `design/gdd/game-concept.md` (extracto del GDD jam `design/gdd-gamejam.md`)
-> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 3 · **Prototipos jugables:** 7
+> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 5 · **Prototipos jugables:** 7
 
 Este índice es la fuente de verdad para qué sistemas existen, en qué orden se
 diseñan, y qué dependencias tienen. Se actualiza cada vez que un sistema
@@ -24,8 +24,8 @@ termina su GDD individual o cambia su estado.
 
 | Estado | Cantidad |
 |---|---:|
-| GDD Complete | 3 |
-| Not Designed | 18 |
+| GDD Complete | 5 |
+| Not Designed | 16 |
 
 ---
 
@@ -34,8 +34,8 @@ termina su GDD individual o cambia su estado.
 | # | Sistema | Capa | Tier | Roadmap | Estado | GDD |
 |---:|---|---|---|---|---|---|
 | 1 | `damage-health-system` | Foundation | MVP ⚠ | Día 1-2 | Prototype | [damage-health-system.md](damage-health-system.md) |
-| 2 | `input-system` | Foundation | MVP | Día 1 | Partial Prototype | — |
-| 3 | `arena-system` | Foundation | MVP | Día 1 | Partial Prototype | — |
+| 2 | `input-system` | Foundation | MVP | Día 1 | Partial Prototype | [input-system.md](input-system.md) |
+| 3 | `arena-system` | Foundation | MVP | Día 1 | Partial Prototype | [arena-system.md](arena-system.md) |
 | 4 | `object-pooling` | Foundation | MVP | Día 1-2 | Not Started | — |
 | 5 | `player-movement` | Core | MVP | Día 1 | Prototype | — |
 | 6 | `camera-system` | Core | MVP | Día 1 | Prototype | — |

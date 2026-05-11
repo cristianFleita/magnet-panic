@@ -16,7 +16,7 @@ To add only healing pickups to an existing scene, run:
 
 That creates:
 
-- a primitive player using `ArkhamPlayerMotor`, `ArkhamCombatController`, `ArkhamTargetScanner`, `MagnetismController`, and `PlayerInput`;
+- a primitive player using `GameInputProvider`, `ArkhamPlayerMotor`, `ArkhamCombatController`, `ArkhamTargetScanner`, `MagnetismController`, and `PlayerInput`;
 - `CombatHealth` on the player plus a UI Toolkit health bar;
 - an `ArkhamEnemyManager`;
 - five primitive `ArkhamEnemy` combat targets;
@@ -30,12 +30,13 @@ That creates:
 Controls use the existing `InputSystem_Actions` asset:
 
 - WASD: move
-- Left mouse / Pull action: first click pulls, second click repels
-- Right mouse / Attack action: strike
-- E / Interact action: alternate Pull/Repel fallback for quick testing
-- Space / Jump action: counter pulse
+- Left mouse / PullToggle intent: first click pulls, second click repels
+- Right mouse / Strike intent: strike
+- Space / Counter intent: counter pulse
+- 1 / 2 / 3: upgrade choices while the input state is UI
+- Escape / Pause intent: pause
 
-The scripts listen for `OnPull`, legacy `OnPullRelease`, `OnStrike`, `OnAttack`, `OnCounter`, and `OnDodge`, so renaming actions later should be painless.
+`PlayerInput` sends messages only to `GameInputProvider`. Gameplay scripts read intents from that provider instead of subscribing to Unity Input System callbacks directly.
 
 ## Implemented Combat Loop
 
@@ -55,7 +56,7 @@ The scripts listen for `OnPull`, legacy `OnPullRelease`, `OnStrike`, `OnAttack`,
 
 The primitive visuals are disposable. To use a real character:
 
-1. Keep the `ArkhamPlayerMotor`, `ArkhamCombatController`, `ArkhamTargetScanner`, `MagnetismController`, `CharacterController`, and `PlayerInput` components.
+1. Keep the `GameInputProvider`, `ArkhamPlayerMotor`, `ArkhamCombatController`, `ArkhamTargetScanner`, `MagnetismController`, `CharacterController`, and `PlayerInput` components.
 2. Replace the capsule renderer with your character prefab.
 3. Assign your character `Animator`.
 4. Either keep the generated prototype controller, or assign the imported Mix and Jam controller from `Assets/ThirdParty/BatmanArkhamCombat/Character/Animations`.
@@ -65,6 +66,7 @@ The primitive visuals are disposable. To use a real character:
 - Root GameObject: `CharacterController`.
 - Root GameObject: `CombatHealth`.
 - Root GameObject: `PlayerInput` using `Assets/InputSystem_Actions.inputactions`, action map `Player`, notification `Send Messages`.
+- Root GameObject: `GameInputProvider`.
 - Root GameObject: `ArkhamPlayerMotor`.
 - Root GameObject: `ArkhamCombatController`.
 - Root GameObject: `ArkhamTargetScanner`.

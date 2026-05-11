@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace MagnetPanic.Combat
 {
@@ -11,10 +10,10 @@ namespace MagnetPanic.Combat
         [Header("References")]
         [SerializeField] Animator animator;
         [SerializeField] Camera cameraOverride;
+        [SerializeField] GameInputProvider inputProvider;
 
         [Header("Movement")]
         [SerializeField] float movementSpeed = 5f;
-        [SerializeField] float sprintMultiplier = 1.25f;
         [SerializeField] float rotationSharpness = 14f;
         [SerializeField] float gravity = -25f;
         [SerializeField] float groundedStickForce = -2f;
@@ -25,7 +24,6 @@ namespace MagnetPanic.Combat
         float verticalVelocity;
         float acceleration = 1f;
         bool movementLocked;
-        bool sprinting;
 
         public Vector2 MoveAxis => moveAxis;
         public Vector3 WorldMoveDirection => worldMoveDirection;
@@ -46,10 +44,14 @@ namespace MagnetPanic.Combat
 
             if (cameraOverride == null)
                 cameraOverride = Camera.main;
+
+            if (inputProvider == null)
+                inputProvider = GameInputProvider.EnsureOn(gameObject);
         }
 
         void Update()
         {
+            moveAxis = inputProvider != null ? inputProvider.MoveAxis : Vector2.zero;
             UpdateWorldMoveDirection();
             UpdateHorizontalMovement();
             UpdateGravity();
@@ -60,6 +62,8 @@ namespace MagnetPanic.Combat
             cameraOverride = sceneCamera;
             animator = targetAnimator;
             movementSpeed = speed;
+            if (inputProvider == null)
+                inputProvider = GameInputProvider.EnsureOn(gameObject);
         }
 
         public void SetMovementLocked(bool locked, bool clearInput = false)
@@ -73,16 +77,6 @@ namespace MagnetPanic.Combat
         public void MoveController(Vector3 displacement)
         {
             controller.Move(displacement);
-        }
-
-        public void OnMove(InputValue value)
-        {
-            moveAxis = value.Get<Vector2>();
-        }
-
-        public void OnSprint(InputValue value)
-        {
-            sprinting = value.isPressed;
         }
 
         void UpdateWorldMoveDirection()
@@ -120,7 +114,7 @@ namespace MagnetPanic.Combat
                 targetRotation,
                 1f - Mathf.Exp(-rotationSharpness * Time.deltaTime));
 
-            float speed = movementSpeed * acceleration * (sprinting ? sprintMultiplier : 1f);
+            float speed = movementSpeed * acceleration;
             controller.Move(worldMoveDirection * speed * Time.deltaTime);
         }
 
