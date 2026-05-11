@@ -111,9 +111,10 @@ namespace MagnetPanic.Combat
                 trail.emitting = false;
             }
 
-            SetKinematic(true);
-            if (body != null)
+            if (body != null && !body.isKinematic)
                 body.linearVelocity = Vector3.zero;
+
+            SetKinematic(true);
 
             if (objectCollider != null)
             {

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8252025870227308575}
   - component: {fileID: 4891748938443140591}
   - component: {fileID: 3800332805574638461}
+  - component: {fileID: 1197719874258635975}
   m_Layer: 0
   m_Name: MainCharacter
   m_TagString: Untagged
@@ -228,7 +229,7 @@ MonoBehaviour:
   attractableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  orbitRadius: 1.5
+  orbitRadius: 2.2
   orbitHeight: 0.95
   orbitAngularSpeed: 210
   maxCapacity: 8
@@ -314,6 +315,62 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1197719874258635975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf93592e205be42ce97a636b072360dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.OverloadController
+  magnetism: {fileID: 8252025870227308575}
+  motor: {fileID: 680580263455245825}
+  cameraRig: {fileID: 0}
+  enemyManager: {fileID: 0}
+  criticalThreshold: 0.7
+  overloadGracePeriod: 1.5
+  baseOverloadDamage: 4
+  damagePerCharge: 2
+  overloadRadius: 6
+  overloadKnockbackDistance: 2.5
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  overloadCooldown: 2
+  overloadStunDuration: 0.5
+  overloadShakeAmplitude: 0.3
+  overloadShakeDuration: 0.3
+  OnEnteredCritical:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExitedCritical:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnteredGrace:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExitedGrace:
+    m_PersistentCalls:
+      m_Calls: []
+  OnOverloadExploded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRecoveryStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRecoveryEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGraceTimerChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1197205948732289119
 GameObject:
   m_ObjectHideFlags: 0

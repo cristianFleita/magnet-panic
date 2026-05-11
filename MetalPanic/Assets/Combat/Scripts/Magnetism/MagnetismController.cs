@@ -21,7 +21,7 @@ namespace MagnetPanic.Combat
         [SerializeField] LayerMask attractableLayers = ~0;
 
         [Header("Orbit")]
-        [SerializeField] float orbitRadius = 1.5f;
+        [SerializeField] float orbitRadius = 2.2f;
         [SerializeField] float orbitHeight = 0.95f;
         [SerializeField] float orbitAngularSpeed = 210f;
         [SerializeField] float maxCapacity = 8f;
@@ -66,11 +66,40 @@ namespace MagnetPanic.Combat
         float orbitAngle;
         bool pullHeld;
         bool pullActive;
+        bool pullEnabled = true;
+        bool repelEnabled = true;
 
         public float CurrentCharge => currentCharge;
         public float MaxCapacity => maxCapacity;
         public bool IsPulling => pullActive;
         public bool HasOrbitingPayload => orbitingObjects.Count > 0 || pulledEnemies.Count > 0;
+        public bool PullEnabled => pullEnabled;
+        public bool RepelEnabled => repelEnabled;
+
+        public void SetPullEnabled(bool enabled)
+        {
+            pullEnabled = enabled;
+            if (!pullEnabled)
+            {
+                pullHeld = false;
+                CancelAttractingPayload();
+                if (pullActive)
+                {
+                    pullActive = false;
+                    OnPullStopped.Invoke();
+                }
+            }
+        }
+
+        public void SetRepelEnabled(bool enabled)
+        {
+            repelEnabled = enabled;
+        }
+
+        public void CancelAttracting()
+        {
+            CancelAttractingPayload();
+        }
 
         void Awake()
         {
@@ -124,7 +153,7 @@ namespace MagnetPanic.Combat
 
         public void StartPull()
         {
-            if (Time.time < nextRepelTime || pullActive)
+            if (Time.time < nextRepelTime || pullActive || !pullEnabled)
                 return;
 
             pullHeld = true;
@@ -137,7 +166,7 @@ namespace MagnetPanic.Combat
             bool hadInput = pullHeld || pullActive || HasOrbitingPayload;
             pullHeld = false;
 
-            if (!hadInput || Time.time < nextRepelTime)
+            if (!hadInput || Time.time < nextRepelTime || !repelEnabled)
                 return;
 
             RepelOrbitingPayload();
