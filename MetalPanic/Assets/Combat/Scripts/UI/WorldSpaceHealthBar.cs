@@ -21,6 +21,9 @@ namespace MagnetPanic.Combat
             if (health == null)
                 health = GetComponentInParent<CombatHealth>();
 
+            if (cameraOverride == null)
+                cameraOverride = Camera.main;
+
             EnsureUi();
         }
 
@@ -40,12 +43,10 @@ namespace MagnetPanic.Combat
 
         void LateUpdate()
         {
-            if (canvas == null)
+            if (canvas == null || cameraOverride == null)
                 return;
 
-            Camera sceneCamera = cameraOverride != null ? cameraOverride : Camera.main;
-            if (sceneCamera != null)
-                canvas.transform.rotation = Quaternion.LookRotation(canvas.transform.position - sceneCamera.transform.position, Vector3.up);
+            canvas.transform.rotation = cameraOverride.transform.rotation;
         }
 
         public void Configure(CombatHealth target, float height)
@@ -70,6 +71,15 @@ namespace MagnetPanic.Combat
         {
             if (canvas != null)
                 return;
+
+            Transform existing = transform.Find("Health Bar Canvas");
+            if (existing != null)
+            {
+                if (Application.isPlaying)
+                    Destroy(existing.gameObject);
+                else
+                    DestroyImmediate(existing.gameObject);
+            }
 
             GameObject canvasObject = new GameObject("Health Bar Canvas");
             canvasObject.transform.SetParent(transform, false);
