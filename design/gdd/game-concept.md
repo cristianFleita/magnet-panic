@@ -82,8 +82,8 @@ Cuanto más metal retiene el jugador:
 |---|---|---|---|
 | Movimiento | WASD | Reposicionamiento 8 direcciones | — |
 | Apuntar | Mouse | Dirige campo y repulsión | — |
-| Pull | Mantener click izquierdo | Atrae chatarra y enemigos magnetizados | P2, P1 |
-| Repel | Soltar click izquierdo | Dispara objetos retenidos hacia cursor | P2, P3 |
+| Pull | Click izquierdo | Atrae chatarra y enemigos magnetizados | P2, P1 |
+| Repel | Segundo click izquierdo | Dispara objetos retenidos hacia cursor | P2, P3 |
 | Strike | Click derecho | Marca enemigos, interrumpe, sostiene combo | P2 |
 | Counter | Espacio | Ventana de pulso anti-ataque | P3 |
 | Upgrade | 1-3 / Mouse | Elegir mejora al subir nivel | — |
@@ -108,7 +108,7 @@ y mapear con dependencias. No están priorizados acá — eso lo hace el index.
 
 ### Contenido del mundo
 - **Objetos atraíbles:** chatarra liviana, placa, mina, objeto pesado
-- **Enemigos:** Scrapling, Runner Bot, Shield Bot, Spitter Drone (opcional)
+- **Enemigos:** Scrapling, Metal Enemy, Runner Bot, Shield Bot, Spitter Drone (opcional)
 - **Mini-boss:** Scrap Brute (4 fases simples)
 
 ### Meta del run
@@ -120,6 +120,7 @@ y mapear con dependencias. No están priorizados acá — eso lo hace el index.
 
 ### Soporte
 - **HUD / UI mínima:** HP, sobrecarga, capacidad, XP, combo, misión, cooldown
+- **UI implementation:** HUD 2D con UI Toolkit; ayudas espaciales con UI/meshes/VFX world-space de Unity
 - **Feedback (game feel):** sonido, hitstop, screen shake, slow-mo, popups
 - **Scoring & condiciones de victoria/derrota:** score final, victoria por boss
   o extracción

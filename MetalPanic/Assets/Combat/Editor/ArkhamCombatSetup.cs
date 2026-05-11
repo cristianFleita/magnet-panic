@@ -37,6 +37,7 @@ namespace MagnetPanic.Combat.Editor
 
             Material playerMaterial = CreateMaterial("MP_Player_Blue", new Color(0.1f, 0.38f, 0.95f));
             Material enemyMaterial = CreateMaterial("MP_Enemy_Red", new Color(0.9f, 0.18f, 0.1f));
+            Material metalEnemyMaterial = CreateMaterial("MP_Metal_Enemy_Cyan", new Color(0.28f, 0.72f, 0.92f));
             Material magnetizedMaterial = CreateMaterial("MP_Magnetized_Yellow", new Color(1f, 0.82f, 0.16f));
             Material arenaMaterial = CreateMaterial("MP_Arena_Grey", new Color(0.42f, 0.44f, 0.46f));
             Material counterMaterial = CreateMaterial("MP_Counter_Cyan", new Color(0.25f, 1f, 1f));
@@ -77,6 +78,18 @@ namespace MagnetPanic.Combat.Editor
                 CreateEnemy(enemyRoot.transform, enemyManager, playerCombat, position, enemyMaterial, magnetizedMaterial, counterMaterial);
             }
 
+            CreateEnemy(
+                enemyRoot.transform,
+                enemyManager,
+                playerCombat,
+                new Vector3(0f, 1f, 3.4f),
+                metalEnemyMaterial,
+                magnetizedMaterial,
+                counterMaterial,
+                "Metal Enemy",
+                true,
+                2.2f);
+
             playerCombat.Configure(
                 enemyManager,
                 player.GetComponent<ArkhamTargetScanner>(),
@@ -90,7 +103,53 @@ namespace MagnetPanic.Combat.Editor
             Selection.activeGameObject = root;
             EditorUtility.DisplayDialog(
                 "Arkham Combat Demo",
-                "Created a URP-safe prototype setup. Press Play, use WASD to move, hold/release left click for Pull/Repel, right click to strike, and Space to counter.",
+                "Created a URP-safe prototype setup. Press Play, use WASD to move, left click to Pull, left click again to Repel, right click to strike, and Space to counter.",
+                "Nice");
+        }
+
+        [MenuItem("Tools/Magnet Panic/Arkham Combat/Spawn Metal Enemy In Current Scene")]
+        public static void SpawnMetalEnemyInCurrentScene()
+        {
+            CreatePrototypeAnimators();
+            EnsureFolder(MaterialFolder);
+
+            ArkhamEnemyManager enemyManager = Object.FindFirstObjectByType<ArkhamEnemyManager>();
+            ArkhamCombatController playerCombat = Object.FindFirstObjectByType<ArkhamCombatController>();
+
+            if (enemyManager == null)
+            {
+                GameObject enemyRoot = new GameObject("Enemy Manager");
+                Undo.RegisterCreatedObjectUndo(enemyRoot, "Create Enemy Manager");
+                enemyManager = enemyRoot.AddComponent<ArkhamEnemyManager>();
+            }
+
+            Material metalEnemyMaterial = CreateMaterial("MP_Metal_Enemy_Cyan", new Color(0.28f, 0.72f, 0.92f));
+            Material magnetizedMaterial = CreateMaterial("MP_Magnetized_Yellow", new Color(1f, 0.82f, 0.16f));
+            Material counterMaterial = CreateMaterial("MP_Counter_Cyan", new Color(0.25f, 1f, 1f));
+
+            Vector3 position = playerCombat != null
+                ? playerCombat.transform.position + playerCombat.transform.forward * 3.4f
+                : new Vector3(0f, 0f, 3.4f);
+            position.y = 1f;
+
+            GameObject metalEnemy = CreateEnemy(
+                enemyManager.transform,
+                enemyManager,
+                playerCombat,
+                position,
+                metalEnemyMaterial,
+                magnetizedMaterial,
+                counterMaterial,
+                "Metal Enemy",
+                true,
+                2.2f);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Selection.activeGameObject = metalEnemy;
+            EditorUtility.DisplayDialog(
+                "Metal Enemy",
+                "Spawned a metal enemy. Press Play and left click Pull to attract it immediately.",
                 "Nice");
         }
 
@@ -137,18 +196,21 @@ namespace MagnetPanic.Combat.Editor
             return player;
         }
 
-        static void CreateEnemy(
+        static GameObject CreateEnemy(
             Transform parent,
             ArkhamEnemyManager manager,
             ArkhamCombatController playerCombat,
             Vector3 position,
             Material enemyMaterial,
             Material magnetizedMaterial,
-            Material counterMaterial)
+            Material counterMaterial,
+            string enemyName = "Arkham Enemy",
+            bool alwaysPullableByMagnet = false,
+            float magneticMass = 3f)
         {
             GameObject enemy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             Undo.RegisterCreatedObjectUndo(enemy, "Create Combat Enemy");
-            enemy.name = "Arkham Enemy";
+            enemy.name = enemyName;
             enemy.transform.SetParent(parent);
             enemy.transform.position = position;
             AssignMaterial(enemy, enemyMaterial);
@@ -174,9 +236,11 @@ namespace MagnetPanic.Combat.Editor
 
             ArkhamEnemy arkhamEnemy = enemy.AddComponent<ArkhamEnemy>();
             arkhamEnemy.Configure(manager, playerCombat, animator, counterCue);
+            arkhamEnemy.ConfigureMagneticProfile(alwaysPullableByMagnet, magneticMass);
             arkhamEnemy.OnMagnetized.AddListener(target => AssignMaterial(target.gameObject, magnetizedMaterial));
 
             manager.Register(arkhamEnemy);
+            return enemy;
         }
 
         static void CreateArena(Transform parent, Material material)

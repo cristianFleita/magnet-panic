@@ -63,7 +63,7 @@ termina su GDD individual o cambia su estado.
   invulnerabilidad temporal, evento de muerte. Base usada por player, enemies,
   attractables (impactos) y boss.
 - **`input-system`** — Wrapper sobre Unity New Input System. Expone intentos
-  abstractos (`Move`, `Aim`, `PullHold`, `PullRelease`, `Strike`, `Counter`,
+  abstractos (`Move`, `Aim`, `PullToggle`, `RepelClick`, `Strike`, `Counter`,
   `UpgradeChoice`). Aísla rebinding y diferencias de plataforma.
 - **`arena-system`** — Geometría del nivel, paredes (críticas para "wall slam"),
   límites de cámara, colisiones estáticas, spawn points.

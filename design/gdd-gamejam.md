@@ -88,8 +88,8 @@ Top-down 3D o isométrica con seguimiento suave.
 |---|---|
 | Movimiento | WASD |
 | Apuntar | Mouse |
-| Atraer | Mantener click izquierdo |
-| Repeler | Soltar click izquierdo |
+| Atraer | Click izquierdo |
+| Repeler | Segundo click izquierdo |
 | Strike | Click derecho |
 | Counter / pulso | Espacio |
 | Elegir upgrade | Mouse / 1-3 |
@@ -101,10 +101,10 @@ Top-down 3D o isométrica con seguimiento suave.
 ## Loop corto
 
 1. El jugador ve chatarra y enemigos.
-2. Mantiene atraer.
+2. Activa atraer con click izquierdo.
 3. La chatarra entra en órbita.
 4. Golpea a un enemigo para marcarlo.
-5. Repele objetos o enemigo hacia un grupo.
+5. Repele objetos o enemigo hacia un grupo con otro click izquierdo.
 6. Impacta, mata, genera combo.
 7. Gana Scrap XP.
 8. Elige upgrades.
@@ -139,14 +139,15 @@ Variables iniciales sugeridas:
 
 ## 6.2 Atraer chatarra
 
-Al mantener click izquierdo, el jugador activa un campo magnético.
+Con un click izquierdo, el jugador activa o alterna un campo magnético.
 
 ### Reglas
 
 - Atrae objetos metálicos dentro de un radio.
 - Los objetos vuelan hacia el jugador.
 - Al llegar, entran en órbita.
-- No atrae enemigos al inicio, salvo enemigos magnetizados.
+- No atrae enemigos al inicio, salvo enemigos magnetizados o enemigos metálicos definidos como atraíbles.
+- Los enemigos magnetizados se acercan al jugador y quedan retenidos al frente, no orbitan como chatarra.
 
 Variables sugeridas:
 
@@ -182,7 +183,7 @@ Capacidad sugerida:
 
 ## 6.4 Repeler
 
-Al soltar click izquierdo, los objetos orbitando salen disparados hacia el cursor.
+Con un segundo click izquierdo, los objetos orbitando y enemigos retenidos salen disparados hacia el cursor.
 
 ### Reglas
 
@@ -574,6 +575,8 @@ Durante 6 segundos, los enemigos pequeños pueden ser atraídos directamente.
 - Cooldown de counter.
 - Indicador de enemigo magnetizado.
 - Cono de repulsión.
+
+La UI 2D del HUD se implementa con UI Toolkit. Las ayudas espaciales sobre el mundo, como el cono de repulsión, retícula de dirección e indicadores sobre enemigos, usan UI/meshes/VFX world-space de Unity.
 
 ---
 

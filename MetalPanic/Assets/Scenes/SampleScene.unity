@@ -189,6 +189,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -554,6 +559,206 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 60073968}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &86983103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 86983104}
+  - component: {fileID: 86983109}
+  - component: {fileID: 86983108}
+  - component: {fileID: 86983107}
+  - component: {fileID: 86983106}
+  - component: {fileID: 86983105}
+  m_Layer: 0
+  m_Name: Metal Enemy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &86983104
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86983103}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 3.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 240067246}
+  - {fileID: 1636409913}
+  m_Father: {fileID: 2119837823}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &86983105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86983103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a66e99fdc0b1d4ac38dc1348512990e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.ArkhamEnemy
+  manager: {fileID: 2119837824}
+  playerCombat: {fileID: 1224832980}
+  animator: {fileID: 86983106}
+  characterController: {fileID: 0}
+  counterIndicator: {fileID: 240067245}
+  counterParticle: {fileID: 0}
+  maxHealth: 3
+  magneticMarksToMagnetize: 2
+  stunDuration: 0.45
+  knockbackDistance: 0.55
+  knockbackDuration: 0.16
+  destroyOnDeath: 1
+  deathDespawnDelay: 0.8
+  markState: 0
+  markDecayTime: 6
+  magneticMass: 2.2
+  magneticPullSnapSharpness: 18
+  magnetizedRepelDuration: 0.42
+  magnetizedProjectileRadius: 0.8
+  markedProjectileDamageMultiplier: 1.2
+  counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 1
+  magnetizedIndicator: {fileID: 1636409912}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
+  strafeSpeed: 1.25
+  approachSpeed: 5
+  retreatSpeed: 2.25
+  retreatDistance: 4.25
+  prepareAttackTime: 0.35
+  attackRange: 1.8
+  attackHitDelay: 0.2
+  attackRecovery: 0.55
+  OnDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  OnMagnetized:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCountered:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!95 &86983106
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86983103}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 29924101c0ee64ad0a8c3e163a665ef8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!143 &86983107
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86983103}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.45
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &86983108
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86983103}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 8fb75b23d9b2a446f882a472d39213b5, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &86983109
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86983103}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &184304063
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,6 +1194,96 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 186646612}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &240067245
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 240067246}
+  - component: {fileID: 240067248}
+  - component: {fileID: 240067247}
+  m_Layer: 0
+  m_Name: Counter Cue
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &240067246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240067245}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.65, z: 0}
+  m_LocalScale: {x: 0.28, y: 0.28, z: 0.28}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 86983104}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &240067247
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240067245}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 8047f3045060a4c44b828ba47e0741b7, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &240067248
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240067245}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &246824068
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,6 +1354,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -1253,6 +1553,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -1584,6 +1889,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -1905,6 +2215,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -2485,6 +2800,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -3312,6 +3632,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -3436,6 +3761,60 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 738564997}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!21 &766499786
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Universal Render Pipeline/Unlit
+  m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddPrecomputedVelocity: 0
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendOp: 0
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _QueueOffset: 0
+    - _SampleGI: 0
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 0
+    - _XRMotionVectorsPass: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
+    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!1 &790550949
 GameObject:
   m_ObjectHideFlags: 0
@@ -3506,6 +3885,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -3749,6 +4133,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -4430,6 +4819,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -4897,6 +5291,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -5239,6 +5638,15 @@ MonoBehaviour:
   repelCooldown: 0.25
   repelSpeed: 16
   magnetizedEnemyDamage: 5
+  heldEnemyDistance: 1.9
+  heldEnemySpacing: 0.9
+  autoCreateAimIndicator: 1
+  aimLine: {fileID: 0}
+  aimTip: {fileID: 0}
+  aimIndicatorLength: 5
+  aimIndicatorHeight: 0.08
+  aimLineWidth: 0.08
+  aimIndicatorColor: {r: 0.2, g: 0.85, b: 1, a: 0.85}
   OnPullStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -5255,6 +5663,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnEnemyOrbited:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnemyPulled:
     m_PersistentCalls:
       m_Calls: []
 --- !u!143 &1224832986
@@ -5834,6 +6245,15 @@ MonoBehaviour:
   repelCooldown: 0.25
   repelSpeed: 16
   magnetizedEnemyDamage: 5
+  heldEnemyDistance: 1.9
+  heldEnemySpacing: 0.9
+  autoCreateAimIndicator: 1
+  aimLine: {fileID: 0}
+  aimTip: {fileID: 0}
+  aimIndicatorLength: 5
+  aimIndicatorHeight: 0.08
+  aimLineWidth: 0.08
+  aimIndicatorColor: {r: 0.2, g: 0.85, b: 1, a: 0.85}
   OnPullStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -5850,6 +6270,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnEnemyOrbited:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnemyPulled:
     m_PersistentCalls:
       m_Calls: []
 --- !u!143 &1293178157
@@ -6586,6 +7009,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -6870,6 +7298,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -7555,6 +7988,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -7769,6 +8207,96 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1587536087}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1636409912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1636409913}
+  - component: {fileID: 1636409915}
+  - component: {fileID: 1636409914}
+  m_Layer: 0
+  m_Name: Magnetized Cue
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1636409913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636409912}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.15, z: 0}
+  m_LocalScale: {x: 0.72, y: 0.018, z: 0.72}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 86983104}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &1636409914
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636409912}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 766499786}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1636409915
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636409912}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1700300740
 GameObject:
   m_ObjectHideFlags: 0
@@ -8881,6 +9409,11 @@ MonoBehaviour:
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
   counterPulseDistance: 1.1
+  alwaysPullableByMagnet: 0
+  magnetizedIndicator: {fileID: 0}
+  autoCreateMagnetizedIndicator: 1
+  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25
@@ -9040,6 +9573,7 @@ Transform:
   - {fileID: 1039710901}
   - {fileID: 49002249}
   - {fileID: 845586493}
+  - {fileID: 86983104}
   m_Father: {fileID: 2128094914}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2119837824

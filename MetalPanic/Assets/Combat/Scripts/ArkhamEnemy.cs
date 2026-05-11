@@ -50,6 +50,11 @@ namespace MagnetPanic.Combat
         [SerializeField] float magnetizedProjectileRadius = 0.8f;
         [SerializeField] float markedProjectileDamageMultiplier = 1.2f;
         [SerializeField] float counterPulseDistance = 1.1f;
+        [SerializeField] bool alwaysPullableByMagnet;
+        [SerializeField] GameObject magnetizedIndicator;
+        [SerializeField] bool autoCreateMagnetizedIndicator = true;
+        [SerializeField] float magnetizedIndicatorHeight = 2.15f;
+        [SerializeField] Color magnetizedIndicatorColor = new Color(1f, 0.82f, 0.16f, 0.85f);
 
         [Header("Movement")]
         [SerializeField] float strafeSpeed = 1.25f;
@@ -90,10 +95,12 @@ namespace MagnetPanic.Combat
         public bool IsCounterable => IsAlive && (isPreparingAttack || isAttacking);
         public bool IsAttacking => isAttacking;
         public bool IsMagnetized => isMagnetized;
+        public bool IsAlwaysPullableByMagnet => alwaysPullableByMagnet;
         public int MagneticMarks => magneticMarks;
         public MagneticMarkState MarkState => markState;
         public float MagneticMass => magneticMass;
-        public bool CanBePulledByMagnet => IsAlive && markState == MagneticMarkState.Magnetized && !isLockedTarget;
+        public bool CanBePulledByMagnet => IsAlive && IsMagneticPullTarget && !isLockedTarget;
+        public bool IsMagneticPullTarget => alwaysPullableByMagnet || markState == MagneticMarkState.Magnetized;
 
         public bool CanDirectorSelect =>
             IsAlive &&
@@ -115,6 +122,15 @@ namespace MagnetPanic.Combat
                 characterController = GetComponent<CharacterController>();
 
             health = maxHealth;
+            EnsureMagnetizedIndicator();
+            UpdateMagnetizedIndicator();
+        }
+
+        public void ConfigureMagneticProfile(bool alwaysPullable, float mass)
+        {
+            alwaysPullableByMagnet = alwaysPullable;
+            magneticMass = Mathf.Max(0.5f, mass);
+            UpdateMagnetizedIndicator();
         }
 
         void OnEnable()
@@ -154,6 +170,8 @@ namespace MagnetPanic.Combat
             playerCombat = player;
             animator = targetAnimator;
             counterIndicator = indicator;
+            EnsureMagnetizedIndicator();
+            UpdateMagnetizedIndicator();
         }
 
         void EnsureEvents()
@@ -301,6 +319,8 @@ namespace MagnetPanic.Combat
 
             if (isMagnetized && previous != MagneticMarkState.Magnetized)
                 OnMagnetized.Invoke(this);
+
+            UpdateMagnetizedIndicator();
         }
 
         public float GetTimeSinceLastMark()
@@ -731,6 +751,7 @@ namespace MagnetPanic.Combat
         {
             isDead = true;
             HideCounterCue();
+            UpdateMagnetizedIndicator();
             StopBehaviorCoroutine();
             StopMoving();
             OnDeath.Invoke(this);
@@ -776,6 +797,60 @@ namespace MagnetPanic.Combat
                 counterParticle.Clear(true);
                 counterParticle.Stop(true);
             }
+        }
+
+        void EnsureMagnetizedIndicator()
+        {
+            if (!autoCreateMagnetizedIndicator || magnetizedIndicator != null)
+                return;
+
+            GameObject cue = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            cue.name = "Magnetized Cue";
+            cue.transform.SetParent(transform, false);
+            cue.transform.localPosition = new Vector3(0f, magnetizedIndicatorHeight, 0f);
+            cue.transform.localScale = new Vector3(0.72f, 0.018f, 0.72f);
+
+            Collider cueCollider = cue.GetComponent<Collider>();
+            if (cueCollider != null)
+                DestroyLocalObject(cueCollider);
+
+            Renderer renderer = cue.GetComponent<Renderer>();
+            if (renderer != null)
+                renderer.sharedMaterial = CreateCueMaterial(magnetizedIndicatorColor);
+
+            magnetizedIndicator = cue;
+            magnetizedIndicator.SetActive(false);
+        }
+
+        void UpdateMagnetizedIndicator()
+        {
+            if (magnetizedIndicator != null)
+                magnetizedIndicator.SetActive(IsAlive && IsMagneticPullTarget);
+        }
+
+        static Material CreateCueMaterial(Color color)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null)
+                shader = Shader.Find("Sprites/Default");
+            if (shader == null)
+                shader = Shader.Find("Standard");
+
+            return new Material(shader)
+            {
+                color = color
+            };
+        }
+
+        static void DestroyLocalObject(Object target)
+        {
+            if (target == null)
+                return;
+
+            if (Application.isPlaying)
+                Destroy(target);
+            else
+                DestroyImmediate(target);
         }
     }
 }

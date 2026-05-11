@@ -27,9 +27,9 @@ namespace MagnetPanic.Combat
         [SerializeField] LayerMask hitLayers = ~0;
 
         [Header("Optional Feedback")]
-        [SerializeField] TrailRenderer trail;
-        [SerializeField] ParticleSystem orbitParticle;
-        [SerializeField] ParticleSystem impactParticle;
+        [SerializeField] TrailRenderer trail = null;
+        [SerializeField] ParticleSystem orbitParticle = null;
+        [SerializeField] ParticleSystem impactParticle = null;
 
         [Header("Events")]
         public UnityEvent<MagneticObject> OnAttractStarted = new UnityEvent<MagneticObject>();

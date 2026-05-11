@@ -10,10 +10,10 @@
 
 El `magnetism-system` es el bucle central de gameplay de Magnet Panic:
 Scrapstorm. Con un solo botón del mouse el jugador ejecuta tres acciones
-acopladas: **Pull** (mantener para proyectar un campo magnético que atrae
+acopladas: **Pull** (primer click para proyectar un campo magnético que atrae
 objetos metálicos y enemigos magnetizados hacia el jugador), **Orbit** (los
 objetos atraídos giran alrededor del jugador, ocupan capacidad y bloquean
-parcialmente proyectiles) y **Repel** (soltar para disparar todos los
+parcialmente proyectiles) y **Repel** (segundo click para disparar todos los
 objetos orbitando en un cono hacia el cursor — la fuente principal de daño
 del juego).
 
@@ -30,14 +30,15 @@ una fuerza que atrae el peligro, lo retiene bajo tensión y lo libera en
 descargas encadenadas sin nunca estar parado. La fantasía es de **combate en
 estado de fluidez**, no de "cargar y disparar":
 
-1. **Pull — el peligro viene a vos.** Mientras te movés, mantenés el campo
-   abierto. Chatarra resbala por el piso. Enemigos magnetizados son
-   arrastrados contra su voluntad. La pantalla se llena de cosas orbitando.
-   Es el momento de "yo soy la tormenta".
+1. **Pull — el peligro viene a vos.** Mientras te movés, el campo queda
+   abierto tras el primer click. Chatarra resbala por el piso. Enemigos
+   magnetizados son arrastrados contra su voluntad hacia un punto frente al
+   jugador. La pantalla se llena de cosas orbitando y amenazas retenidas. Es
+   el momento de "yo soy la tormenta".
 2. **Hold — leer el caos.** La órbita se llena, te movés más lento (-20%
    con carga completa), la sobrecarga sube. Estás midiendo el campo,
    ajustando posición, eligiendo el ángulo del cono. La decisión no es
-   "soltar o no", es "soltar **dónde** y **cuándo** dentro de un combo".
+   "seguir cargando o repeler", es "repeler **dónde** y **cuándo** dentro de un combo".
 3. **Repel — liberación dirigida.** Explosión direccional satisfactoria.
    Minas detonan, enemigos chocan contra paredes, los números de combo se
    apilan. El siguiente Pull empieza antes de que termine la animación.
@@ -77,21 +78,22 @@ recurso **carga actual**.
 
 #### Pull
 
-1. Activado por el intento `PullHold` (mantener click izquierdo en el
+1. Activado por el intento `PullToggle` (click izquierdo en el
    default; abstraído por `input-system`).
-2. Mientras `PullHold == true`, se proyecta un campo magnético circular de
+2. Mientras `PullActive == true`, se proyecta un campo magnético circular de
    radio `pullRadius` (default 5 m) centrado en `playerPosition`.
 3. Cada frame, todo `IAttractable` con su pivot dentro del campo recibe
    una fuerza hacia el jugador con magnitud `pullSpeed × (1 / mass)`,
    limitada por `pullSpeedMax`. La velocidad efectiva no es uniforme:
    chatarra liviana llega rápido, objetos pesados llegan lento (P4 —
    riesgo/recompensa).
-4. Los enemigos sólo son afectados por Pull si `MarkState == Magnetizado`.
-   Enemigos `Marcado` o `Normal` ignoran el campo.
+4. Los enemigos sólo son afectados por Pull si `MarkState == Magnetizado` o
+   si tienen `AlwaysPullableByMagnet` activo, como los enemigos metálicos.
+   Enemigos `Marcado` o `Normal` sin esa propiedad ignoran el campo.
 5. El jugador puede moverse y apuntar mientras Pull está activo.
 6. Pull no consume carga; *alimenta* la órbita.
-7. Pull no tiene cooldown propio. La transición a Repel ocurre solo al
-   soltar el botón.
+7. Pull no tiene cooldown propio. La transición a Repel ocurre con el
+   siguiente click izquierdo.
 
 #### Orbit
 
@@ -118,9 +120,10 @@ recurso **carga actual**.
 
 #### Repel
 
-1. Activado por el intento `PullRelease` (soltar el botón).
+1. Activado por el intento `RepelClick` (segundo click izquierdo mientras Pull
+   está activo o hay carga retenida).
 2. **Cooldown global** de `repelCooldown` (default 0.25 s) tras cualquier
-   release. Mientras esté en cooldown, `PullHold` se ignora hasta que
+   Repel. Mientras esté en cooldown, `PullToggle` se ignora hasta que
    termine.
 3. Al ejecutar Repel:
    - Se calcula el cono frontal de ángulo `repelConeAngle` (default 50°)
@@ -129,7 +132,7 @@ recurso **carga actual**.
      inicial es un ángulo aleatorio dentro del cono. Su velocidad inicial
      es `repelSpeed × objectSpeedMod` (chatarra rápida, pesado lento).
    - El objeto deja la órbita; `currentCharge` baja por `objectMass`.
-4. **Dry whoosh:** si `currentCharge == 0` al soltar, el sistema dispara el
+4. **Dry whoosh:** si `currentCharge == 0` al repeler, el sistema dispara el
    evento `OnRepelFired(empty=true)`, reproduce el VFX/SFX reducido, y
    aplica el cooldown completo. **No** se penaliza al jugador con un
    cooldown extra ni con stagger.
@@ -193,14 +196,14 @@ Eventos emitidos:
 #### Player-magnetism FSM
 
 ```
-        ┌──────┐  PullHold  ┌─────────┐  object reaches player  ┌──────────┐
-        │ Idle │ ─────────> │ Pulling │ ──────────────────────> │ Orbiting │
+        ┌──────┐  PullToggle ┌─────────┐  object reaches player  ┌──────────┐
+        │ Idle │ ──────────> │ Pulling │ ──────────────────────> │ Orbiting │
         └──────┘            └─────────┘                         └──────────┘
-           ▲                    │  PullRelease                       │
+           ▲                    │  RepelClick                        │
            │                    │  (currentCharge == 0)              │
            │                    │  ──> dry whoosh                    │
            │                    ▼                                    │
-           │              ┌──────────────┐  PullRelease (charge>0)   │
+           │              ┌──────────────┐  RepelClick (charge>0)    │
            │              │  Cooldown    │ <───────────────────────  │
            │              │  (0.25s)     │                           │
            │              └──────────────┘                           │
@@ -213,10 +216,10 @@ Transiciones:
 
 | Desde | Evento | A | Side effect |
 |---|---|---|---|
-| Idle | `PullHold` start | Pulling | Activa campo magnético, VFX |
+| Idle | `PullToggle` | Pulling | Activa campo magnético, VFX |
 | Pulling | object enters orbit | Orbiting | `currentCharge += mass` |
-| Pulling | `PullRelease` (charge==0) | Cooldown | Dry whoosh VFX/SFX |
-| Orbiting | `PullRelease` (charge>0) | Repelling | Convierte objetos en proyectiles |
+| Pulling | `RepelClick` (charge==0) | Cooldown | Dry whoosh VFX/SFX |
+| Orbiting | `RepelClick` (charge>0) | Repelling | Convierte objetos en proyectiles |
 | Repelling | animación termina | Cooldown | — |
 | Cooldown | timer 0.25s | Idle | Listo para nuevo Pull |
 | Orbiting/Pulling | `OverloadTriggered` event | ForcedEject | Expulsa todo, vacía `currentCharge` |
@@ -228,7 +231,7 @@ Transiciones:
 InWorld ──in pullRadius──> Attracting ──dist ≤ orbitRadius──> InOrbit
 InOrbit ──Repel──> Projectile ──OnImpact──> Consumed (despawn)
 InOrbit ──ForcedEject──> InWorld (radial pushback)
-Attracting ──out of radius / Pull released──> InWorld
+Attracting ──out of radius / RepelClick──> InWorld
 ```
 
 | Desde | Evento | A | Notas |
@@ -236,7 +239,7 @@ Attracting ──out of radius / Pull released──> InWorld
 | InWorld | dentro de `pullRadius` y Pull activo | Attracting | Aplica fuerza cada frame |
 | Attracting | distancia ≤ `orbitRadius` y capacidad OK | InOrbit | Asigna slot |
 | Attracting | capacidad llena | InWorld (rebote) | `orbitRejectSpeed` radial |
-| Attracting | Pull soltado o sale del radio | InWorld | Pierde fuerza, deja de atraer |
+| Attracting | RepelClick o sale del radio | InWorld | Pierde fuerza, deja de atraer |
 | InOrbit | Repel | Projectile | Disparado en cono |
 | Projectile | OnImpact | Consumed | Despawn vía pool |
 | InOrbit | ForcedEject (overload) | InWorld | Radial pushback fuerte |
@@ -247,7 +250,7 @@ Attracting ──out of radius / Pull released──> InWorld
 Normal ──Strike──> Marcado ──Strike <6s──> Magnetizado
 Marcado ──6s sin Strike──> Normal
 Magnetizado ──6s sin Strike──> Marcado ──6s más──> Normal
-Magnetizado ──Pulled + Repelled──> Normal (consumido al ser disparado)
+Magnetizado ──Pulled + Repelled──> Normal (retenido al frente y disparado)
 ```
 
 | Desde | Evento | A |
@@ -256,7 +259,7 @@ Magnetizado ──Pulled + Repelled──> Normal (consumido al ser disparado)
 | Marcado | Strike hit dentro de 6s | Magnetizado |
 | Marcado | 6s sin Strike | Normal |
 | Magnetizado | 6s sin Strike | Marcado |
-| Magnetizado | Pulled + Repelled (lanzado contra otro enemigo o pared) | Normal |
+| Magnetizado | Pulled + Repelled (retenido al frente y lanzado contra otro enemigo o pared) | Normal |
 
 ---
 
@@ -264,7 +267,7 @@ Magnetizado ──Pulled + Repelled──> Normal (consumido al ser disparado)
 
 | Sistema | Dirección | Interfaz / Datos |
 |---|---|---|
-| `input-system` | in | Lee `PullHold` (bool), `PullRelease` (event), `Aim` (Vector3 cursor world pos). El sistema desconoce qué tecla mapea — sólo escucha intents. |
+| `input-system` | in | Lee `PullToggle`/`RepelClick` (click izquierdo contextual) y `Aim` (Vector3 cursor world pos). El sistema desconoce qué tecla mapea — sólo escucha intents. |
 | `player-movement` | in (read) + out (modifier) | Lee `playerPosition`, `playerFacing`. Escribe `chargePenalty: float ∈ [0,1]` calculado como `currentCharge / maxCapacity` × `chargePenaltyMax` (default 0.2). `player-movement` aplica este modificador a su `baseSpeed`. |
 | `object-pooling` | in | Spawn/despawn de proyectiles in flight. API: `pool.Spawn(prefabId, pos, vel)` → `Handle`; `pool.Despawn(handle)`. |
 | `attractables-system` | in (contract consumer) | Consume `IAttractable` interface: `mass`, `objectSpeedMod`, `OnEnterOrbit()`, `OnLeaveOrbit()`, `OnRepel(direction, force)`, `OnImpact(target, hitInfo)`. Cada attractable owns su comportamiento de impacto. |
@@ -392,7 +395,7 @@ si (now − lastStrikeTime > markDecaySeconds):
 ### Pull eligibility de enemigo
 
 ```
-canPullEnemy = (enemy.MarkState == Magnetizado)
+canPullEnemy = (enemy.MarkState == Magnetizado || enemy.AlwaysPullableByMagnet)
             && (enemy.mass ≤ pullableEnemyMaxMass)
 ```
 
@@ -476,13 +479,14 @@ Implicaciones intencionadas:
 
 ### Exploits previstos (autobalanceados, no bloqueados)
 
-- **Spam Pull/Release vacío:** respeta cooldown 0.25 s, no gana nada. No
+- **Spam Pull/Repel vacío:** respeta cooldown 0.25 s, no gana nada. No
   bloquear.
-- **Hold orbit indefinido para farm de orbit contact damage:** contrarrestado
+- **Órbita indefinida para farm de orbit contact damage:** contrarrestado
   por `overload-system`, que escala con tiempo en alta carga, fuerza
   ForcedEject y deja al jugador vulnerable 0.5 s (GDD §6.9).
-- **Magnetized enemy como escudo orbital:** feature, no exploit. Cuenta como
-  charge ocupada.
+- **Magnetized enemy como escudo orbital:** ya no aplica al prototype actual.
+  El enemigo magnetizado se retiene al frente del jugador, estilo
+  atracción/repulsión dirigida, y no entra a la órbita de chatarra.
 
 ### Powerups y modificadores
 
@@ -531,7 +535,7 @@ GDD. Si el GDD final difiere, este sistema se ajusta:
 
 | Dep | Hard/Soft | Interfaz | Status |
 |---|---|---|---|
-| `input-system` | Hard | Lee `PullHold` (bool), `PullRelease` (event), `Aim` (Vector3) | Not Designed (asunción provisional) |
+| `input-system` | Hard | Lee `PullToggle`/`RepelClick` contextual y `Aim` (Vector3) | Not Designed (asunción provisional) |
 | `player-movement` | Hard | Lee `playerPosition`, `playerFacing`. Escribe `chargePenalty: float ∈ [0,1]` | Not Designed (asunción) |
 | `object-pooling` | Hard | `pool.Spawn(prefabId, pos, vel) → Handle`; `pool.Despawn(handle)` | Not Designed (asunción) |
 | `attractables-system` | Hard | Consume `IAttractable` interface (definido en este GDD) | Not Designed |
@@ -688,19 +692,19 @@ magnetism garantiza emitir** y el feel objetivo, no las implementaciones
 
 | Evento | Cuándo | Feel objetivo |
 |---|---|---|
-| `OnPullStart` | Press de `PullHold` | Hum magnético low-end arranca, partículas radiales convergen al jugador |
+| `OnPullStart` | Click de `PullToggle` | Hum magnético low-end arranca, partículas radiales convergen al jugador |
 | `OnPullActive` (por frame) | Mientras Pull activo | Loop modulado por `currentCharge` (sube en frecuencia con la carga) |
 | `OnObjectAttracting(handle)` | Objeto entra al campo | Trail tenue del objeto al jugador |
 | `OnObjectOrbited(handle, type)` | Objeto entra al ring | Click metálico distinto por type (chatarra: tink; placa: thunk; mina: clack-fizz; pesado: deep clunk) |
 | `OnChargeFull` | `currentCharge == maxCapacity` | Pulso visual + tick high-pitched (alerta sin ser molesta) |
-| `OnRepelFired(numProjectiles, empty)` | Release con/sin carga | Empty: dry whoosh quiet. Con carga: punchy bang escalado por count |
+| `OnRepelFired(numProjectiles, empty)` | Repel con/sin carga | Empty: dry whoosh quiet. Con carga: punchy bang escalado por count |
 | `OnProjectileImpact(handle, target)` | Proyectil pega | Crunch + hitstop 0.05 s |
 | `OnMineExploded(pos)` | Mina detona | Boom low-pass + screen shake medio + flash |
 | `OnEnemyMagnetizedRepelled(handle, target)` | Magnetizado se lanza | Sonido eléctrico desgarrando + trail magnético |
 | `OnMarkApplied(stacks)` | Strike marca enemigo | Tick eléctrico crisp |
 | `OnEnemyMagnetized` | 2 stacks aplicados | Loop eléctrico sutil sobre el enemigo (continuo hasta decay/muerte) |
 | `OnForcedEject(reason)` | Overload trigger | Descarga radial violenta + screen shake fuerte + flash blanco breve |
-| `OnPullEnd(empty)` | Release | Hum se corta seco |
+| `OnPullEnd(empty)` | RepelClick | Hum se corta seco |
 
 ### Feel obligatorio (de GDD §15)
 
@@ -725,6 +729,8 @@ sobrecarga) son responsabilidad de `scoring-xp-system` y
 
 `hud-system` implementa los elementos. Esta sección define qué datos
 expone magnetism y qué cues visuales son no-negociables para legibilidad.
+HUD 2D usa UI Toolkit; ayudas espaciales como retícula, cono, glows y cues
+sobre enemigos usan UI/meshes/VFX world-space de Unity.
 
 ### Datos publicados (read-only desde HUD)
 
@@ -744,8 +750,8 @@ magnetism.orbitedObjects     : List<{handle, type, mass}>
    siempre. Pulsa al alcanzar full (`OnChargeFull`). Color por default;
    segmentos por type del objeto en órbita es opcional pero deseable.
 2. **Indicador de cono de Repel** — cono semitransparente desde el
-   jugador hacia `Aim`, ángulo `repelConeAngle`. **Sólo visible cuando
-   `pullActive == true` y `currentCharge > 0`.** Anti screen clutter.
+   jugador hacia `Aim`, ángulo `repelConeAngle`. **Visible cuando
+   `pullActive == true` o hay payload retenido.** Anti screen clutter.
 3. **Cooldown de Repel** — indicador radial pequeño cerca del reticle
    mientras `repelCooldownLeft > 0`.
 4. **Indicador de enemigo Magnetizado** — glow world-space sobre cada
@@ -766,13 +772,13 @@ magnetism.orbitedObjects     : List<{handle, type, mass}>
 
 ### Funcional
 
-1. Mantener `PullHold` activa el campo dentro de 1 frame; `IAttractable` en
+1. Click de `PullToggle` activa el campo dentro de 1 frame; `IAttractable` en
    `pullRadius` se mueve hacia el jugador con velocidad consistente con su
    `mass` y `objectSpeedMod`.
-2. Soltar `PullHold` con orbita > 0 dispara todos los objetos en cono
+2. Segundo click con órbita > 0 dispara todos los objetos en cono
    `repelConeAngle`, vacía `currentCharge` a 0, inicia cooldown
    `repelCooldown`.
-3. Soltar con orbita == 0 ejecuta dry whoosh: sin proyectiles, mismo
+3. Segundo click con órbita == 0 ejecuta dry whoosh: sin proyectiles, mismo
    cooldown, sin penalización extra.
 4. Strike (vía `combat-system`) aplica marca a enemigo Normal → Marcado;
    segundo Strike dentro de 6 s → Magnetizado. Pull arrastra Magnetizados
@@ -826,12 +832,12 @@ magnetism.orbitedObjects     : List<{handle, type, mass}>
     `currentCharge > 0`.
 21. ¿Se sabe cuánta carga tenés? HUD bar consistente con número de
     objetos en órbita.
-22. ¿Pull/Release con 0 cooldown remaining permite el flujo
+22. ¿Pull/Repel con 0 cooldown remaining permite el flujo
     Strike→Strike→Pull→Repel sin micro-pausa percibida?
 
 ### Resistencia a abuso
 
-23. Pull spam (alternar PullHold/Release ~10 Hz durante 60 s): sin
+23. Pull spam (alternar PullToggle/RepelClick ~10 Hz durante 60 s): sin
     excepciones, sin pérdida de fps, pool sin overflow.
 24. Repel apuntando fuera de arena: proyectiles vuelan hasta
     `projectileMaxDistance` y despawnean; pool libera handles.

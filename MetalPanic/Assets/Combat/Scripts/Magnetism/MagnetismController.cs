@@ -12,7 +12,6 @@ namespace MagnetPanic.Combat
         [SerializeField] Camera cameraOverride;
         [SerializeField] ArkhamPlayerMotor motor;
         [SerializeField] ArkhamEnemyManager enemyManager;
-        [SerializeField] PlayerInput playerInput;
         [SerializeField] Transform orbitCenter;
 
         [Header("Pull")]
@@ -35,9 +34,18 @@ namespace MagnetPanic.Combat
         [SerializeField] float repelSpeed = 16f;
         [SerializeField] int magnetizedEnemyDamage = 5;
 
-        [Header("Input Safety")]
-        [SerializeField] string pullActionName = "Pull";
-        [SerializeField] float repeatedPressRepelsAfter = 0.08f;
+        [Header("Enemy Pull")]
+        [SerializeField] float heldEnemyDistance = 1.9f;
+        [SerializeField] float heldEnemySpacing = 0.9f;
+
+        [Header("Aim Assist")]
+        [SerializeField] bool autoCreateAimIndicator = true;
+        [SerializeField] LineRenderer aimLine;
+        [SerializeField] Transform aimTip;
+        [SerializeField] float aimIndicatorLength = 5f;
+        [SerializeField] float aimIndicatorHeight = 0.08f;
+        [SerializeField] float aimLineWidth = 0.08f;
+        [SerializeField] Color aimIndicatorColor = new Color(0.2f, 0.85f, 1f, 0.85f);
 
         [Header("Events")]
         public UnityEvent OnPullStarted = new UnityEvent();
@@ -46,25 +54,23 @@ namespace MagnetPanic.Combat
         public UnityEvent<float, float> OnChargeChanged = new UnityEvent<float, float>();
         public UnityEvent<MagneticObject> OnObjectOrbited = new UnityEvent<MagneticObject>();
         public UnityEvent<ArkhamEnemy> OnEnemyOrbited = new UnityEvent<ArkhamEnemy>();
+        public UnityEvent<ArkhamEnemy> OnEnemyPulled = new UnityEvent<ArkhamEnemy>();
 
         readonly Collider[] overlapBuffer = new Collider[64];
         readonly List<MagneticObject> attractingObjects = new List<MagneticObject>();
         readonly List<MagneticObject> orbitingObjects = new List<MagneticObject>();
-        readonly List<ArkhamEnemy> attractingEnemies = new List<ArkhamEnemy>();
-        readonly List<ArkhamEnemy> orbitingEnemies = new List<ArkhamEnemy>();
+        readonly List<ArkhamEnemy> pulledEnemies = new List<ArkhamEnemy>();
 
         float currentCharge;
         float nextRepelTime;
         float orbitAngle;
-        float pullStartedTime;
         bool pullHeld;
         bool pullActive;
-        string activePullActionName;
 
         public float CurrentCharge => currentCharge;
         public float MaxCapacity => maxCapacity;
         public bool IsPulling => pullActive;
-        public bool HasOrbitingPayload => orbitingObjects.Count > 0 || orbitingEnemies.Count > 0;
+        public bool HasOrbitingPayload => orbitingObjects.Count > 0 || pulledEnemies.Count > 0;
 
         void Awake()
         {
@@ -77,21 +83,19 @@ namespace MagnetPanic.Combat
             if (enemyManager == null)
                 enemyManager = FindFirstObjectByType<ArkhamEnemyManager>();
 
-            if (playerInput == null)
-                playerInput = GetComponent<PlayerInput>();
-
             if (orbitCenter == null)
                 orbitCenter = transform;
+
+            EnsureAimIndicator();
         }
 
         void Update()
         {
-            ReleaseIfActiveInputEnded();
-
             if (pullHeld && Time.time >= nextRepelTime)
                 TickPull();
 
             TickOrbit();
+            UpdateAimIndicator();
             ApplyMovementPenalty();
         }
 
@@ -100,13 +104,14 @@ namespace MagnetPanic.Combat
             cameraOverride = sceneCamera;
             enemyManager = manager;
             motor = playerMotor;
-            playerInput = GetComponent<PlayerInput>();
             orbitCenter = transform;
+            EnsureAimIndicator();
         }
 
         public void OnPull(InputValue value)
         {
-            HandlePullInput(value, pullActionName);
+            if (value.isPressed)
+                TogglePullRepel();
         }
 
         public void OnPullRelease()
@@ -116,34 +121,24 @@ namespace MagnetPanic.Combat
 
         public void OnInteract(InputValue value)
         {
-            HandlePullInput(value, "Interact");
+            if (value.isPressed)
+                TogglePullRepel();
         }
 
         public void StartPull()
         {
-            StartPullFromAction(null);
-        }
-
-        void StartPullFromAction(string actionName)
-        {
-            if (!pullHeld)
-                pullStartedTime = Time.time;
-
-            pullHeld = true;
-            activePullActionName = actionName;
-
             if (Time.time < nextRepelTime || pullActive)
                 return;
 
+            pullHeld = true;
             pullActive = true;
             OnPullStarted.Invoke();
         }
 
         public void ReleasePull()
         {
-            bool hadInput = pullHeld || pullActive;
+            bool hadInput = pullHeld || pullActive || HasOrbitingPayload;
             pullHeld = false;
-            activePullActionName = null;
 
             if (!hadInput || Time.time < nextRepelTime)
                 return;
@@ -169,9 +164,9 @@ namespace MagnetPanic.Combat
                 magneticObject.ForcedEject(direction, orbitRejectSpeed * 1.4f);
             }
 
-            for (int i = orbitingEnemies.Count - 1; i >= 0; i--)
+            for (int i = pulledEnemies.Count - 1; i >= 0; i--)
             {
-                ArkhamEnemy enemy = orbitingEnemies[i];
+                ArkhamEnemy enemy = pulledEnemies[i];
                 if (enemy == null)
                     continue;
 
@@ -180,43 +175,23 @@ namespace MagnetPanic.Combat
             }
 
             orbitingObjects.Clear();
-            orbitingEnemies.Clear();
+            pulledEnemies.Clear();
             SetCharge(0f);
             pullActive = false;
             pullHeld = false;
-            activePullActionName = null;
             nextRepelTime = Time.time + repelCooldown;
+            UpdateAimIndicator();
         }
 
-        void HandlePullInput(InputValue value, string actionName)
+        void TogglePullRepel()
         {
-            bool isPressed = value.isPressed;
-
-            if (isPressed)
-                HandlePullPressed(actionName);
-            else
-                ReleasePull();
-        }
-
-        void HandlePullPressed(string actionName)
-        {
-            if (pullHeld && pullActive && Time.time - pullStartedTime >= repeatedPressRepelsAfter)
+            if (pullActive || HasOrbitingPayload)
             {
                 ReleasePull();
                 return;
             }
 
-            StartPullFromAction(actionName);
-        }
-
-        void ReleaseIfActiveInputEnded()
-        {
-            if (!pullHeld || playerInput == null || playerInput.actions == null || string.IsNullOrEmpty(activePullActionName))
-                return;
-
-            InputAction action = playerInput.actions.FindAction(activePullActionName, false);
-            if (action != null && !action.IsPressed())
-                ReleasePull();
+            StartPull();
         }
 
         void TickPull()
@@ -231,7 +206,7 @@ namespace MagnetPanic.Combat
             CollectMagneticObjects(center);
             CollectMagnetizedEnemies();
             PullObjects(center);
-            PullEnemies(center);
+            PullEnemies();
         }
 
         void CollectMagneticObjects(Vector3 center)
@@ -263,7 +238,7 @@ namespace MagnetPanic.Combat
             for (int i = 0; i < enemies.Count; i++)
             {
                 ArkhamEnemy enemy = enemies[i];
-                if (enemy == null || !enemy.CanBePulledByMagnet || orbitingEnemies.Contains(enemy) || attractingEnemies.Contains(enemy))
+                if (enemy == null || !enemy.CanBePulledByMagnet || pulledEnemies.Contains(enemy))
                     continue;
 
                 Vector3 delta = enemy.transform.position - transform.position;
@@ -272,7 +247,9 @@ namespace MagnetPanic.Combat
                     continue;
 
                 enemy.BeginMagneticPull();
-                attractingEnemies.Add(enemy);
+                pulledEnemies.Add(enemy);
+                OnEnemyPulled.Invoke(enemy);
+                OnEnemyOrbited.Invoke(enemy);
             }
         }
 
@@ -314,43 +291,32 @@ namespace MagnetPanic.Combat
             }
         }
 
-        void PullEnemies(Vector3 center)
+        void PullEnemies()
         {
-            for (int i = attractingEnemies.Count - 1; i >= 0; i--)
+            Vector3 aim = AimDirection();
+            for (int i = pulledEnemies.Count - 1; i >= 0; i--)
             {
-                ArkhamEnemy enemy = attractingEnemies[i];
-                if (enemy == null || !enemy.IsAlive || !enemy.CanBePulledByMagnet)
+                ArkhamEnemy enemy = pulledEnemies[i];
+                if (enemy == null || !enemy.IsAlive)
                 {
-                    attractingEnemies.RemoveAt(i);
+                    pulledEnemies.RemoveAt(i);
                     continue;
                 }
 
-                enemy.MagnetPullTowards(center, enemyPullSpeed, Time.deltaTime);
-
-                Vector3 delta = enemy.transform.position - center;
-                delta.y = 0f;
-                if (delta.sqrMagnitude > (orbitRadius + 0.65f) * (orbitRadius + 0.65f))
+                if (!enemy.CanBePulledByMagnet)
+                {
+                    enemy.CancelMagneticPull();
+                    pulledEnemies.RemoveAt(i);
                     continue;
+                }
 
-                if (CanFit(enemy.MagneticMass))
-                {
-                    attractingEnemies.RemoveAt(i);
-                    orbitingEnemies.Add(enemy);
-                    AddCharge(enemy.MagneticMass);
-                    enemy.EnterMagneticOrbit();
-                    OnEnemyOrbited.Invoke(enemy);
-                }
-                else
-                {
-                    attractingEnemies.RemoveAt(i);
-                    enemy.RejectMagneticPull(center, orbitRejectSpeed);
-                }
+                enemy.MagnetPullTowards(EnemyHoldPosition(aim, i, pulledEnemies.Count), enemyPullSpeed, Time.deltaTime);
             }
         }
 
         void TickOrbit()
         {
-            int total = orbitingObjects.Count + orbitingEnemies.Count;
+            int total = orbitingObjects.Count;
             if (total == 0)
                 return;
 
@@ -370,24 +336,11 @@ namespace MagnetPanic.Combat
                 magneticObject.TickOrbit(OrbitSlot(center, total, slot), Time.deltaTime);
                 slot++;
             }
-
-            for (int i = orbitingEnemies.Count - 1; i >= 0; i--)
-            {
-                ArkhamEnemy enemy = orbitingEnemies[i];
-                if (enemy == null || !enemy.IsAlive || enemy.MarkState != MagneticMarkState.Magnetized)
-                {
-                    orbitingEnemies.RemoveAt(i);
-                    continue;
-                }
-
-                enemy.TickMagneticOrbit(OrbitSlot(center, total, slot), Time.deltaTime);
-                slot++;
-            }
         }
 
         void RepelOrbitingPayload()
         {
-            int total = orbitingObjects.Count + orbitingEnemies.Count;
+            int total = orbitingObjects.Count + pulledEnemies.Count;
             bool empty = total == 0;
             Vector3 aim = AimDirection();
             int slot = 0;
@@ -402,9 +355,9 @@ namespace MagnetPanic.Combat
                 slot++;
             }
 
-            for (int i = orbitingEnemies.Count - 1; i >= 0; i--)
+            for (int i = pulledEnemies.Count - 1; i >= 0; i--)
             {
-                ArkhamEnemy enemy = orbitingEnemies[i];
+                ArkhamEnemy enemy = pulledEnemies[i];
                 if (enemy == null)
                     continue;
 
@@ -413,9 +366,10 @@ namespace MagnetPanic.Combat
             }
 
             orbitingObjects.Clear();
-            orbitingEnemies.Clear();
+            pulledEnemies.Clear();
             SetCharge(0f);
             OnRepelFired.Invoke(empty);
+            UpdateAimIndicator();
         }
 
         void CancelAttractingPayload()
@@ -426,16 +380,7 @@ namespace MagnetPanic.Combat
                 if (magneticObject != null)
                     magneticObject.StopAttracting();
             }
-
-            for (int i = attractingEnemies.Count - 1; i >= 0; i--)
-            {
-                ArkhamEnemy enemy = attractingEnemies[i];
-                if (enemy != null)
-                    enemy.CancelMagneticPull();
-            }
-
             attractingObjects.Clear();
-            attractingEnemies.Clear();
         }
 
         Vector3 OrbitPosition()
@@ -450,6 +395,16 @@ namespace MagnetPanic.Combat
             float angle = orbitAngle + (360f / Mathf.Max(1, total)) * slot;
             Vector3 offset = Quaternion.AngleAxis(angle, Vector3.up) * Vector3.forward * orbitRadius;
             return center + offset;
+        }
+
+        Vector3 EnemyHoldPosition(Vector3 aim, int slot, int total)
+        {
+            Vector3 center = transform.position + aim.normalized * heldEnemyDistance;
+            Vector3 right = Quaternion.AngleAxis(90f, Vector3.up) * aim.normalized;
+            float offset = slot - (Mathf.Max(1, total) - 1f) * 0.5f;
+            center += right * offset * heldEnemySpacing;
+            center.y = transform.position.y;
+            return center;
         }
 
         Vector3 AimDirection()
@@ -508,6 +463,101 @@ namespace MagnetPanic.Combat
 
             float ratio = maxCapacity > 0f ? Mathf.Clamp01(currentCharge / maxCapacity) : 0f;
             motor.Acceleration = Mathf.Max(0.25f, 1f - ratio * chargePenaltyAtFull);
+        }
+
+        void EnsureAimIndicator()
+        {
+            if (!autoCreateAimIndicator)
+                return;
+
+            Material indicatorMaterial = CreateIndicatorMaterial(aimIndicatorColor);
+
+            if (aimLine == null)
+            {
+                GameObject lineObject = new GameObject("Repel Aim Line");
+                lineObject.transform.SetParent(transform, false);
+                aimLine = lineObject.AddComponent<LineRenderer>();
+                aimLine.useWorldSpace = true;
+                aimLine.positionCount = 2;
+                aimLine.widthMultiplier = aimLineWidth;
+                aimLine.numCapVertices = 4;
+                aimLine.material = indicatorMaterial;
+                aimLine.enabled = false;
+            }
+
+            if (aimTip == null)
+            {
+                GameObject tip = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                tip.name = "Repel Aim Tip";
+                tip.transform.SetParent(transform, false);
+                tip.transform.localScale = new Vector3(0.28f, 0.04f, 0.55f);
+                Collider tipCollider = tip.GetComponent<Collider>();
+                if (tipCollider != null)
+                    DestroyLocalObject(tipCollider);
+
+                Renderer renderer = tip.GetComponent<Renderer>();
+                if (renderer != null)
+                    renderer.sharedMaterial = indicatorMaterial;
+
+                aimTip = tip.transform;
+                aimTip.gameObject.SetActive(false);
+            }
+        }
+
+        void UpdateAimIndicator()
+        {
+            bool visible = pullActive || HasOrbitingPayload;
+            if (aimLine != null)
+                aimLine.enabled = visible;
+
+            if (aimTip != null)
+                aimTip.gameObject.SetActive(visible);
+
+            if (!visible)
+                return;
+
+            Vector3 aim = AimDirection();
+            Vector3 start = transform.position + Vector3.up * aimIndicatorHeight;
+            Vector3 end = start + aim * aimIndicatorLength;
+
+            if (aimLine != null)
+            {
+                aimLine.SetPosition(0, start);
+                aimLine.SetPosition(1, end);
+            }
+
+            if (aimTip != null)
+            {
+                aimTip.position = end;
+                aimTip.rotation = Quaternion.LookRotation(aim, Vector3.up);
+            }
+        }
+
+        static Material CreateIndicatorMaterial(Color color)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null)
+                shader = Shader.Find("Sprites/Default");
+            if (shader == null)
+                shader = Shader.Find("Standard");
+
+            Material material = new Material(shader)
+            {
+                color = color
+            };
+
+            return material;
+        }
+
+        static void DestroyLocalObject(Object target)
+        {
+            if (target == null)
+                return;
+
+            if (Application.isPlaying)
+                Destroy(target);
+            else
+                DestroyImmediate(target);
         }
 
         void OnDrawGizmosSelected()
