@@ -2,7 +2,7 @@
 
 > **Última actualización:** 2026-05-10
 > **Fuente:** `design/gdd/game-concept.md` (extracto del GDD jam `design/gdd-gamejam.md`)
-> **Total de sistemas:** 21 · **MVP:** 21 · **Diseñados:** 0
+> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 3 · **Prototipos jugables:** 7
 
 Este índice es la fuente de verdad para qué sistemas existen, en qué orden se
 diseñan, y qué dependencias tienen. Se actualiza cada vez que un sistema
@@ -12,13 +12,20 @@ termina su GDD individual o cambia su estado.
 
 ## Progreso
 
+### Implementación actual
+
 | Estado | Cantidad |
 |---|---:|
-| Not Started | 20 |
-| In Design | 0 |
-| Designed | 1 |
-| In Review | 0 |
-| Approved | 0 |
+| Prototype | 7 |
+| Partial Prototype | 4 |
+| Not Started | 10 |
+
+### Diseño de GDD
+
+| Estado | Cantidad |
+|---|---:|
+| GDD Complete | 3 |
+| Not Designed | 18 |
 
 ---
 
@@ -26,32 +33,61 @@ termina su GDD individual o cambia su estado.
 
 | # | Sistema | Capa | Tier | Roadmap | Estado | GDD |
 |---:|---|---|---|---|---|---|
-| 1 | `damage-health-system` | Foundation | MVP ⚠ | Día 1-2 | Not Started | — |
-| 2 | `input-system` | Foundation | MVP | Día 1 | Not Started | — |
-| 3 | `arena-system` | Foundation | MVP | Día 1 | Not Started | — |
+| 1 | `damage-health-system` | Foundation | MVP ⚠ | Día 1-2 | Prototype | [damage-health-system.md](damage-health-system.md) |
+| 2 | `input-system` | Foundation | MVP | Día 1 | Partial Prototype | — |
+| 3 | `arena-system` | Foundation | MVP | Día 1 | Partial Prototype | — |
 | 4 | `object-pooling` | Foundation | MVP | Día 1-2 | Not Started | — |
-| 5 | `player-movement` | Core | MVP | Día 1 | Not Started | — |
-| 6 | `camera-system` | Core | MVP | Día 1 | Not Started | — |
-| 7 | `magnetism-system` | Core | MVP ⚠ | Día 1 | Designed | [magnetism-system.md](magnetism-system.md) |
+| 5 | `player-movement` | Core | MVP | Día 1 | Prototype | — |
+| 6 | `camera-system` | Core | MVP | Día 1 | Prototype | — |
+| 7 | `magnetism-system` | Core | MVP ⚠ | Día 1 | Prototype | [magnetism-system.md](magnetism-system.md) |
 | 8 | `overload-system` | Core | MVP | Día 1-3 | Not Started | — |
-| 9 | `attractables-system` | Content | MVP | Día 2 | Not Started | — |
-| 10 | `enemy-system` | Content | MVP ⚠ | Día 4 | Not Started | — |
-| 11 | `combat-system` | Content | MVP | Día 3 | Not Started | — |
+| 9 | `attractables-system` | Content | MVP | Día 2 | Prototype | — |
+| 10 | `enemy-system` | Content | MVP ⚠ | Día 4 | Prototype | — |
+| 11 | `combat-system` | Content | MVP | Día 3 | Prototype | [combat-system.md](combat-system.md) |
 | 12 | `wave-director` | Encuentros | MVP | Día 4-5 | Not Started | — |
 | 13 | `scoring-xp-system` | Meta | MVP | Día 5 | Not Started | — |
 | 14 | `upgrade-system` | Meta | MVP | Día 5 | Not Started | — |
 | 15 | `mission-system` | Meta | MVP | Día 6 | Not Started | — |
 | 16 | `powerup-system` | Meta | MVP | Día 6 | Not Started | — |
 | 17 | `boss-system` | Meta | MVP* | Día 7 | Not Started | — |
-| 18 | `hud-system` | Presentation | MVP | Día 8 | Not Started | — |
-| 19 | `presentation-system` | Presentation | MVP | Día 8 | Not Started | — |
+| 18 | `hud-system` | Presentation | MVP | Día 8 | Partial Prototype | — |
+| 19 | `presentation-system` | Presentation | MVP | Día 8 | Partial Prototype | — |
 | 20 | `host-bridge` | Boundary | MVP | Día 10 | Not Started | — |
 | 21 | `meta-flow-system` | Boundary | MVP | Día 10 | Not Started | — |
 
 **Leyenda:**
 - ⚠ = Bottleneck (muchos dependientes, alto riesgo de cambio)
+- `Prototype` = existe una versión jugable en `MetalPanic/Assets/Combat`.
+- `Partial Prototype` = hay piezas útiles en código, pero todavía no existe
+  como sistema completo o reusable.
 - \* = Candidato a recorte si el día 7 va apretado (`boss-system`); fallback es
   victoria por extracción/score
+
+---
+
+## Qué Ya Tenemos En Código
+
+Implementado como prototipo jugable:
+
+- `player-movement`: `ArkhamPlayerMotor` con movimiento WASD, cámara relativa y penalización por carga.
+- `camera-system`: `ArkhamSimpleCameraFollow` con cámara top-down/isométrica simple.
+- `damage-health-system`: `HealthPool`, `CombatHealth`, HP de player/enemigos, muerte y pickups de curación.
+- `magnetism-system`: `MagnetismController`, Pull/Repel por click, órbita de chatarra, atracción/repulsión de enemigos magnetizados y enemigos metálicos.
+- `attractables-system`: `MagneticObject` con chatarra liviana, placas, minas y objetos pesados como tipos configurables.
+- `enemy-system`: `ArkhamEnemy`, `ArkhamEnemyManager`, enemigo normal, enemigo metálico siempre atraíble, ataque simple y cues.
+- `combat-system`: `ArkhamCombatController`, target scanner, Strike, Counter, daño, marcas y flujo base estilo Arkham.
+
+Parcialmente implementado:
+
+- `input-system`: existe `InputSystem_Actions` y `PlayerInput` con Send Messages; falta wrapper de intents y rebinding.
+- `arena-system`: existe arena prototipo creada por editor; faltan límites, spawn points y reglas de navegación.
+- `hud-system`: existe barra de vida del player con UI Toolkit; faltan XP, combo, capacidad, misión, cooldowns y score.
+- `presentation-system`: existen aim indicator, magnetized cue, counter cue y hooks opcionales de partículas; faltan SFX/VFX finales, hitstop/slow-mo/shake integrados.
+
+Todavía falta para cerrar el loop de run:
+
+- `wave-director`, `scoring-xp-system`, `upgrade-system`, `hud-system` y `meta-flow-system`.
+- Con el pivot a run infinita, `leaderboard/score-submit` sube de Full Vision a MVP y `boss-system` pasa a evento opcional o hito de dificultad.
 
 ---
 
@@ -100,8 +136,8 @@ termina su GDD individual o cambia su estado.
 
 - **`boss-system`** — Scrap Brute. 4 fases: persigue, absorbe chatarra,
   sobrecarga, ventana vulnerable. Invoca Scraplings.
-- **`wave-director`** — Timeline scripted del run (§13 GDD). Eventos a
-  tiempo fijo: 0:20 Scraplings, 1:00 Runner, 2:00 Shield, 3:30 Brute, etc.
+- **`wave-director`** — Director infinito por actos. Sube densidad,
+  agresividad y mezcla de enemigos; usa mini-bosses como hitos, no como final.
 
 ### Meta
 
@@ -129,8 +165,8 @@ termina su GDD individual o cambia su estado.
   Eventos out: `RunStarted`, `RunEnded(score, stats)`, `ScoreSubmitted`.
   Eventos in: `StartRun`, `RestartRun`, `ApplySettings`.
 - **`meta-flow-system`** — State machine del shell: Menu → Tutorial (visual,
-  0:00-0:20) → Run → Score Screen. Pause. Restart. Condiciones de
-  victoria/derrota.
+  0:00-0:20) → Endless Run → Death/Score Screen. Pause. Restart. Derrota por
+  HP 0; score submit al leaderboard.
 
 ---
 
@@ -258,7 +294,7 @@ Listados en `game-concept.md` como descartados explícitamente para la jam:
 - Polaridad avanzada (más allá de magnetizado básico)
 - Meta-progresión entre runs (unlocks persistentes)
 - Múltiples biomas / arenas
-- Leaderboards online
+- Leaderboards avanzados con temporadas/filtros/amigos
 - Boss complejo (más allá de Scrap Brute simple)
 - Animaciones elaboradas
 - Narrativa scripted

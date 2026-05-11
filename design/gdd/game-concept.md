@@ -35,7 +35,7 @@ Fantasía simple a entregar:
 - **Motor:** Unity 6 (`6000.3.6f1`), URP, new Input System
 - **Plataforma objetivo:** WebGL (embebido en host React/Vite)
 - **Cámara:** top-down 3D o isométrica con seguimiento suave
-- **Duración objetivo de run:** 4–5 minutos
+- **Duración objetivo de run:** infinita hasta muerte; primer hito fuerte a los 4–5 minutos
 
 ---
 
@@ -116,14 +116,15 @@ y mapear con dependencias. No están priorizados acá — eso lo hace el index.
 - **Level up & Upgrades:** árbol de mejoras (Pull / Repel / Combo / Capacidad / Especiales)
 - **Misiones de estilo:** objetivos secundarios cada 45–60s
 - **Powerups temporales:** Repeler 360, Slow Time, Magnet Fever, Enemy Pull
-- **Pacing de oleadas:** timeline del run con eventos a tiempos fijos
+- **Pacing de oleadas:** director infinito con actos, eventos de presión y bosses como hitos
 
 ### Soporte
 - **HUD / UI mínima:** HP, sobrecarga, capacidad, XP, combo, misión, cooldown
 - **UI implementation:** HUD 2D con UI Toolkit; ayudas espaciales con UI/meshes/VFX world-space de Unity
 - **Feedback (game feel):** sonido, hitstop, screen shake, slow-mo, popups
-- **Scoring & condiciones de victoria/derrota:** score final, victoria por boss
-  o extracción
+- **Scoring & condiciones de derrota:** score final al morir; bosses funcionan
+  como hitos de presión, no como final obligatorio
+- **Leaderboard:** score attack infinito, con tiempo sobrevivido como desempate
 - **Host React (puente WebGL):** comunicación juego ↔ página vía
   `react-unity-webgl`
 
@@ -161,7 +162,7 @@ lista debe justificarse contra el plazo de 10 días.
 - Boss complejo (Scrap Brute simple es suficiente)
 - Animaciones elaboradas
 - Narrativa
-- Leaderboards
+- Meta-progresión online avanzada más allá del leaderboard básico
 
 ---
 
@@ -175,7 +176,7 @@ lista debe justificarse contra el plazo de 10 días.
 | 4 | Scrapling, Runner, Shield Bot |
 | 5 | XP, level up, upgrades |
 | 6 | Misiones de estilo y powerups |
-| 7 | Mini-boss y final de run |
+| 7 | Mini-boss como hito de run |
 | 8 | UI, sonido, partículas, screen shake |
 | 9 | Balance, optimización WebGL, bugs |
 | 10 | Tutorial, menú, build, deploy, página de jam |

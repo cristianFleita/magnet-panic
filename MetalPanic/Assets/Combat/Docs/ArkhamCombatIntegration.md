@@ -10,13 +10,20 @@ To add only the pullable metal enemy to an existing scene, run:
 
 `Tools > Magnet Panic > Arkham Combat > Spawn Metal Enemy In Current Scene`
 
+To add only healing pickups to an existing scene, run:
+
+`Tools > Magnet Panic > Arkham Combat > Spawn Healing Pickups In Current Scene`
+
 That creates:
 
 - a primitive player using `ArkhamPlayerMotor`, `ArkhamCombatController`, `ArkhamTargetScanner`, `MagnetismController`, and `PlayerInput`;
+- `CombatHealth` on the player plus a UI Toolkit health bar;
 - an `ArkhamEnemyManager`;
 - five primitive `ArkhamEnemy` combat targets;
 - one primitive `Metal Enemy` that can be pulled at any time;
+- enemy world-space health bars;
 - prototype magnetic scrap objects for Pull/Orbit/Repel;
+- prototype healing pickups;
 - a simple follow camera;
 - prototype animator controllers and URP-safe materials.
 
@@ -56,6 +63,7 @@ The primitive visuals are disposable. To use a real character:
 ## Player Prefab Checklist
 
 - Root GameObject: `CharacterController`.
+- Root GameObject: `CombatHealth`.
 - Root GameObject: `PlayerInput` using `Assets/InputSystem_Actions.inputactions`, action map `Player`, notification `Send Messages`.
 - Root GameObject: `ArkhamPlayerMotor`.
 - Root GameObject: `ArkhamCombatController`.
@@ -65,10 +73,12 @@ The primitive visuals are disposable. To use a real character:
 - Child: `Hit Point` transform around chest/hand height, assigned to `ArkhamCombatController`.
 - Assign the scene camera to `ArkhamPlayerMotor` and `MagnetismController` if `Camera.main` is not reliable.
 - Optional: assign custom `Aim Line` / `Aim Tip` visuals on `MagnetismController`, or leave `Auto Create Aim Indicator` enabled for prototypes.
+- Scene or child object: `UIDocument` + `PlayerHealthHud` for the UI Toolkit HP bar.
 
 ## Enemy Prefab Checklist
 
 - Root GameObject: `CharacterController`.
+- Root GameObject: `CombatHealth`.
 - Root GameObject: `ArkhamEnemy`.
 - Child or root: visual model with an `Animator`.
 - Child: `Counter Cue` visual above the head, assigned to `ArkhamEnemy`.
@@ -78,6 +88,15 @@ The primitive visuals are disposable. To use a real character:
 - For metallic enemies, enable `Always Pullable By Magnet`; they can be pulled even while `Mark State` is `Normal`.
 - Keep attack telegraph timings visible: `prepareAttackTime`, `attackHitDelay`, and `attackRecovery`.
 - `Destroy On Death` is enabled by default; tune `Death Despawn Delay` if you want the death animation to linger longer.
+- Leave `Auto Create Health Bar` enabled for a world-space HP bar above the head, or assign a custom `WorldSpaceHealthBar`.
+
+## Healing Pickup Checklist
+
+- Root GameObject: visible mesh.
+- Trigger collider.
+- `HealingPickup`.
+- Set `Heal Amount`, usually 1-2 HP for the prototype.
+- Pickups heal only living targets with `CombatHealth` that are not already full.
 
 ## Magnetic Prop Checklist
 

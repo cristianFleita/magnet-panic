@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 namespace MagnetPanic.Combat.Editor
 {
@@ -12,8 +13,10 @@ namespace MagnetPanic.Combat.Editor
         const string GeneratedFolder = "Assets/Combat/Generated";
         const string MaterialFolder = GeneratedFolder + "/Materials";
         const string AnimatorFolder = GeneratedFolder + "/Animators";
+        const string UIFolder = GeneratedFolder + "/UI";
         const string PlayerControllerPath = AnimatorFolder + "/ArkhamPrototypePlayer.controller";
         const string EnemyControllerPath = AnimatorFolder + "/ArkhamPrototypeEnemy.controller";
+        const string PanelSettingsPath = UIFolder + "/MP_RuntimePanelSettings.asset";
         const string InputActionsPath = "Assets/InputSystem_Actions.inputactions";
 
         [MenuItem("Tools/Magnet Panic/Arkham Combat/Create Prototype Animators")]
@@ -45,12 +48,14 @@ namespace MagnetPanic.Combat.Editor
             Material plateMaterial = CreateMaterial("MP_Plate_Teal", new Color(0.15f, 0.55f, 0.6f));
             Material mineMaterial = CreateMaterial("MP_Mine_Orange", new Color(1f, 0.42f, 0.08f));
             Material heavyMaterial = CreateMaterial("MP_Heavy_Dark", new Color(0.18f, 0.2f, 0.22f));
+            Material healingMaterial = CreateMaterial("MP_Healing_Green", new Color(0.18f, 0.92f, 0.42f));
 
             GameObject root = new GameObject("Arkham Combat Demo");
             Undo.RegisterCreatedObjectUndo(root, "Create Arkham Combat Demo");
 
             CreateArena(root.transform, arenaMaterial);
             CreateMagneticScrap(root.transform, scrapMaterial, plateMaterial, mineMaterial, heavyMaterial);
+            CreateHealingPickups(root.transform, healingMaterial);
 
             GameObject cameraObject = new GameObject("Combat Camera");
             Undo.RegisterCreatedObjectUndo(cameraObject, "Create Combat Camera");
@@ -153,6 +158,29 @@ namespace MagnetPanic.Combat.Editor
                 "Nice");
         }
 
+        [MenuItem("Tools/Magnet Panic/Arkham Combat/Spawn Healing Pickups In Current Scene")]
+        public static void SpawnHealingPickupsInCurrentScene()
+        {
+            EnsureFolder(MaterialFolder);
+            Material healingMaterial = CreateMaterial("MP_Healing_Green", new Color(0.18f, 0.92f, 0.42f));
+
+            Transform parent = Object.FindFirstObjectByType<ArkhamCombatController>()?.transform.parent;
+            if (parent == null)
+            {
+                GameObject root = new GameObject("Healing Pickups");
+                Undo.RegisterCreatedObjectUndo(root, "Create Healing Pickups Root");
+                parent = root.transform;
+            }
+
+            CreateHealingPickups(parent, healingMaterial);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            EditorUtility.DisplayDialog(
+                "Healing Pickups",
+                "Spawned prototype healing pickups. They heal the player through CombatHealth.",
+                "Nice");
+        }
+
         static GameObject CreatePlayer(Transform parent, Camera sceneCamera, ArkhamSimpleCameraFollow cameraFollow, Material material)
         {
             GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -171,6 +199,7 @@ namespace MagnetPanic.Combat.Editor
             Animator animator = player.AddComponent<Animator>();
             animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(PlayerControllerPath);
 
+            CombatHealth health = player.AddComponent<CombatHealth>();
             ArkhamPlayerMotor motor = player.AddComponent<ArkhamPlayerMotor>();
             ArkhamTargetScanner scanner = player.AddComponent<ArkhamTargetScanner>();
             ArkhamCombatController combat = player.AddComponent<ArkhamCombatController>();
@@ -189,9 +218,11 @@ namespace MagnetPanic.Combat.Editor
                 input.notificationBehavior = PlayerNotifications.SendMessages;
             }
 
+            health.Configure(6, true);
             motor.Configure(sceneCamera, animator, 5f);
             combat.Configure(null, scanner, motor, animator, cameraFollow, hitPoint.transform);
             magnetism.Configure(sceneCamera, null, motor);
+            CreatePlayerHud(player.transform, health);
 
             return player;
         }
@@ -224,6 +255,9 @@ namespace MagnetPanic.Combat.Editor
             Animator animator = enemy.AddComponent<Animator>();
             animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(EnemyControllerPath);
 
+            CombatHealth health = enemy.AddComponent<CombatHealth>();
+            health.Configure(3, true);
+
             GameObject counterCue = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             Undo.RegisterCreatedObjectUndo(counterCue, "Create Counter Cue");
             counterCue.name = "Counter Cue";
@@ -241,6 +275,19 @@ namespace MagnetPanic.Combat.Editor
 
             manager.Register(arkhamEnemy);
             return enemy;
+        }
+
+        static void CreatePlayerHud(Transform player, CombatHealth health)
+        {
+            GameObject hudObject = new GameObject("Player Health HUD");
+            Undo.RegisterCreatedObjectUndo(hudObject, "Create Player Health HUD");
+            hudObject.transform.SetParent(player, false);
+
+            UIDocument document = hudObject.AddComponent<UIDocument>();
+            document.panelSettings = GetOrCreatePanelSettings();
+
+            PlayerHealthHud hud = hudObject.AddComponent<PlayerHealthHud>();
+            hud.Configure(health);
         }
 
         static void CreateArena(Transform parent, Material material)
@@ -267,6 +314,29 @@ namespace MagnetPanic.Combat.Editor
             CreateMagneticObject(parent, "Metal Plate B", MagneticObjectType.Plate, new Vector3(4.8f, 0.45f, 2.7f), new Vector3(1.2f, 0.16f, 0.7f), PrimitiveType.Cube, plateMaterial);
             CreateMagneticObject(parent, "Magnetic Mine", MagneticObjectType.Mine, new Vector3(-1.1f, 0.45f, -4.3f), new Vector3(0.62f, 0.62f, 0.62f), PrimitiveType.Sphere, mineMaterial);
             CreateMagneticObject(parent, "Heavy Scrap", MagneticObjectType.Heavy, new Vector3(5.5f, 0.55f, -4.5f), new Vector3(0.9f, 0.9f, 0.9f), PrimitiveType.Cube, heavyMaterial);
+        }
+
+        static void CreateHealingPickups(Transform parent, Material healingMaterial)
+        {
+            CreateHealingPickup(parent, "Healing Pickup A", new Vector3(-2.2f, 0.55f, -2.6f), healingMaterial, 2);
+            CreateHealingPickup(parent, "Healing Pickup B", new Vector3(2.4f, 0.55f, 2.1f), healingMaterial, 2);
+        }
+
+        static void CreateHealingPickup(Transform parent, string name, Vector3 position, Material material, int healAmount)
+        {
+            GameObject pickup = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            Undo.RegisterCreatedObjectUndo(pickup, "Create Healing Pickup");
+            pickup.name = name;
+            pickup.transform.SetParent(parent);
+            pickup.transform.position = position;
+            pickup.transform.localScale = Vector3.one * 0.42f;
+            AssignMaterial(pickup, material);
+
+            Collider pickupCollider = pickup.GetComponent<Collider>();
+            pickupCollider.isTrigger = true;
+
+            HealingPickup healingPickup = pickup.AddComponent<HealingPickup>();
+            healingPickup.Configure(healAmount);
         }
 
         static void CreateMagneticObject(
@@ -418,6 +488,23 @@ namespace MagnetPanic.Combat.Editor
 
             AssetDatabase.CreateAsset(material, path);
             return material;
+        }
+
+        static PanelSettings GetOrCreatePanelSettings()
+        {
+            EnsureFolder(UIFolder);
+
+            PanelSettings existing = AssetDatabase.LoadAssetAtPath<PanelSettings>(PanelSettingsPath);
+            if (existing != null)
+                return existing;
+
+            PanelSettings panelSettings = ScriptableObject.CreateInstance<PanelSettings>();
+            panelSettings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+            panelSettings.referenceResolution = new Vector2Int(1920, 1080);
+            panelSettings.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
+            panelSettings.match = 0.5f;
+            AssetDatabase.CreateAsset(panelSettings, PanelSettingsPath);
+            return panelSettings;
         }
 
         static void AssignMaterial(GameObject target, Material material)

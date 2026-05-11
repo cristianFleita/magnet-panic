@@ -29,6 +29,8 @@ namespace MagnetPanic.Combat
         [SerializeField] ArkhamCombatController playerCombat;
         [SerializeField] Animator animator;
         [SerializeField] CharacterController characterController;
+        [SerializeField] CombatHealth combatHealth;
+        [SerializeField] WorldSpaceHealthBar healthBar;
         [SerializeField] GameObject counterIndicator;
         [SerializeField] ParticleSystem counterParticle = null;
 
@@ -40,6 +42,8 @@ namespace MagnetPanic.Combat
         [SerializeField] float knockbackDuration = 0.16f;
         [SerializeField] bool destroyOnDeath = true;
         [SerializeField] float deathDespawnDelay = 0.8f;
+        [SerializeField] bool autoCreateHealthBar = true;
+        [SerializeField] float healthBarHeight = 2.35f;
 
         [Header("Magnetism")]
         [SerializeField] MagneticMarkState markState = MagneticMarkState.Normal;
@@ -74,7 +78,6 @@ namespace MagnetPanic.Combat
         public UnityEvent<ArkhamEnemy> OnMagnetized = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnCountered = new UnityEvent<ArkhamEnemy>();
 
-        int health;
         int magneticMarks;
         bool isPreparingAttack;
         bool isAttacking;
@@ -90,10 +93,13 @@ namespace MagnetPanic.Combat
         Coroutine behaviorCoroutine;
         Coroutine movementCoroutine;
 
-        public bool IsAlive => !isDead && isActiveAndEnabled && health > 0;
+        public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsAttackable => IsAlive && !isLockedTarget;
         public bool IsCounterable => IsAlive && (isPreparingAttack || isAttacking);
         public bool IsAttacking => isAttacking;
+        public CombatHealth Health => combatHealth;
+        public int CurrentHealth => combatHealth != null ? combatHealth.CurrentHealth : 0;
+        public int MaxHealth => combatHealth != null ? combatHealth.MaxHealth : maxHealth;
         public bool IsMagnetized => isMagnetized;
         public bool IsAlwaysPullableByMagnet => alwaysPullableByMagnet;
         public int MagneticMarks => magneticMarks;
@@ -121,7 +127,14 @@ namespace MagnetPanic.Combat
             if (characterController == null)
                 characterController = GetComponent<CharacterController>();
 
-            health = maxHealth;
+            if (combatHealth == null)
+                combatHealth = GetComponent<CombatHealth>();
+
+            if (combatHealth == null)
+                combatHealth = gameObject.AddComponent<CombatHealth>();
+
+            combatHealth.Configure(maxHealth, true);
+            EnsureHealthBar();
             EnsureMagnetizedIndicator();
             UpdateMagnetizedIndicator();
         }
@@ -170,6 +183,9 @@ namespace MagnetPanic.Combat
             playerCombat = player;
             animator = targetAnimator;
             counterIndicator = indicator;
+            if (combatHealth == null)
+                combatHealth = GetComponent<CombatHealth>();
+            EnsureHealthBar();
             EnsureMagnetizedIndicator();
             UpdateMagnetizedIndicator();
         }
@@ -253,10 +269,10 @@ namespace MagnetPanic.Combat
             StopMoving();
 
             ApplyMark(1);
-            health -= Mathf.Max(1, damage);
+            combatHealth.ApplyDamage(Mathf.Max(1, damage));
             OnDamaged.Invoke(this);
 
-            if (health <= 0)
+            if (!combatHealth.IsAlive)
             {
                 Die();
                 return;
@@ -446,14 +462,14 @@ namespace MagnetPanic.Combat
                 ? markedProjectileDamageMultiplier
                 : 1f;
             int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * multiplier));
-            health -= finalDamage;
+            combatHealth.ApplyDamage(finalDamage);
 
             if (clearsMagnetized && markState == MagneticMarkState.Magnetized)
                 SetMarkState(MagneticMarkState.Normal);
 
             OnDamaged.Invoke(this);
 
-            if (health <= 0)
+            if (!combatHealth.IsAlive)
             {
                 Die();
                 return;
@@ -820,6 +836,17 @@ namespace MagnetPanic.Combat
 
             magnetizedIndicator = cue;
             magnetizedIndicator.SetActive(false);
+        }
+
+        void EnsureHealthBar()
+        {
+            if (!autoCreateHealthBar || healthBar != null)
+                return;
+
+            GameObject barObject = new GameObject("Enemy Health Bar");
+            barObject.transform.SetParent(transform, false);
+            healthBar = barObject.AddComponent<WorldSpaceHealthBar>();
+            healthBar.Configure(combatHealth, healthBarHeight);
         }
 
         void UpdateMagnetizedIndicator()

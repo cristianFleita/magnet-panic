@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 namespace MagnetPanic.Combat
 {
     [RequireComponent(typeof(ArkhamPlayerMotor))]
+    [RequireComponent(typeof(CombatHealth))]
     public sealed class ArkhamCombatController : MonoBehaviour
     {
         static readonly int GroundPunchHash = Animator.StringToHash("GroundPunch");
@@ -19,6 +20,11 @@ namespace MagnetPanic.Combat
         [SerializeField] Animator animator;
         [SerializeField] Transform hitPoint;
         [SerializeField] ArkhamSimpleCameraFollow cameraRig;
+
+        [Header("Health")]
+        [SerializeField] CombatHealth health;
+        [SerializeField] int maxHealth = 6;
+        [SerializeField] int damagePerEnemyHit = 1;
 
         [Header("Attack")]
         [SerializeField] int strikeDamage = 1;
@@ -39,6 +45,7 @@ namespace MagnetPanic.Combat
         public UnityEvent<ArkhamEnemy> OnHit = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnCounterAttack = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnDamaged = new UnityEvent<ArkhamEnemy>();
+        public UnityEvent OnDeath = new UnityEvent();
 
         ArkhamEnemy lockedTarget;
         CharacterController characterController;
@@ -52,6 +59,8 @@ namespace MagnetPanic.Combat
         public bool isAttackingEnemy { get; private set; }
         public bool isCountering { get; private set; }
         public ArkhamEnemy LockedTarget => lockedTarget;
+        public CombatHealth Health => health;
+        public bool IsAlive => health == null || health.IsAlive;
 
         void Awake()
         {
@@ -72,6 +81,13 @@ namespace MagnetPanic.Combat
             if (cameraRig == null)
                 cameraRig = FindFirstObjectByType<ArkhamSimpleCameraFollow>();
 
+            if (health == null)
+                health = GetComponent<CombatHealth>();
+
+            if (health == null)
+                health = gameObject.AddComponent<CombatHealth>();
+
+            health.Configure(maxHealth, true);
             characterController = GetComponent<CharacterController>();
         }
 
@@ -91,6 +107,9 @@ namespace MagnetPanic.Combat
             animator = targetAnimator;
             cameraRig = followCamera;
             hitPoint = punchPoint;
+
+            if (health == null)
+                health = GetComponent<CombatHealth>();
         }
 
         void EnsureEvents()
@@ -99,6 +118,7 @@ namespace MagnetPanic.Combat
             OnHit ??= new UnityEvent<ArkhamEnemy>();
             OnCounterAttack ??= new UnityEvent<ArkhamEnemy>();
             OnDamaged ??= new UnityEvent<ArkhamEnemy>();
+            OnDeath ??= new UnityEvent();
         }
 
         public void OnAttack(InputValue value)
@@ -143,7 +163,7 @@ namespace MagnetPanic.Combat
 
         public void AttackCheck()
         {
-            if (isAttackingEnemy)
+            if (!IsAlive || isAttackingEnemy)
                 return;
 
             ArkhamEnemy target = targetScanner != null
@@ -161,7 +181,7 @@ namespace MagnetPanic.Combat
 
         public void CounterCheck()
         {
-            if (isCountering || isAttackingEnemy || Time.time < nextCounterTime || enemyManager == null)
+            if (!IsAlive || isCountering || isAttackingEnemy || Time.time < nextCounterTime || enemyManager == null)
                 return;
 
             ArkhamEnemy target = enemyManager.ClosestCounterableEnemy(transform.position, counterRadius);
@@ -181,13 +201,28 @@ namespace MagnetPanic.Combat
 
         public void ReceiveDamage(ArkhamEnemy source)
         {
-            if (isCountering || isAttackingEnemy)
+            if (!IsAlive || isCountering || isAttackingEnemy || health == null)
                 return;
+
+            if (!health.ApplyDamage(damagePerEnemyHit))
+                return;
+
+            if (!health.IsAlive)
+            {
+                OnDamaged.Invoke(source);
+                Die();
+                return;
+            }
 
             if (damageCoroutine != null)
                 StopCoroutine(damageCoroutine);
 
             damageCoroutine = StartCoroutine(DamageRoutine(source));
+        }
+
+        public bool Heal(int amount)
+        {
+            return health != null && health.Heal(amount);
         }
 
         void StartAttack(ArkhamEnemy target, bool counterAttack)
@@ -267,6 +302,26 @@ namespace MagnetPanic.Combat
 
             motor.SetMovementLocked(false);
             damageCoroutine = null;
+        }
+
+        void Die()
+        {
+            if (attackCoroutine != null)
+                StopCoroutine(attackCoroutine);
+
+            if (damageCoroutine != null)
+                StopCoroutine(damageCoroutine);
+
+            isAttackingEnemy = false;
+            isCountering = false;
+            lockedTarget = null;
+            motor.SetMovementLocked(true, true);
+
+            if (animator != null)
+                animator.SetTrigger(HitHash);
+
+            cameraRig?.Shake(0.26f, 0.24f);
+            OnDeath.Invoke();
         }
 
         IEnumerator MoveTowardTarget(ArkhamEnemy target, float duration)

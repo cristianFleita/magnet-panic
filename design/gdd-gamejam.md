@@ -26,7 +26,11 @@ La versión de game jam debe demostrar una fantasía simple:
 
 # 2. Objetivo de la versión jam
 
-Crear una experiencia de 4 a 5 minutos que sea:
+Crear una experiencia de score attack infinito donde la primera curva fuerte de
+la run aparece alrededor de los 4 a 5 minutos. La run termina cuando el jugador
+muere, no por un timer fijo.
+
+La experiencia debe ser:
 
 - intuitiva,
 - rápida,
@@ -112,12 +116,22 @@ Top-down 3D o isométrica con seguimiento suave.
 ## Loop de run
 
 1. Inicio con imán básico.
-2. Oleadas de enemigos.
+2. Oleadas infinitas con dificultad creciente.
 3. Misiones de estilo.
 4. Upgrades del imán.
-5. Oleada intensa.
-6. Mini-boss.
-7. Extracción o score final.
+5. Oleadas intensas y eventos de presión.
+6. Boss o mini-boss como hito de dificultad, no como final obligatorio.
+7. Muerte, score final y leaderboard.
+
+## Loop de run infinita
+
+- La run no tiene duración fija. El objetivo es sobrevivir, subir el score y sostener estilo.
+- El tiempo se divide en actos de 60-90 segundos. Cada acto sube densidad, tipos de enemigo, agresividad y presión espacial.
+- Cada 4-5 minutos aparece un hito mayor: mini-boss, elite wave, arena hazard o misión de alto riesgo.
+- La XP sigue desbloqueando upgrades durante la run. Si el jugador sobrevive mucho, el build empieza a sentirse distinto.
+- El score final combina tiempo sobrevivido, enemigos destruidos, combos, kills por Repel, counters, misiones y daño recibido.
+- El leaderboard ordena por score. Tiempo sobrevivido funciona como desempate secundario.
+- El boss deja de ser condición de victoria y pasa a ser un evento memorable dentro de la escalada.
 
 ---
 
@@ -548,6 +562,9 @@ Durante 6 segundos, los enemigos pequeños pueden ser atraídos directamente.
 
 # 13. Pacing de run
 
+El pacing es infinito por actos. Los tiempos son puntos de escalada sugeridos,
+no final de run.
+
 | Tiempo | Evento |
 |---|---|
 | 0:00 | Inicio y tutorial visual |
@@ -558,9 +575,9 @@ Durante 6 segundos, los enemigos pequeños pueden ser atraídos directamente.
 | 2:00 | Entra Shield Bot |
 | 2:30 | Lluvia de chatarra / powerup |
 | 3:00 | Oleada intensa |
-| 3:30 | Aparece Scrap Brute |
-| 4:30 | Extracción o final |
-| 5:00 | Score screen |
+| 3:30 | Elite wave o Scrap Brute como hito |
+| 4:30 | Acto 2: sube densidad/agresividad |
+| 5:00+ | Repite escalada con variaciones hasta muerte |
 
 ---
 
@@ -598,8 +615,8 @@ La UI 2D del HUD se implementa con UI Toolkit. Las ayudas espaciales sobre el mu
 
 ## Victoria
 
-- Derrotar al Scrap Brute, o
-- sobrevivir hasta extracción.
+- No hay victoria dura en el modo principal.
+- Derrotar bosses o elites extiende la run, da score/XP y desbloquea nuevas ventanas de upgrade.
 
 ## Derrota
 
@@ -613,6 +630,13 @@ La UI 2D del HUD se implementa con UI Toolkit. Las ayudas espaciales sobre el mu
 - Daño recibido.
 - Scrap reciclado.
 - Mini-boss derrotado.
+- Tiempo sobrevivido.
+
+## Leaderboard
+
+- Orden principal: score final.
+- Desempate: tiempo sobrevivido.
+- Futuro: filtros por versión, diaria/semanal y seed si agregamos arenas variables.
 
 ---
 
