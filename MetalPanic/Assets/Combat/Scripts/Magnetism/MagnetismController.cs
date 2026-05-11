@@ -305,7 +305,8 @@ namespace MagnetPanic.Combat
                     continue;
                 }
 
-                magneticObject.TickAttract(center, pullSpeed, Time.deltaTime);
+                Vector3 ringTarget = NearestRingTarget(center, magneticObject.transform.position);
+                magneticObject.TickAttract(ringTarget, pullSpeed, Time.deltaTime);
 
                 if (!magneticObject.IsCloseEnoughForOrbit(center, orbitRadius))
                     continue;
@@ -434,6 +435,15 @@ namespace MagnetPanic.Combat
             Vector3 center = orbitCenter != null ? orbitCenter.position : transform.position;
             center.y = transform.position.y + orbitHeight;
             return center;
+        }
+
+        Vector3 NearestRingTarget(Vector3 center, Vector3 fromWorldPosition)
+        {
+            Vector3 delta = fromWorldPosition - center;
+            delta.y = 0f;
+            if (delta.sqrMagnitude < 0.0001f)
+                delta = transform.forward;
+            return center + delta.normalized * orbitRadius;
         }
 
         Vector3 OrbitSlot(Vector3 center, int total, int slot)

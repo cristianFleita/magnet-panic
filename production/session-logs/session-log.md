@@ -108,3 +108,25 @@ MetalPanic/Assets/Scenes/GameScene.unity
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260511_200900
+### Commits
+48e3f1d chore: enemies and attractable object prefabs wip
+00d771f chore: overload system wip
+d17a8eb chore: fix collider on character
+972c30a chore: movement + camera
+cae265b chore: wip pool objects system
+08e2a5c chore: wip arena system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticObject.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Editor/WebGLBuildScript.cs
+MetalPanic/Assets/Settings/Mobile_RPAsset.asset
+MetalPanic/Assets/Settings/PC_RPAsset.asset
+MetalPanic/Assets/Settings/UniversalRenderPipelineGlobalSettings.asset
+MetalPanic/ProjectSettings/EditorBuildSettings.asset
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

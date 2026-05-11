@@ -159,7 +159,7 @@ namespace MagnetPanic.Combat
             state = MagneticObjectState.Attracting;
             SetKinematic(true);
             objectCollider.enabled = true;
-            RestoreColliderMode();
+            objectCollider.isTrigger = true;
             if (trail != null)
             {
                 trail.Clear();
@@ -193,7 +193,7 @@ namespace MagnetPanic.Combat
             hitEnemies.Clear();
             SetKinematic(true);
             objectCollider.enabled = true;
-            RestoreColliderMode();
+            objectCollider.isTrigger = true;
             if (trail != null)
             {
                 trail.Clear();
