@@ -5,7 +5,7 @@ using UnityEngine.Events;
 namespace MagnetPanic.Combat
 {
     [RequireComponent(typeof(Collider))]
-    public sealed class MagneticObject : MonoBehaviour, IAttractable
+    public sealed class MagneticObject : MonoBehaviour, IAttractable, IPoolable
     {
         [Header("Identity")]
         [SerializeField] MagneticObjectType objectType = MagneticObjectType.LightScrap;
@@ -71,6 +71,55 @@ namespace MagnetPanic.Combat
 
             projectileAge = 0f;
             hitEnemies.Clear();
+        }
+
+        public void OnSpawn()
+        {
+            EnsureReferences();
+            magnetTransform = null;
+            state = MagneticObjectState.InWorld;
+            projectileAge = 0f;
+            pierceRemaining = Mathf.Max(1, maxPierceCount);
+            hitEnemies.Clear();
+            objectCollider.enabled = true;
+            RestoreColliderMode();
+            SetKinematic(false);
+
+            if (trail != null)
+            {
+                trail.Clear();
+                trail.emitting = false;
+            }
+
+            StopParticle(orbitParticle);
+            StopParticle(impactParticle);
+        }
+
+        public void OnDespawn()
+        {
+            EnsureReferences();
+            magnetTransform = null;
+            state = MagneticObjectState.InWorld;
+            projectileAge = 0f;
+            hitEnemies.Clear();
+            StopParticle(orbitParticle);
+            StopParticle(impactParticle);
+
+            if (trail != null)
+            {
+                trail.Clear();
+                trail.emitting = false;
+            }
+
+            SetKinematic(true);
+            if (body != null)
+                body.linearVelocity = Vector3.zero;
+
+            if (objectCollider != null)
+            {
+                objectCollider.enabled = false;
+                RestoreColliderMode();
+            }
         }
 
         void Update()
@@ -297,7 +346,7 @@ namespace MagnetPanic.Combat
             SetKinematic(true);
             state = MagneticObjectState.InWorld;
             objectCollider.enabled = false;
-            Destroy(gameObject);
+            Pool.Despawn(gameObject);
         }
 
         void ApplyTypeDefaults(MagneticObjectType type)

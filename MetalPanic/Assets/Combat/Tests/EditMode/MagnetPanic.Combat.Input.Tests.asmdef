@@ -3,7 +3,8 @@
     "rootNamespace": "MagnetPanic.Combat.Tests",
     "references": [
         "MagnetPanic.Combat.Input",
-        "MagnetPanic.Combat.Arena"
+        "MagnetPanic.Combat.Arena",
+        "MagnetPanic.Combat.Pooling"
     ],
     "includePlatforms": [
         "Editor"

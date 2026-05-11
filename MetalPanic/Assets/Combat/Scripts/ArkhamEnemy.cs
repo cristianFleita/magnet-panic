@@ -6,7 +6,7 @@ using UnityEngine.Events;
 namespace MagnetPanic.Combat
 {
     [RequireComponent(typeof(CharacterController))]
-    public sealed class ArkhamEnemy : MonoBehaviour, IMarkable
+    public sealed class ArkhamEnemy : MonoBehaviour, IMarkable, IPoolable
     {
         static readonly int InputMagnitudeHash = Animator.StringToHash("InputMagnitude");
         static readonly int StrafeHash = Animator.StringToHash("Strafe");
@@ -155,6 +155,8 @@ namespace MagnetPanic.Combat
 
         void OnEnable()
         {
+            ResetRuntimeState();
+
             if (manager == null)
                 manager = GetComponentInParent<ArkhamEnemyManager>();
 
@@ -169,6 +171,44 @@ namespace MagnetPanic.Combat
         void OnDisable()
         {
             manager?.Unregister(this);
+        }
+
+        public void OnSpawn()
+        {
+            if (!enabled)
+            {
+                enabled = true;
+                return;
+            }
+
+            ResetRuntimeState();
+            manager?.Register(this);
+            StartIdleMovement();
+        }
+
+        public void OnDespawn()
+        {
+            StopBehaviorCoroutine();
+            HideCounterCue();
+            isDead = true;
+            isPreparingAttack = false;
+            isAttacking = false;
+            isRetreating = false;
+            isLockedTarget = false;
+            isStunned = false;
+            isMagnetized = false;
+            isMagneticallyControlled = false;
+            isMagnetRepelProjectile = false;
+            attackHitApplied = false;
+            moveMode = MoveMode.None;
+            magneticMarks = 0;
+            markState = MagneticMarkState.Normal;
+            UpdateMagnetizedIndicator();
+
+            if (characterController != null)
+                characterController.enabled = false;
+
+            enabled = false;
         }
 
         void Update()
@@ -882,7 +922,60 @@ namespace MagnetPanic.Combat
             enabled = false;
 
             if (destroyOnDeath)
-                Destroy(gameObject, deathDespawnDelay);
+                Pool.Despawn(gameObject, deathDespawnDelay);
+        }
+
+        void ResetRuntimeState()
+        {
+            EnsureEvents();
+
+            if (animator == null)
+                animator = GetComponentInChildren<Animator>();
+
+            if (characterController == null)
+                characterController = GetComponent<CharacterController>();
+
+            if (combatHealth == null)
+                combatHealth = GetComponent<CombatHealth>();
+
+            if (combatHealth == null)
+                combatHealth = gameObject.AddComponent<CombatHealth>();
+
+            if (arenaSystem == null)
+                arenaSystem = FindFirstObjectByType<ArenaSystem>();
+
+            StopBehaviorCoroutine();
+            isDead = false;
+            isPreparingAttack = false;
+            isAttacking = false;
+            isRetreating = false;
+            isLockedTarget = false;
+            isStunned = false;
+            isMagnetized = false;
+            isMagneticallyControlled = false;
+            isMagnetRepelProjectile = false;
+            attackHitApplied = false;
+            lastArenaWallHitNormal = Vector3.zero;
+            lastMarkTime = -999f;
+            moveMode = MoveMode.None;
+            magneticMarks = 0;
+            markState = MagneticMarkState.Normal;
+
+            combatHealth.Configure(maxHealth, true);
+
+            if (characterController != null)
+                characterController.enabled = true;
+
+            if (animator != null)
+            {
+                animator.Rebind();
+                animator.Update(0f);
+            }
+
+            EnsureHealthBar();
+            EnsureMagnetizedIndicator();
+            HideCounterCue();
+            UpdateMagnetizedIndicator();
         }
 
         float DistanceToPlayer()

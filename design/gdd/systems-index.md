@@ -2,7 +2,7 @@
 
 > **Última actualización:** 2026-05-10
 > **Fuente:** `design/gdd/game-concept.md` (extracto del GDD jam `design/gdd-gamejam.md`)
-> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 11 · **Prototipos jugables:** 7
+> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 14 · **Prototipos jugables:** 7
 
 Este índice es la fuente de verdad para qué sistemas existen, en qué orden se
 diseñan, y qué dependencias tienen. Se actualiza cada vez que un sistema
@@ -24,8 +24,8 @@ termina su GDD individual o cambia su estado.
 
 | Estado | Cantidad |
 |---|---:|
-| GDD Complete | 11 |
-| Not Designed | 10 |
+| GDD Complete | 14 |
+| Not Designed | 7 |
 
 ---
 
@@ -44,12 +44,12 @@ termina su GDD individual o cambia su estado.
 | 9 | `attractables-system` | Content | MVP | Día 2 | Prototype | [attractables-system.md](attractables-system.md) |
 | 10 | `enemy-system` | Content | MVP ⚠ | Día 4 | Prototype | [enemy-system.md](enemy-system.md) |
 | 11 | `combat-system` | Content | MVP | Día 3 | Prototype | [combat-system.md](combat-system.md) |
-| 12 | `wave-director` | Encuentros | MVP | Día 4-5 | Not Started | — |
-| 13 | `scoring-xp-system` | Meta | MVP | Día 5 | Not Started | — |
+| 12 | `wave-director` | Encuentros | MVP | Día 4-5 | Not Started | [wave-director.md](wave-director.md) |
+| 13 | `scoring-xp-system` | Meta | MVP | Día 5 | Not Started | [scoring-xp-system.md](scoring-xp-system.md) |
 | 14 | `upgrade-system` | Meta | MVP | Día 5 | Not Started | — |
 | 15 | `mission-system` | Meta | MVP | Día 6 | Not Started | — |
 | 16 | `powerup-system` | Meta | MVP | Día 6 | Not Started | — |
-| 17 | `boss-system` | Meta | MVP* | Día 7 | Not Started | — |
+| 17 | `boss-system` | Meta | MVP* | Día 7 | Not Started | [boss-system.md](boss-system.md) |
 | 18 | `hud-system` | Presentation | MVP | Día 8 | Partial Prototype | — |
 | 19 | `presentation-system` | Presentation | MVP | Día 8 | Partial Prototype | — |
 | 20 | `host-bridge` | Boundary | MVP | Día 10 | Not Started | — |

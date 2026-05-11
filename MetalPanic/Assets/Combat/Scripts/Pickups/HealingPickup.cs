@@ -4,7 +4,7 @@ namespace MagnetPanic.Combat
 {
     [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(Rigidbody))]
-    public sealed class HealingPickup : MonoBehaviour
+    public sealed class HealingPickup : MonoBehaviour, IPoolable
     {
         [SerializeField] int healAmount = 2;
         [SerializeField] bool destroyOnUse = true;
@@ -22,6 +22,22 @@ namespace MagnetPanic.Combat
             body.isKinematic = true;
             body.useGravity = false;
             startPosition = transform.position;
+        }
+
+        public void OnSpawn()
+        {
+            Collider pickupCollider = GetComponent<Collider>();
+            pickupCollider.isTrigger = true;
+
+            Rigidbody body = GetComponent<Rigidbody>();
+            body.isKinematic = true;
+            body.useGravity = false;
+
+            startPosition = transform.position;
+        }
+
+        public void OnDespawn()
+        {
         }
 
         void Update()
@@ -47,7 +63,7 @@ namespace MagnetPanic.Combat
                 return;
 
             if (destroyOnUse)
-                Destroy(gameObject);
+                Pool.Despawn(gameObject);
             else
                 gameObject.SetActive(false);
         }
