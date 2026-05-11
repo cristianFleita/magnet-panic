@@ -19,6 +19,7 @@ namespace MagnetPanic.Combat.Editor
         const string PanelSettingsPath = UIFolder + "/MP_RuntimePanelSettings.asset";
         const string InputActionsPath = "Assets/InputSystem_Actions.inputactions";
         const string MapPrefabPath = "Assets/Prefabs/Map.prefab";
+        const string MainCharacterPrefabPath = "Assets/Prefabs/MainCharacter.prefab";
 
         [MenuItem("Tools/Magnet Panic/Arkham Combat/Create Prototype Animators")]
         public static void CreatePrototypeAnimators()
@@ -39,7 +40,6 @@ namespace MagnetPanic.Combat.Editor
             CreatePrototypeAnimators();
             EnsureFolder(MaterialFolder);
 
-            Material playerMaterial = CreateMaterial("MP_Player_Blue", new Color(0.1f, 0.38f, 0.95f));
             Material enemyMaterial = CreateMaterial("MP_Enemy_Red", new Color(0.9f, 0.18f, 0.1f));
             Material metalEnemyMaterial = CreateMaterial("MP_Metal_Enemy_Cyan", new Color(0.28f, 0.72f, 0.92f));
             Material magnetizedMaterial = CreateMaterial("MP_Magnetized_Yellow", new Color(1f, 0.82f, 0.16f));
@@ -68,7 +68,7 @@ namespace MagnetPanic.Combat.Editor
             cameraObject.AddComponent<AudioListener>();
             ArkhamSimpleCameraFollow cameraFollow = cameraObject.AddComponent<ArkhamSimpleCameraFollow>();
 
-            GameObject player = CreatePlayer(root.transform, camera, cameraFollow, playerMaterial);
+            GameObject player = CreatePlayer(root.transform, camera, cameraFollow);
             cameraFollow.Configure(player.transform, new Vector3(0f, 10f, -8f));
 
             GameObject enemyRoot = new GameObject("Enemy Manager");
@@ -100,7 +100,7 @@ namespace MagnetPanic.Combat.Editor
                 enemyManager,
                 player.GetComponent<ArkhamTargetScanner>(),
                 player.GetComponent<ArkhamPlayerMotor>(),
-                player.GetComponent<Animator>(),
+                player.GetComponentInChildren<Animator>(),
                 cameraFollow,
                 player.transform.Find("Hit Point"));
 
@@ -182,48 +182,74 @@ namespace MagnetPanic.Combat.Editor
                 "Nice");
         }
 
-        static GameObject CreatePlayer(Transform parent, Camera sceneCamera, ArkhamSimpleCameraFollow cameraFollow, Material material)
+        static GameObject CreatePlayer(Transform parent, Camera sceneCamera, ArkhamSimpleCameraFollow cameraFollow)
         {
-            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MainCharacterPrefabPath);
+            if (prefab == null)
+                throw new FileNotFoundException("MainCharacter prefab was not found.", MainCharacterPrefabPath);
+
+            GameObject player = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
             Undo.RegisterCreatedObjectUndo(player, "Create Combat Player");
             player.name = "Arkham Combat Player";
-            player.transform.SetParent(parent);
             player.transform.position = new Vector3(0f, 1f, 0f);
-            AssignMaterial(player, material);
-            Object.DestroyImmediate(player.GetComponent<Collider>());
 
-            CharacterController controller = player.AddComponent<CharacterController>();
+            CharacterController controller = player.GetComponent<CharacterController>();
+            if (controller == null)
+                controller = player.AddComponent<CharacterController>();
+
             controller.center = Vector3.zero;
             controller.height = 2f;
             controller.radius = 0.45f;
 
-            Animator animator = player.AddComponent<Animator>();
-            animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(PlayerControllerPath);
+            Animator animator = player.GetComponentInChildren<Animator>();
+            CombatHealth health = player.GetComponent<CombatHealth>();
+            if (health == null)
+                health = player.AddComponent<CombatHealth>();
 
-            CombatHealth health = player.AddComponent<CombatHealth>();
-            ArkhamPlayerMotor motor = player.AddComponent<ArkhamPlayerMotor>();
-            ArkhamTargetScanner scanner = player.AddComponent<ArkhamTargetScanner>();
-            ArkhamCombatController combat = player.AddComponent<ArkhamCombatController>();
-            MagnetismController magnetism = player.AddComponent<MagnetismController>();
-            GameInputProvider inputProvider = player.AddComponent<GameInputProvider>();
+            ArkhamPlayerMotor motor = player.GetComponent<ArkhamPlayerMotor>();
+            if (motor == null)
+                motor = player.AddComponent<ArkhamPlayerMotor>();
 
-            GameObject hitPoint = new GameObject("Hit Point");
-            hitPoint.transform.SetParent(player.transform);
-            hitPoint.transform.localPosition = new Vector3(0f, 0.9f, 0.75f);
+            ArkhamTargetScanner scanner = player.GetComponent<ArkhamTargetScanner>();
+            if (scanner == null)
+                scanner = player.AddComponent<ArkhamTargetScanner>();
 
-            PlayerInput input = player.AddComponent<PlayerInput>();
+            ArkhamCombatController combat = player.GetComponent<ArkhamCombatController>();
+            if (combat == null)
+                combat = player.AddComponent<ArkhamCombatController>();
+
+            MagnetismController magnetism = player.GetComponent<MagnetismController>();
+            if (magnetism == null)
+                magnetism = player.AddComponent<MagnetismController>();
+
+            GameInputProvider inputProvider = GameInputProvider.EnsureOn(player);
+
+            Transform hitPoint = player.transform.Find("Hit Point");
+            if (hitPoint == null)
+            {
+                GameObject hitPointObject = new GameObject("Hit Point");
+                hitPointObject.transform.SetParent(player.transform);
+                hitPointObject.transform.localPosition = new Vector3(0f, 0.9f, 0.75f);
+                hitPoint = hitPointObject.transform;
+            }
+
+            PlayerInput input = player.GetComponent<PlayerInput>();
+            if (input == null)
+                input = player.AddComponent<PlayerInput>();
+
             InputActionAsset actions = AssetDatabase.LoadAssetAtPath<InputActionAsset>(InputActionsPath);
             if (actions != null)
             {
                 input.actions = actions;
                 input.defaultActionMap = "Player";
                 input.notificationBehavior = PlayerNotifications.SendMessages;
+                input.camera = sceneCamera;
             }
 
             health.Configure(6, true);
             inputProvider.Configure(sceneCamera);
             motor.Configure(sceneCamera, animator, 5f);
-            combat.Configure(null, scanner, motor, animator, cameraFollow, hitPoint.transform);
+            combat.Configure(null, scanner, motor, animator, cameraFollow, hitPoint);
             magnetism.Configure(sceneCamera, null, motor);
             CreatePlayerHud(player.transform, health);
 

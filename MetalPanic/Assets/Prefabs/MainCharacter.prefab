@@ -193,7 +193,9 @@ MonoBehaviour:
   cameraOverride: {fileID: 0}
   inputProvider: {fileID: 4891748938443140591}
   movementSpeed: 5
+  sprintMultiplier: 1.25
   rotationSharpness: 14
+  accelerationFloor: 0.25
   gravity: -25
   groundedStickForce: -2
 --- !u!114 &6502341364504635286

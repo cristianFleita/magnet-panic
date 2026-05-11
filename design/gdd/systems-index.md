@@ -2,7 +2,7 @@
 
 > **Última actualización:** 2026-05-10
 > **Fuente:** `design/gdd/game-concept.md` (extracto del GDD jam `design/gdd-gamejam.md`)
-> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 14 · **Prototipos jugables:** 7
+> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 21 · **Prototipos jugables:** 7
 
 Este índice es la fuente de verdad para qué sistemas existen, en qué orden se
 diseñan, y qué dependencias tienen. Se actualiza cada vez que un sistema
@@ -24,8 +24,8 @@ termina su GDD individual o cambia su estado.
 
 | Estado | Cantidad |
 |---|---:|
-| GDD Complete | 14 |
-| Not Designed | 7 |
+| GDD Complete | 21 |
+| Not Designed | 0 |
 
 ---
 
@@ -46,14 +46,14 @@ termina su GDD individual o cambia su estado.
 | 11 | `combat-system` | Content | MVP | Día 3 | Prototype | [combat-system.md](combat-system.md) |
 | 12 | `wave-director` | Encuentros | MVP | Día 4-5 | Not Started | [wave-director.md](wave-director.md) |
 | 13 | `scoring-xp-system` | Meta | MVP | Día 5 | Not Started | [scoring-xp-system.md](scoring-xp-system.md) |
-| 14 | `upgrade-system` | Meta | MVP | Día 5 | Not Started | — |
-| 15 | `mission-system` | Meta | MVP | Día 6 | Not Started | — |
-| 16 | `powerup-system` | Meta | MVP | Día 6 | Not Started | — |
+| 14 | `upgrade-system` | Meta | MVP | Día 5 | Not Started | [upgrade-system.md](upgrade-system.md) |
+| 15 | `mission-system` | Meta | MVP | Día 6 | Not Started | [mission-system.md](mission-system.md) |
+| 16 | `powerup-system` | Meta | MVP | Día 6 | Not Started | [powerup-system.md](powerup-system.md) |
 | 17 | `boss-system` | Meta | MVP* | Día 7 | Not Started | [boss-system.md](boss-system.md) |
-| 18 | `hud-system` | Presentation | MVP | Día 8 | Partial Prototype | — |
-| 19 | `presentation-system` | Presentation | MVP | Día 8 | Partial Prototype | — |
-| 20 | `host-bridge` | Boundary | MVP | Día 10 | Not Started | — |
-| 21 | `meta-flow-system` | Boundary | MVP | Día 10 | Not Started | — |
+| 18 | `hud-system` | Presentation | MVP | Día 8 | Partial Prototype | [hud-system.md](hud-system.md) |
+| 19 | `presentation-system` | Presentation | MVP | Día 8 | Partial Prototype | [presentation-system.md](presentation-system.md) |
+| 20 | `host-bridge` | Boundary | MVP | Día 10 | Not Started | [host-bridge.md](host-bridge.md) |
+| 21 | `meta-flow-system` | Boundary | MVP | Día 10 | Not Started | [meta-flow-system.md](meta-flow-system.md) |
 
 **Leyenda:**
 - ⚠ = Bottleneck (muchos dependientes, alto riesgo de cambio)

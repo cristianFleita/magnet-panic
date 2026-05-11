@@ -14,7 +14,9 @@ namespace MagnetPanic.Combat
 
         [Header("Movement")]
         [SerializeField] float movementSpeed = 5f;
+        [SerializeField] float sprintMultiplier = 1.25f;
         [SerializeField] float rotationSharpness = 14f;
+        [SerializeField] float accelerationFloor = 0.25f;
         [SerializeField] float gravity = -25f;
         [SerializeField] float groundedStickForce = -2f;
 
@@ -28,11 +30,14 @@ namespace MagnetPanic.Combat
         public Vector2 MoveAxis => moveAxis;
         public Vector3 WorldMoveDirection => worldMoveDirection;
         public bool IsMovementLocked => movementLocked;
+        public float EffectiveSpeed => movementSpeed * acceleration * SprintMultiplier;
+
+        float SprintMultiplier => inputProvider != null && inputProvider.SprintPressed ? sprintMultiplier : 1f;
 
         public float Acceleration
         {
             get => acceleration;
-            set => acceleration = Mathf.Max(0f, value);
+            set => acceleration = Mathf.Clamp(value, accelerationFloor, 1f);
         }
 
         void Awake()
@@ -42,11 +47,24 @@ namespace MagnetPanic.Combat
             if (animator == null)
                 animator = GetComponentInChildren<Animator>();
 
-            if (cameraOverride == null)
-                cameraOverride = Camera.main;
-
             if (inputProvider == null)
                 inputProvider = GameInputProvider.EnsureOn(gameObject);
+
+            if (cameraOverride == null && inputProvider != null)
+                cameraOverride = inputProvider.SceneCamera;
+
+            if (cameraOverride == null)
+                cameraOverride = Camera.main;
+        }
+
+        void OnValidate()
+        {
+            movementSpeed = Mathf.Max(0f, movementSpeed);
+            sprintMultiplier = Mathf.Max(1f, sprintMultiplier);
+            rotationSharpness = Mathf.Max(0.01f, rotationSharpness);
+            accelerationFloor = Mathf.Clamp(accelerationFloor, 0.01f, 1f);
+            gravity = Mathf.Min(0f, gravity);
+            groundedStickForce = Mathf.Min(0f, groundedStickForce);
         }
 
         void Update()
@@ -81,15 +99,28 @@ namespace MagnetPanic.Combat
 
         void UpdateWorldMoveDirection()
         {
-            Camera sceneCamera = cameraOverride != null ? cameraOverride : Camera.main;
+            Camera sceneCamera = cameraOverride != null
+                ? cameraOverride
+                : inputProvider != null ? inputProvider.SceneCamera : null;
+
+            if (sceneCamera == null)
+                sceneCamera = Camera.main;
 
             Vector3 forward = sceneCamera != null ? sceneCamera.transform.forward : Vector3.forward;
             Vector3 right = sceneCamera != null ? sceneCamera.transform.right : Vector3.right;
 
             forward.y = 0f;
             right.y = 0f;
-            forward.Normalize();
-            right.Normalize();
+
+            if (forward.sqrMagnitude <= 0.0001f)
+                forward = Vector3.forward;
+            else
+                forward.Normalize();
+
+            if (right.sqrMagnitude <= 0.0001f)
+                right = Vector3.right;
+            else
+                right.Normalize();
 
             worldMoveDirection = forward * moveAxis.y + right * moveAxis.x;
 
@@ -99,7 +130,7 @@ namespace MagnetPanic.Combat
 
         void UpdateHorizontalMovement()
         {
-            float inputMagnitude = Mathf.Clamp01(moveAxis.sqrMagnitude);
+            float inputMagnitude = Mathf.Clamp01(moveAxis.magnitude);
             float animatedMagnitude = movementLocked ? 0f : inputMagnitude * acceleration;
 
             if (animator != null)
@@ -114,8 +145,7 @@ namespace MagnetPanic.Combat
                 targetRotation,
                 1f - Mathf.Exp(-rotationSharpness * Time.deltaTime));
 
-            float speed = movementSpeed * acceleration;
-            controller.Move(worldMoveDirection * speed * Time.deltaTime);
+            controller.Move(worldMoveDirection * EffectiveSpeed * Time.deltaTime);
         }
 
         void UpdateGravity()

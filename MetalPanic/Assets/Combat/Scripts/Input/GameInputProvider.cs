@@ -30,6 +30,7 @@ namespace MagnetPanic.Combat
         bool pullTogglePressed;
         bool strikePressed;
         bool counterPressed;
+        bool sprintPressed;
         bool upgrade1Pressed;
         bool upgrade2Pressed;
         bool upgrade3Pressed;
@@ -45,9 +46,11 @@ namespace MagnetPanic.Combat
         public Vector2 MoveAxis => GameplayEnabled ? moveAxis : Vector2.zero;
         public Vector2 AimScreenPosition => aimScreenPosition;
         public Vector3 AimWorldDirection => aimWorldDirection;
+        public Camera SceneCamera => cameraOverride;
         public bool PullTogglePressed => GameplayEnabled && pullTogglePressed;
         public bool StrikePressed => GameplayEnabled && strikePressed;
         public bool CounterPressed => GameplayEnabled && counterPressed;
+        public bool SprintPressed => GameplayEnabled && sprintPressed;
         public bool Upgrade1Pressed => UiEnabled && upgrade1Pressed;
         public bool Upgrade2Pressed => UiEnabled && upgrade2Pressed;
         public bool Upgrade3Pressed => UiEnabled && upgrade3Pressed;
@@ -151,6 +154,16 @@ namespace MagnetPanic.Combat
         public void OnLook(InputValue value)
         {
             OnAim(value);
+        }
+
+        public void OnSprint(InputValue value)
+        {
+            SetSprintPressed(value.isPressed);
+        }
+
+        public void SetSprintPressed(bool pressed)
+        {
+            sprintPressed = pressed;
         }
 
         public void OnPullToggle(InputValue value)
@@ -404,6 +417,7 @@ namespace MagnetPanic.Combat
         {
             moveAxis = Vector2.zero;
             stickAim = Vector2.zero;
+            sprintPressed = false;
             combatBuffer.Reset();
             ClearFramePresses();
         }
