@@ -18,6 +18,7 @@ namespace MagnetPanic.Combat.Editor
         const string EnemyControllerPath = AnimatorFolder + "/ArkhamPrototypeEnemy.controller";
         const string PanelSettingsPath = UIFolder + "/MP_RuntimePanelSettings.asset";
         const string InputActionsPath = "Assets/InputSystem_Actions.inputactions";
+        const string MapPrefabPath = "Assets/Prefabs/Map.prefab";
 
         [MenuItem("Tools/Magnet Panic/Arkham Combat/Create Prototype Animators")]
         public static void CreatePrototypeAnimators()
@@ -294,12 +295,33 @@ namespace MagnetPanic.Combat.Editor
 
         static void CreateArena(Transform parent, Material material)
         {
+            GameObject mapPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(MapPrefabPath);
+            if (mapPrefab != null)
+            {
+                GameObject map = (GameObject)PrefabUtility.InstantiatePrefab(mapPrefab, parent);
+                Undo.RegisterCreatedObjectUndo(map, "Create Map Arena");
+                map.name = "Map";
+                map.transform.localPosition = new Vector3(26.29f, -4.38f, -7.2f);
+                map.transform.localRotation = Quaternion.identity;
+                map.transform.localScale = Vector3.one;
+
+                if (map.GetComponent<ArenaSystem>() == null)
+                    map.AddComponent<ArenaSystem>();
+
+                if (map.GetComponent<ArenaMapColliderBuilder>() == null)
+                    map.AddComponent<ArenaMapColliderBuilder>();
+
+                return;
+            }
+
             GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
             Undo.RegisterCreatedObjectUndo(floor, "Create Combat Arena");
             floor.name = "Prototype Arena";
             floor.transform.SetParent(parent);
             floor.transform.localScale = new Vector3(1.6f, 1f, 1.6f);
             AssignMaterial(floor, material);
+            ArenaSystem arena = floor.AddComponent<ArenaSystem>();
+            arena.ConfigurePlayableBounds(Vector3.zero, new Vector3(16f, 2f, 16f));
         }
 
         static void CreateMagneticScrap(

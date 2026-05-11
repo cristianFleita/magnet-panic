@@ -2,7 +2,8 @@
     "name": "MagnetPanic.Combat.Input.Tests",
     "rootNamespace": "MagnetPanic.Combat.Tests",
     "references": [
-        "MagnetPanic.Combat.Input"
+        "MagnetPanic.Combat.Input",
+        "MagnetPanic.Combat.Arena"
     ],
     "includePlatforms": [
         "Editor"

@@ -2,7 +2,7 @@
 
 > **Última actualización:** 2026-05-10
 > **Fuente:** `design/gdd/game-concept.md` (extracto del GDD jam `design/gdd-gamejam.md`)
-> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 9 · **Prototipos jugables:** 7
+> **Total de sistemas:** 21 · **MVP:** 21 · **GDD completos:** 11 · **Prototipos jugables:** 7
 
 Este índice es la fuente de verdad para qué sistemas existen, en qué orden se
 diseñan, y qué dependencias tienen. Se actualiza cada vez que un sistema
@@ -24,8 +24,8 @@ termina su GDD individual o cambia su estado.
 
 | Estado | Cantidad |
 |---|---:|
-| GDD Complete | 9 |
-| Not Designed | 12 |
+| GDD Complete | 11 |
+| Not Designed | 10 |
 
 ---
 
@@ -41,8 +41,8 @@ termina su GDD individual o cambia su estado.
 | 6 | `camera-system` | Core | MVP | Día 1 | Prototype | [camera-system.md](camera-system.md) |
 | 7 | `magnetism-system` | Core | MVP ⚠ | Día 1 | Prototype | [magnetism-system.md](magnetism-system.md) |
 | 8 | `overload-system` | Core | MVP | Día 1-3 | Not Started | [overload-system.md](overload-system.md) |
-| 9 | `attractables-system` | Content | MVP | Día 2 | Prototype | — |
-| 10 | `enemy-system` | Content | MVP ⚠ | Día 4 | Prototype | — |
+| 9 | `attractables-system` | Content | MVP | Día 2 | Prototype | [attractables-system.md](attractables-system.md) |
+| 10 | `enemy-system` | Content | MVP ⚠ | Día 4 | Prototype | [enemy-system.md](enemy-system.md) |
 | 11 | `combat-system` | Content | MVP | Día 3 | Prototype | [combat-system.md](combat-system.md) |
 | 12 | `wave-director` | Encuentros | MVP | Día 4-5 | Not Started | — |
 | 13 | `scoring-xp-system` | Meta | MVP | Día 5 | Not Started | — |

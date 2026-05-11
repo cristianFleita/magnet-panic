@@ -53,6 +53,7 @@ namespace MagnetPanic.Combat
         [SerializeField] float magnetizedRepelDuration = 0.42f;
         [SerializeField] float magnetizedProjectileRadius = 0.8f;
         [SerializeField] float markedProjectileDamageMultiplier = 1.2f;
+        [SerializeField] float wallSlamBounceDistance = 0.18f;
         [SerializeField] float counterPulseDistance = 1.1f;
         [SerializeField] bool alwaysPullableByMagnet;
         [SerializeField] GameObject magnetizedIndicator;
@@ -92,6 +93,9 @@ namespace MagnetPanic.Combat
         MoveMode moveMode;
         Coroutine behaviorCoroutine;
         Coroutine movementCoroutine;
+        ArenaSystem arenaSystem;
+        bool isMagnetRepelProjectile;
+        Vector3 lastArenaWallHitNormal;
 
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsAttackable => IsAlive && !isLockedTarget;
@@ -132,6 +136,9 @@ namespace MagnetPanic.Combat
 
             if (combatHealth == null)
                 combatHealth = gameObject.AddComponent<CombatHealth>();
+
+            if (arenaSystem == null)
+                arenaSystem = FindFirstObjectByType<ArenaSystem>();
 
             combatHealth.Configure(maxHealth, true);
             EnsureHealthBar();
@@ -440,6 +447,7 @@ namespace MagnetPanic.Combat
             SetMarkState(MagneticMarkState.Normal);
             isStunned = true;
             isMagneticallyControlled = true;
+            isMagnetRepelProjectile = true;
             behaviorCoroutine = StartCoroutine(MagneticRepelRoutine(direction.normalized, speed, impactDamage));
         }
 
@@ -581,11 +589,29 @@ namespace MagnetPanic.Combat
             while (elapsed < magnetizedRepelDuration && IsAlive)
             {
                 elapsed += Time.deltaTime;
-                MoveBy(direction * speed * Time.deltaTime);
+                lastArenaWallHitNormal = Vector3.zero;
+                CollisionFlags collision = MoveBy(direction * speed * Time.deltaTime);
                 DamageEnemiesTouchedByMagneticProjectile(hitEnemies, impactDamage);
+
+                if (HitArenaWall(collision) || EscapedArenaBounds())
+                {
+                    Vector3 wallNormal = lastArenaWallHitNormal.sqrMagnitude > 0.001f
+                        ? lastArenaWallHitNormal
+                        : arenaSystem != null
+                            ? arenaSystem.GetNearestWallNormal(transform.position)
+                            : -direction;
+
+                    ApplyArenaWallSlam(wallNormal, speed);
+                    if (!IsAlive)
+                        yield break;
+
+                    break;
+                }
+
                 yield return null;
             }
 
+            isMagnetRepelProjectile = false;
             isMagneticallyControlled = false;
             yield return StunRoutine(stunDuration);
         }
@@ -755,12 +781,87 @@ namespace MagnetPanic.Combat
             }
         }
 
-        void MoveBy(Vector3 displacement)
+        CollisionFlags MoveBy(Vector3 displacement)
         {
             if (characterController != null && characterController.enabled)
-                characterController.Move(displacement);
+                return characterController.Move(displacement);
             else
+            {
                 transform.position += displacement;
+                return CollisionFlags.None;
+            }
+        }
+
+        void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            if (!isMagnetRepelProjectile || hit == null || hit.collider == null)
+                return;
+
+            if (!IsArenaWallCollider(hit.collider) || Mathf.Abs(hit.normal.y) > 0.35f)
+                return;
+
+            lastArenaWallHitNormal = hit.normal;
+        }
+
+        bool HitArenaWall(CollisionFlags collision)
+        {
+            return isMagnetRepelProjectile
+                && (collision & CollisionFlags.Sides) != 0
+                && lastArenaWallHitNormal.sqrMagnitude > 0.001f;
+        }
+
+        bool EscapedArenaBounds()
+        {
+            if (!isMagnetRepelProjectile || arenaSystem == null || arenaSystem.IsInsideArena(transform.position))
+                return false;
+
+            lastArenaWallHitNormal = arenaSystem.GetNearestWallNormal(transform.position);
+            transform.position = arenaSystem.ClampToArena(transform.position);
+            return true;
+        }
+
+        bool IsArenaWallCollider(Collider target)
+        {
+            int arenaWallLayer = LayerMask.NameToLayer("ArenaWall");
+            return arenaWallLayer >= 0 && target.gameObject.layer == arenaWallLayer;
+        }
+
+        void ApplyArenaWallSlam(Vector3 wallNormal, float impactSpeed)
+        {
+            isMagnetRepelProjectile = false;
+
+            if (arenaSystem == null)
+                arenaSystem = FindFirstObjectByType<ArenaSystem>();
+
+            int damage = arenaSystem != null
+                ? arenaSystem.CalculateWallSlamDamage(impactSpeed)
+                : 2 + Mathf.FloorToInt(Mathf.Max(0f, impactSpeed) / 5f);
+
+            ReceiveArenaWallSlam(damage, wallNormal);
+            arenaSystem?.ReportWallSlam(gameObject, wallNormal, impactSpeed, damage);
+        }
+
+        public void ReceiveArenaWallSlam(int damage, Vector3 wallNormal)
+        {
+            if (!IsAlive)
+                return;
+
+            combatHealth.ApplyDamage(Mathf.Max(0, damage));
+            OnDamaged.Invoke(this);
+
+            if (!combatHealth.IsAlive)
+            {
+                Die();
+                return;
+            }
+
+            if (animator != null)
+                animator.SetTrigger(HitHash);
+
+            Vector3 bounce = wallNormal;
+            bounce.y = 0f;
+            if (bounce.sqrMagnitude > 0.001f)
+                MoveBy(bounce.normalized * wallSlamBounceDistance);
         }
 
         void Die()

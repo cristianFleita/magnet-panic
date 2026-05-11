@@ -417,7 +417,10 @@ namespace MagnetPanic.Combat
                 return;
 
             if (other.GetComponentInParent<ArkhamEnemy>() == null)
+            {
+                Consume();
                 return;
+            }
 
             CheckProjectileHits();
         }

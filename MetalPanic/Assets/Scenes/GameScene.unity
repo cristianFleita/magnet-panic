@@ -847,7 +847,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &490629950
 Transform:
   m_ObjectHideFlags: 0
@@ -1044,6 +1044,7 @@ MonoBehaviour:
   magnetizedRepelDuration: 0.42
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
+  wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
   magnetizedIndicator: {fileID: 1445211010}
@@ -1382,6 +1383,7 @@ MonoBehaviour:
   magnetizedRepelDuration: 0.42
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
+  wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
   magnetizedIndicator: {fileID: 793615982}
@@ -2551,6 +2553,7 @@ MonoBehaviour:
   magnetizedRepelDuration: 0.42
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
+  wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
   magnetizedIndicator: {fileID: 1822179102}
@@ -4099,9 +4102,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 910100100100100102, guid: 2737bbf63c8d8406a94800c411c0b557, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2605740755634077484, guid: 2737bbf63c8d8406a94800c411c0b557, type: 3}
       propertyPath: m_Name
       value: Map
+      objectReference: {fileID: 0}
+    - target: {fileID: 2605740755634077484, guid: 2737bbf63c8d8406a94800c411c0b557, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4915310124000972915, guid: 2737bbf63c8d8406a94800c411c0b557, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5089,6 +5100,7 @@ MonoBehaviour:
   magnetizedRepelDuration: 0.42
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
+  wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
   magnetizedIndicator: {fileID: 2013486106}
@@ -5487,6 +5499,7 @@ MonoBehaviour:
   magnetizedRepelDuration: 0.42
   magnetizedProjectileRadius: 0.8
   markedProjectileDamageMultiplier: 1.2
+  wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
   magnetizedIndicator: {fileID: 1119406842}
