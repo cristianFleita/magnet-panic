@@ -344,6 +344,13 @@ MonoBehaviour:
   overloadStunDuration: 0.5
   overloadShakeAmplitude: 0.3
   overloadShakeDuration: 0.3
+  debugLogs: 1
+  showRuntimeRing: 1
+  ringColor: {r: 1, g: 0.25, b: 0.1, a: 0.9}
+  ringDuration: 0.45
+  ringSegments: 48
+  ringHeight: 0.08
+  ringWidth: 0.12
   OnEnteredCritical:
     m_PersistentCalls:
       m_Calls: []

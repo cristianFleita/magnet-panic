@@ -18,6 +18,7 @@ namespace MagnetPanic.Combat
 
         [Header("Projectile")]
         [SerializeField] int damage = 2;
+        [SerializeField] int aoeDamage = 4;
         [SerializeField] float hitRadius = 0.55f;
         [SerializeField] float knockbackDistance = 0.8f;
         [SerializeField] int maxPierceCount = 1;
@@ -25,6 +26,10 @@ namespace MagnetPanic.Combat
         [SerializeField] bool explodesOnImpact;
         [SerializeField] float explosionRadius = 2.5f;
         [SerializeField] LayerMask hitLayers = ~0;
+
+        [Header("Presentation (swap-friendly)")]
+        [Tooltip("Empty transform that owns the visual model. Drag a 3D model under it — colliders, rigidbody and VFX live on the root and stay untouched.")]
+        [SerializeField] Transform modelRoot;
 
         [Header("Optional Feedback")]
         [SerializeField] TrailRenderer trail = null;
@@ -54,6 +59,7 @@ namespace MagnetPanic.Combat
         public float MagneticMass => magneticMass;
         public MagneticObjectState MagneticState => state;
         public Transform AttractionTransform => transform;
+        public Transform ModelRoot => modelRoot;
         public bool CanEnterOrbit => isActiveAndEnabled && (state == MagneticObjectState.InWorld || state == MagneticObjectState.Attracting);
 
         void Awake()
@@ -294,7 +300,7 @@ namespace MagnetPanic.Combat
 
                 if (explodesOnImpact)
                 {
-                    Explode();
+                    Explode(enemy);
                     return;
                 }
 
@@ -311,8 +317,11 @@ namespace MagnetPanic.Combat
             }
         }
 
-        void Explode()
+        void Explode(ArkhamEnemy directTarget)
         {
+            if (directTarget != null && directTarget.IsAlive)
+                directTarget.ReceiveMagneticImpact(damage, transform.position, knockbackDistance, true);
+
             int count = Physics.OverlapSphereNonAlloc(
                 transform.position,
                 explosionRadius,
@@ -329,7 +338,7 @@ namespace MagnetPanic.Combat
                     continue;
 
                 hitEnemies.Add(enemy);
-                enemy.ReceiveMagneticImpact(damage, transform.position, knockbackDistance * 1.4f, true);
+                enemy.ReceiveMagneticImpact(aoeDamage, transform.position, knockbackDistance * 1.4f, true);
             }
 
             OnImpact.Invoke(this);
@@ -358,22 +367,25 @@ namespace MagnetPanic.Combat
                     magneticMass = 1f;
                     objectSpeedModifier = 1.4f;
                     damage = 2;
+                    aoeDamage = 0;
                     knockbackDistance = 0.8f;
-                    maxPierceCount = 1;
+                    maxPierceCount = 2;
                     explodesOnImpact = false;
                     break;
                 case MagneticObjectType.Plate:
                     magneticMass = 2f;
                     objectSpeedModifier = 1f;
-                    damage = 4;
+                    damage = 3;
+                    aoeDamage = 0;
                     knockbackDistance = 1.15f;
-                    maxPierceCount = 2;
+                    maxPierceCount = 3;
                     explodesOnImpact = false;
                     break;
                 case MagneticObjectType.Mine:
-                    magneticMass = 2f;
-                    objectSpeedModifier = 0.8f;
-                    damage = 6;
+                    magneticMass = 1.5f;
+                    objectSpeedModifier = 1.2f;
+                    damage = 3;
+                    aoeDamage = 4;
                     knockbackDistance = 1.35f;
                     maxPierceCount = 1;
                     explodesOnImpact = true;
@@ -383,6 +395,7 @@ namespace MagnetPanic.Combat
                     magneticMass = 3f;
                     objectSpeedModifier = 0.6f;
                     damage = 7;
+                    aoeDamage = 0;
                     knockbackDistance = 1.8f;
                     maxPierceCount = 1;
                     explodesOnImpact = false;

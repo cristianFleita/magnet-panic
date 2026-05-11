@@ -24,6 +24,9 @@ namespace MagnetPanic.Combat
             Retreat
         }
 
+        [Header("Definition")]
+        [SerializeField] EnemyDefinition definition;
+
         [Header("References")]
         [SerializeField] ArkhamEnemyManager manager;
         [SerializeField] ArkhamCombatController playerCombat;
@@ -33,6 +36,7 @@ namespace MagnetPanic.Combat
         [SerializeField] WorldSpaceHealthBar healthBar;
         [SerializeField] GameObject counterIndicator;
         [SerializeField] ParticleSystem counterParticle = null;
+        [SerializeField] GameObject chargeTelegraph;
 
         [Header("Stats")]
         [SerializeField] int maxHealth = 3;
@@ -66,12 +70,17 @@ namespace MagnetPanic.Combat
         [SerializeField] float approachSpeed = 5f;
         [SerializeField] float retreatSpeed = 2.25f;
         [SerializeField] float retreatDistance = 4.25f;
+        [SerializeField] bool disableStrafe;
 
         [Header("Attack")]
         [SerializeField] float prepareAttackTime = 0.35f;
         [SerializeField] float attackRange = 1.8f;
         [SerializeField] float attackHitDelay = 0.2f;
         [SerializeField] float attackRecovery = 0.55f;
+        [SerializeField] bool useLinearCharge;
+        [SerializeField] float chargeSpeed = 11f;
+        [SerializeField] float chargeDuration = 0.55f;
+        [SerializeField] float chargeHitRadius = 1.1f;
 
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnDamaged = new UnityEvent<ArkhamEnemy>();
@@ -140,10 +149,51 @@ namespace MagnetPanic.Combat
             if (arenaSystem == null)
                 arenaSystem = FindFirstObjectByType<ArenaSystem>();
 
+            if (definition != null)
+                ApplyDefinitionFields(definition);
+
             combatHealth.Configure(maxHealth, true);
             EnsureHealthBar();
             EnsureMagnetizedIndicator();
             UpdateMagnetizedIndicator();
+            HideChargeTelegraph();
+        }
+
+        public void Apply(EnemyDefinition def)
+        {
+            if (def == null)
+                return;
+
+            definition = def;
+            ApplyDefinitionFields(def);
+
+            if (combatHealth != null)
+                combatHealth.Configure(maxHealth, true);
+
+            UpdateMagnetizedIndicator();
+        }
+
+        void ApplyDefinitionFields(EnemyDefinition def)
+        {
+            maxHealth = def.maxHealth;
+            alwaysPullableByMagnet = def.alwaysPullableByMagnet;
+            magneticMarksToMagnetize = Mathf.Max(1, def.magneticMarksToMagnetize);
+            magneticMass = Mathf.Max(0.5f, def.magneticMass);
+            approachSpeed = def.approachSpeed;
+            strafeSpeed = def.strafeSpeed;
+            retreatSpeed = def.retreatSpeed;
+            retreatDistance = def.retreatDistance;
+            disableStrafe = def.disableStrafe;
+            prepareAttackTime = def.prepareAttackTime;
+            attackRange = def.attackRange;
+            attackHitDelay = def.attackHitDelay;
+            attackRecovery = def.attackRecovery;
+            knockbackDistance = def.knockbackDistance;
+            knockbackDuration = def.knockbackDuration;
+            useLinearCharge = def.useLinearCharge;
+            chargeSpeed = def.chargeSpeed;
+            chargeDuration = def.chargeDuration;
+            chargeHitRadius = def.chargeHitRadius;
         }
 
         public void ConfigureMagneticProfile(bool alwaysPullable, float mass)
@@ -228,8 +278,10 @@ namespace MagnetPanic.Combat
 
             manager = enemyManager;
             playerCombat = player;
-            animator = targetAnimator;
-            counterIndicator = indicator;
+            if (targetAnimator != null)
+                animator = targetAnimator;
+            if (indicator != null)
+                counterIndicator = indicator;
             if (combatHealth == null)
                 combatHealth = GetComponent<CombatHealth>();
             EnsureHealthBar();
@@ -263,7 +315,7 @@ namespace MagnetPanic.Combat
                 return;
 
             StopBehaviorCoroutine();
-            behaviorCoroutine = StartCoroutine(AttackRoutine());
+            behaviorCoroutine = StartCoroutine(useLinearCharge ? LinearChargeRoutine() : AttackRoutine());
         }
 
         public void BeginRetreat()
@@ -572,6 +624,69 @@ namespace MagnetPanic.Combat
             behaviorCoroutine = null;
         }
 
+        IEnumerator LinearChargeRoutine()
+        {
+            isPreparingAttack = true;
+            ShowCounterCue();
+            ShowChargeTelegraph();
+
+            float prepTimer = 0f;
+            while (prepTimer < prepareAttackTime && IsAlive)
+            {
+                prepTimer += Time.deltaTime;
+                FacePlayer();
+                yield return null;
+            }
+
+            HideChargeTelegraph();
+            isPreparingAttack = false;
+            isAttacking = true;
+            attackHitApplied = false;
+            moveMode = MoveMode.None;
+
+            Vector3 chargeDirection = transform.forward;
+            if (playerCombat != null)
+            {
+                Vector3 toPlayer = playerCombat.transform.position - transform.position;
+                toPlayer.y = 0f;
+                if (toPlayer.sqrMagnitude > 0.01f)
+                    chargeDirection = toPlayer.normalized;
+            }
+
+            if (animator != null)
+                animator.SetTrigger(AirPunchHash);
+
+            float dashTimer = 0f;
+            float hitRadiusSqr = chargeHitRadius * chargeHitRadius;
+            while (dashTimer < chargeDuration && IsAlive)
+            {
+                dashTimer += Time.deltaTime;
+                CollisionFlags flags = MoveBy(chargeDirection * chargeSpeed * Time.deltaTime);
+
+                if (!attackHitApplied && playerCombat != null)
+                {
+                    Vector3 delta = playerCombat.transform.position - transform.position;
+                    delta.y = 0f;
+                    if (delta.sqrMagnitude <= hitRadiusSqr)
+                    {
+                        attackHitApplied = true;
+                        playerCombat.ReceiveDamage(this);
+                    }
+                }
+
+                if ((flags & CollisionFlags.Sides) != 0)
+                    break;
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(attackRecovery);
+
+            isAttacking = false;
+            HideCounterCue();
+            behaviorCoroutine = null;
+        }
+
         IEnumerator RetreatRoutine()
         {
             isRetreating = true;
@@ -679,13 +794,20 @@ namespace MagnetPanic.Combat
         {
             while (IsAlive && !isLockedTarget && !isStunned && !isPreparingAttack && !isAttacking && !isRetreating)
             {
-                int random = Random.Range(0, 3);
-                moveMode = random switch
+                if (disableStrafe)
                 {
-                    0 => MoveMode.None,
-                    1 => MoveMode.StrafeLeft,
-                    _ => MoveMode.StrafeRight
-                };
+                    moveMode = DistanceToPlayer() > attackRange * 1.5f ? MoveMode.Approach : MoveMode.None;
+                }
+                else
+                {
+                    int random = Random.Range(0, 3);
+                    moveMode = random switch
+                    {
+                        0 => MoveMode.None,
+                        1 => MoveMode.StrafeLeft,
+                        _ => MoveMode.StrafeRight
+                    };
+                }
 
                 yield return new WaitForSeconds(Random.Range(0.7f, 1.2f));
             }
@@ -1007,6 +1129,20 @@ namespace MagnetPanic.Combat
                 counterParticle.Clear(true);
                 counterParticle.Stop(true);
             }
+
+            HideChargeTelegraph();
+        }
+
+        void ShowChargeTelegraph()
+        {
+            if (chargeTelegraph != null)
+                chargeTelegraph.SetActive(true);
+        }
+
+        void HideChargeTelegraph()
+        {
+            if (chargeTelegraph != null)
+                chargeTelegraph.SetActive(false);
         }
 
         void EnsureMagnetizedIndicator()

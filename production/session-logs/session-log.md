@@ -80,3 +80,31 @@ production/session-logs/session-log.md
 production/session-state/active.md
 ---
 
+## Session End: 20260511_164550
+### Commits
+00d771f chore: overload system wip
+d17a8eb chore: fix collider on character
+972c30a chore: movement + camera
+cae265b chore: wip pool objects system
+08e2a5c chore: wip arena system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Editor/ArkhamCombatSetup.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticObject.cs
+---
+
+## Session End: 20260511_190250
+### Commits
+00d771f chore: overload system wip
+d17a8eb chore: fix collider on character
+972c30a chore: movement + camera
+cae265b chore: wip pool objects system
+08e2a5c chore: wip arena system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Editor/ArkhamCombatSetup.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticObject.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+production/session-logs/session-log.md
+---
+

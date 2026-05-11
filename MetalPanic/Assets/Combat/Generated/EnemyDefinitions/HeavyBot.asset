@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7994ad0ac90bb43c0a89660f6def8540, type: 3}
+  m_Name: HeavyBot
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.EnemyDefinition
+  archetype: 3
+  displayName: Heavy Bot
+  maxHealth: 8
+  alwaysPullableByMagnet: 0
+  magneticMarksToMagnetize: 3
+  magneticMass: 5
+  approachSpeed: 3
+  strafeSpeed: 0.8
+  retreatSpeed: 1.6
+  retreatDistance: 3.8
+  disableStrafe: 0
+  prepareAttackTime: 0.6
+  attackRange: 2.2
+  attackHitDelay: 0.28
+  attackRecovery: 0.8
+  knockbackDistance: 1.1
+  knockbackDuration: 0.22
+  useLinearCharge: 0
+  chargeSpeed: 11
+  chargeDuration: 0.55
+  chargeHitRadius: 1.1

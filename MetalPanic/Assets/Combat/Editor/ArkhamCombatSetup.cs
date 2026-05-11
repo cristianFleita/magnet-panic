@@ -20,6 +20,8 @@ namespace MagnetPanic.Combat.Editor
         const string InputActionsPath = "Assets/InputSystem_Actions.inputactions";
         const string MapPrefabPath = "Assets/Prefabs/Map.prefab";
         const string MainCharacterPrefabPath = "Assets/Prefabs/MainCharacter.prefab";
+        const string AttractablePrefabFolder = "Assets/Prefabs/Attractables";
+        const string EnemyPrefabFolder = "Assets/Prefabs/Enemies/Combat";
 
         [MenuItem("Tools/Magnet Panic/Arkham Combat/Create Prototype Animators")]
         public static void CreatePrototypeAnimators()
@@ -81,20 +83,41 @@ namespace MagnetPanic.Combat.Editor
             {
                 float angle = i * Mathf.PI * 2f / 5f;
                 Vector3 position = new Vector3(Mathf.Cos(angle) * 5f, 1f, Mathf.Sin(angle) * 5f);
-                CreateEnemy(enemyRoot.transform, enemyManager, playerCombat, position, enemyMaterial, magnetizedMaterial, counterMaterial);
+                SpawnArchetypeOrFallback(enemyRoot.transform, enemyManager, playerCombat, "Scrapling", position, enemyMaterial, magnetizedMaterial, counterMaterial);
             }
 
-            CreateEnemy(
+            SpawnArchetypeOrFallback(
                 enemyRoot.transform,
                 enemyManager,
                 playerCombat,
+                "MetalEnemy",
                 new Vector3(0f, 1f, 3.4f),
                 metalEnemyMaterial,
                 magnetizedMaterial,
                 counterMaterial,
-                "Metal Enemy",
-                true,
-                2.2f);
+                fallbackEnemyName: "Metal Enemy",
+                fallbackAlwaysPullable: true,
+                fallbackMass: 2.2f);
+
+            SpawnArchetypeOrFallback(
+                enemyRoot.transform,
+                enemyManager,
+                playerCombat,
+                "RunnerBot",
+                new Vector3(-6f, 1f, 6f),
+                enemyMaterial,
+                magnetizedMaterial,
+                counterMaterial);
+
+            SpawnArchetypeOrFallback(
+                enemyRoot.transform,
+                enemyManager,
+                playerCombat,
+                "HeavyBot",
+                new Vector3(6f, 1f, 6f),
+                enemyMaterial,
+                magnetizedMaterial,
+                counterMaterial);
 
             playerCombat.Configure(
                 enemyManager,
@@ -113,8 +136,19 @@ namespace MagnetPanic.Combat.Editor
                 "Nice");
         }
 
+        [MenuItem("Tools/Magnet Panic/Arkham Combat/Spawn Scrapling In Current Scene")]
+        public static void SpawnScraplingInCurrentScene() => SpawnArchetypeAtPlayer("Scrapling");
+
         [MenuItem("Tools/Magnet Panic/Arkham Combat/Spawn Metal Enemy In Current Scene")]
-        public static void SpawnMetalEnemyInCurrentScene()
+        public static void SpawnMetalEnemyInCurrentScene() => SpawnArchetypeAtPlayer("MetalEnemy");
+
+        [MenuItem("Tools/Magnet Panic/Arkham Combat/Spawn Runner Bot In Current Scene")]
+        public static void SpawnRunnerBotInCurrentScene() => SpawnArchetypeAtPlayer("RunnerBot");
+
+        [MenuItem("Tools/Magnet Panic/Arkham Combat/Spawn Heavy Bot In Current Scene")]
+        public static void SpawnHeavyBotInCurrentScene() => SpawnArchetypeAtPlayer("HeavyBot");
+
+        static void SpawnArchetypeAtPlayer(string archetypePrefabName)
         {
             CreatePrototypeAnimators();
             EnsureFolder(MaterialFolder);
@@ -129,7 +163,7 @@ namespace MagnetPanic.Combat.Editor
                 enemyManager = enemyRoot.AddComponent<ArkhamEnemyManager>();
             }
 
-            Material metalEnemyMaterial = CreateMaterial("MP_Metal_Enemy_Cyan", new Color(0.28f, 0.72f, 0.92f));
+            Material enemyMaterial = CreateMaterial("MP_Enemy_Red", new Color(0.9f, 0.18f, 0.1f));
             Material magnetizedMaterial = CreateMaterial("MP_Magnetized_Yellow", new Color(1f, 0.82f, 0.16f));
             Material counterMaterial = CreateMaterial("MP_Counter_Cyan", new Color(0.25f, 1f, 1f));
 
@@ -138,25 +172,67 @@ namespace MagnetPanic.Combat.Editor
                 : new Vector3(0f, 0f, 3.4f);
             position.y = 1f;
 
-            GameObject metalEnemy = CreateEnemy(
+            GameObject spawned = SpawnArchetypeOrFallback(
                 enemyManager.transform,
                 enemyManager,
                 playerCombat,
+                archetypePrefabName,
                 position,
-                metalEnemyMaterial,
+                enemyMaterial,
                 magnetizedMaterial,
-                counterMaterial,
-                "Metal Enemy",
-                true,
-                2.2f);
+                counterMaterial);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Selection.activeGameObject = metalEnemy;
+            Selection.activeGameObject = spawned;
             EditorUtility.DisplayDialog(
-                "Metal Enemy",
-                "Spawned a metal enemy. Press Play and left click Pull to attract it immediately.",
+                archetypePrefabName,
+                "Spawned " + archetypePrefabName + ". Open the prefab to swap the model under 'Model'.",
                 "Nice");
+        }
+
+        static GameObject SpawnArchetypeOrFallback(
+            Transform parent,
+            ArkhamEnemyManager manager,
+            ArkhamCombatController playerCombat,
+            string archetypePrefabName,
+            Vector3 position,
+            Material fallbackMaterial,
+            Material magnetizedMaterial,
+            Material counterMaterial,
+            string fallbackEnemyName = null,
+            bool fallbackAlwaysPullable = false,
+            float fallbackMass = 3f)
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(EnemyPrefabFolder + "/" + archetypePrefabName + ".prefab");
+            if (prefab != null)
+            {
+                GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+                Undo.RegisterCreatedObjectUndo(instance, "Spawn Enemy Prefab");
+                instance.transform.position = position;
+
+                ArkhamEnemy enemy = instance.GetComponent<ArkhamEnemy>();
+                if (enemy != null)
+                {
+                    enemy.Configure(manager, playerCombat, instance.GetComponentInChildren<Animator>(), instance.transform.Find("VFX/CounterCue")?.gameObject);
+                    enemy.OnMagnetized.AddListener(target => AssignMaterial(target.gameObject, magnetizedMaterial));
+                    manager.Register(enemy);
+                }
+
+                return instance;
+            }
+
+            return CreateEnemy(
+                parent,
+                manager,
+                playerCombat,
+                position,
+                fallbackMaterial,
+                magnetizedMaterial,
+                counterMaterial,
+                fallbackEnemyName ?? archetypePrefabName,
+                fallbackAlwaysPullable,
+                fallbackMass);
         }
 
         [MenuItem("Tools/Magnet Panic/Arkham Combat/Spawn Healing Pickups In Current Scene")]
@@ -357,13 +433,45 @@ namespace MagnetPanic.Combat.Editor
             Material mineMaterial,
             Material heavyMaterial)
         {
-            CreateMagneticObject(parent, "Light Scrap A", MagneticObjectType.LightScrap, new Vector3(-3.5f, 0.45f, 2.2f), new Vector3(0.42f, 0.28f, 0.72f), PrimitiveType.Cube, scrapMaterial);
-            CreateMagneticObject(parent, "Light Scrap B", MagneticObjectType.LightScrap, new Vector3(3.2f, 0.45f, -1.8f), new Vector3(0.35f, 0.35f, 0.62f), PrimitiveType.Cube, scrapMaterial);
-            CreateMagneticObject(parent, "Light Scrap C", MagneticObjectType.LightScrap, new Vector3(1.2f, 0.45f, 4.2f), new Vector3(0.5f, 0.22f, 0.5f), PrimitiveType.Cube, scrapMaterial);
-            CreateMagneticObject(parent, "Metal Plate A", MagneticObjectType.Plate, new Vector3(-5f, 0.45f, -1.4f), new Vector3(1.2f, 0.16f, 0.7f), PrimitiveType.Cube, plateMaterial);
-            CreateMagneticObject(parent, "Metal Plate B", MagneticObjectType.Plate, new Vector3(4.8f, 0.45f, 2.7f), new Vector3(1.2f, 0.16f, 0.7f), PrimitiveType.Cube, plateMaterial);
-            CreateMagneticObject(parent, "Magnetic Mine", MagneticObjectType.Mine, new Vector3(-1.1f, 0.45f, -4.3f), new Vector3(0.62f, 0.62f, 0.62f), PrimitiveType.Sphere, mineMaterial);
-            CreateMagneticObject(parent, "Heavy Scrap", MagneticObjectType.Heavy, new Vector3(5.5f, 0.55f, -4.5f), new Vector3(0.9f, 0.9f, 0.9f), PrimitiveType.Cube, heavyMaterial);
+            GameObject lightScrapPrefab = LoadAttractablePrefab("LightScrap_Attractable");
+            GameObject platePrefab = LoadAttractablePrefab("Plate_Attractable");
+            GameObject minePrefab = LoadAttractablePrefab("Mine_Attractable");
+            GameObject heavyPrefab = LoadAttractablePrefab("Heavy_Attractable");
+
+            SpawnOrFallback(parent, lightScrapPrefab, "Light Scrap A", MagneticObjectType.LightScrap, new Vector3(-3.5f, 0.45f, 2.2f), new Vector3(0.42f, 0.28f, 0.72f), PrimitiveType.Cube, scrapMaterial);
+            SpawnOrFallback(parent, lightScrapPrefab, "Light Scrap B", MagneticObjectType.LightScrap, new Vector3(3.2f, 0.45f, -1.8f), new Vector3(0.35f, 0.35f, 0.62f), PrimitiveType.Cube, scrapMaterial);
+            SpawnOrFallback(parent, lightScrapPrefab, "Light Scrap C", MagneticObjectType.LightScrap, new Vector3(1.2f, 0.45f, 4.2f), new Vector3(0.5f, 0.22f, 0.5f), PrimitiveType.Cube, scrapMaterial);
+            SpawnOrFallback(parent, platePrefab, "Metal Plate A", MagneticObjectType.Plate, new Vector3(-5f, 0.45f, -1.4f), new Vector3(1.2f, 0.16f, 0.7f), PrimitiveType.Cube, plateMaterial);
+            SpawnOrFallback(parent, platePrefab, "Metal Plate B", MagneticObjectType.Plate, new Vector3(4.8f, 0.45f, 2.7f), new Vector3(1.2f, 0.16f, 0.7f), PrimitiveType.Cube, plateMaterial);
+            SpawnOrFallback(parent, minePrefab, "Magnetic Mine", MagneticObjectType.Mine, new Vector3(-1.1f, 0.45f, -4.3f), new Vector3(0.62f, 0.62f, 0.62f), PrimitiveType.Sphere, mineMaterial);
+            SpawnOrFallback(parent, heavyPrefab, "Heavy Scrap", MagneticObjectType.Heavy, new Vector3(5.5f, 0.55f, -4.5f), new Vector3(0.9f, 0.9f, 0.9f), PrimitiveType.Cube, heavyMaterial);
+        }
+
+        static GameObject LoadAttractablePrefab(string name)
+        {
+            return AssetDatabase.LoadAssetAtPath<GameObject>(AttractablePrefabFolder + "/" + name + ".prefab");
+        }
+
+        static void SpawnOrFallback(
+            Transform parent,
+            GameObject prefab,
+            string instanceName,
+            MagneticObjectType type,
+            Vector3 position,
+            Vector3 fallbackScale,
+            PrimitiveType fallbackPrimitive,
+            Material fallbackMaterial)
+        {
+            if (prefab != null)
+            {
+                GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+                Undo.RegisterCreatedObjectUndo(instance, "Spawn Attractable Prefab");
+                instance.name = instanceName;
+                instance.transform.position = position;
+                return;
+            }
+
+            CreateMagneticObject(parent, instanceName, type, position, fallbackScale, fallbackPrimitive, fallbackMaterial);
         }
 
         static void CreateHealingPickups(Transform parent, Material healingMaterial)

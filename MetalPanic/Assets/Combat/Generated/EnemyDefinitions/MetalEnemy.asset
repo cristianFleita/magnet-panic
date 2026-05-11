@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7994ad0ac90bb43c0a89660f6def8540, type: 3}
+  m_Name: MetalEnemy
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.EnemyDefinition
+  archetype: 1
+  displayName: Metal Enemy
+  maxHealth: 5
+  alwaysPullableByMagnet: 1
+  magneticMarksToMagnetize: 2
+  magneticMass: 2.2
+  approachSpeed: 4
+  strafeSpeed: 1
+  retreatSpeed: 2
+  retreatDistance: 4.25
+  disableStrafe: 0
+  prepareAttackTime: 0.4
+  attackRange: 1.8
+  attackHitDelay: 0.22
+  attackRecovery: 0.6
+  knockbackDistance: 0.55
+  knockbackDuration: 0.16
+  useLinearCharge: 0
+  chargeSpeed: 11
+  chargeDuration: 0.55
+  chargeHitRadius: 1.1
