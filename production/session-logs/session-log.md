@@ -198,3 +198,37 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_054735
+### Commits
+3e8b904 chore: damage popup
+0666dd6 fix: magnetic objects
+e471b9c fix: overloard scrap limit
+77b200c chore: adjust animations and input from the player
+### Uncommitted Changes
+design/gdd/systems-index.md
+design/gdd/wave-director.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260512_055144
+### Commits
+3e8b904 chore: damage popup
+0666dd6 fix: magnetic objects
+e471b9c fix: overloard scrap limit
+77b200c chore: adjust animations and input from the player
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Health/CombatHealth.cs
+MetalPanic/Assets/Combat/Scripts/UI/DamageNumberSpawner.cs
+MetalPanic/Assets/Combat/Scripts/UI/DamagePopup.cs
+design/gdd/systems-index.md
+design/gdd/wave-director.md
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

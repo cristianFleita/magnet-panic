@@ -4,9 +4,25 @@ using UnityEngine.UI;
 
 namespace MagnetPanic.Combat
 {
+    public struct PopupOptions
+    {
+        public float scaleMultiplier;
+        public float lifetimeMultiplier;
+        public float fontSizeMultiplier;
+        public Vector3 drift;
+
+        public static PopupOptions Default => new PopupOptions
+        {
+            scaleMultiplier = 1f,
+            lifetimeMultiplier = 1f,
+            fontSizeMultiplier = 1f,
+            drift = Vector3.up,
+        };
+    }
+
     public sealed class DamagePopup : MonoBehaviour
     {
-        [Header("Animation")]
+        [Header("Base Animation")]
         [SerializeField] float lifetime = 0.85f;
         [SerializeField] float riseDistance = 1.25f;
         [SerializeField] AnimationCurve riseCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
@@ -17,10 +33,10 @@ namespace MagnetPanic.Combat
             new Keyframe(0.45f, 1f),
             new Keyframe(1f, 0.85f));
 
-        [Header("Style")]
-        [SerializeField] int fontSize = 64;
+        [Header("Base Style")]
+        [SerializeField] int baseFontSize = 64;
         [SerializeField] FontStyle fontStyle = FontStyle.Bold;
-        [SerializeField] Vector2 canvasSize = new Vector2(220f, 90f);
+        [SerializeField] Vector2 canvasSize = new Vector2(240f, 96f);
         [SerializeField] float worldScale = 0.01f;
         [SerializeField] Color outlineColor = new Color(0f, 0f, 0f, 0.9f);
         [SerializeField] Vector2 outlineDistance = new Vector2(2f, -2f);
@@ -31,7 +47,10 @@ namespace MagnetPanic.Combat
         Text label;
         Camera billboardCamera;
         Vector3 origin;
+        Vector3 driftDirection = Vector3.up;
         Color baseColor = Color.white;
+        float activeLifetime;
+        float activeScaleMultiplier = 1f;
         float elapsed;
         bool running;
 
@@ -42,7 +61,12 @@ namespace MagnetPanic.Combat
             EnsureUi();
         }
 
-        public void Show(Vector3 worldPosition, int amount, Color color, Camera camera)
+        public void Show(Vector3 worldPosition, string text, Color color, Camera camera)
+        {
+            Show(worldPosition, text, color, camera, PopupOptions.Default);
+        }
+
+        public void Show(Vector3 worldPosition, string text, Color color, Camera camera, in PopupOptions options)
         {
             EnsureUi();
 
@@ -50,14 +74,21 @@ namespace MagnetPanic.Combat
             baseColor = color;
             billboardCamera = camera != null ? camera : Camera.main;
 
+            activeLifetime = Mathf.Max(0.05f, lifetime * SafeMultiplier(options.lifetimeMultiplier));
+            activeScaleMultiplier = SafeMultiplier(options.scaleMultiplier);
+            driftDirection = options.drift.sqrMagnitude > 0.0001f ? options.drift.normalized : Vector3.up;
+
+            float fontMultiplier = SafeMultiplier(options.fontSizeMultiplier);
+
             if (label != null)
             {
-                label.text = amount.ToString();
+                label.text = text;
                 label.color = baseColor;
+                label.fontSize = Mathf.Max(1, Mathf.RoundToInt(baseFontSize * fontMultiplier));
             }
 
             transform.position = origin;
-            transform.localScale = Vector3.one * worldScale;
+            transform.localScale = Vector3.one * worldScale * activeScaleMultiplier;
             elapsed = 0f;
             running = true;
             gameObject.SetActive(true);
@@ -75,13 +106,13 @@ namespace MagnetPanic.Combat
                 return;
 
             elapsed += Time.deltaTime;
-            float t = lifetime > 0f ? Mathf.Clamp01(elapsed / lifetime) : 1f;
+            float t = activeLifetime > 0f ? Mathf.Clamp01(elapsed / activeLifetime) : 1f;
 
-            float rise = riseCurve.Evaluate(t) * riseDistance;
-            transform.position = origin + Vector3.up * rise;
+            float drift = riseCurve.Evaluate(t) * riseDistance;
+            transform.position = origin + driftDirection * drift;
 
             float scale = scaleCurve.Evaluate(t);
-            transform.localScale = Vector3.one * worldScale * scale;
+            transform.localScale = Vector3.one * worldScale * activeScaleMultiplier * scale;
 
             if (billboardCamera != null)
                 transform.rotation = billboardCamera.transform.rotation;
@@ -98,6 +129,11 @@ namespace MagnetPanic.Combat
                 running = false;
                 OnExpired?.Invoke(this);
             }
+        }
+
+        static float SafeMultiplier(float value)
+        {
+            return value > 0.0001f ? value : 1f;
         }
 
         void EnsureUi()
@@ -135,7 +171,7 @@ namespace MagnetPanic.Combat
             label.alignment = TextAnchor.MiddleCenter;
             label.horizontalOverflow = HorizontalWrapMode.Overflow;
             label.verticalOverflow = VerticalWrapMode.Overflow;
-            label.fontSize = fontSize;
+            label.fontSize = baseFontSize;
             label.fontStyle = fontStyle;
             label.raycastTarget = false;
 

@@ -123,6 +123,9 @@ MonoBehaviour:
   OnDamageApplied:
     m_PersistentCalls:
       m_Calls: []
+  OnHealApplied:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &680580263455245825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,11 +406,41 @@ MonoBehaviour:
   worldOffset: {x: 0, y: 2.35, z: 0}
   horizontalJitter: 0.35
   verticalJitter: 0.12
-  color: {r: 1, g: 1, b: 1, a: 1}
-  enableCritical: 1
-  criticalThreshold: 4
-  criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
-  minimumAmount: 1
+  depthJitter: 0.12
+  damageStyle:
+    enabled: 1
+    color: {r: 1, g: 0.49574798, b: 0, a: 1}
+    prefix: '-'
+    suffix: 
+    scaleMultiplier: 1
+    fontSizeMultiplier: 1
+    lifetimeMultiplier: 1
+    drift: {x: 0, y: 1, z: 0}
+    minimumAmount: 1
+    criticalEnabled: 1
+    criticalThreshold: 4
+    criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
+    criticalPrefix: 
+    criticalSuffix: '!'
+    criticalScaleMultiplier: 1.35
+    criticalFontMultiplier: 1.15
+  healStyle:
+    enabled: 1
+    color: {r: 0.36, g: 0.9, b: 0.42, a: 1}
+    prefix: +
+    suffix: 
+    scaleMultiplier: 0.85
+    fontSizeMultiplier: 0.9
+    lifetimeMultiplier: 1
+    drift: {x: 0, y: 1, z: 0}
+    minimumAmount: 1
+    criticalEnabled: 0
+    criticalThreshold: 4
+    criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
+    criticalPrefix: 
+    criticalSuffix: '!'
+    criticalScaleMultiplier: 1.35
+    criticalFontMultiplier: 1.15
 --- !u!1 &1197205948732289119
 GameObject:
   m_ObjectHideFlags: 0
