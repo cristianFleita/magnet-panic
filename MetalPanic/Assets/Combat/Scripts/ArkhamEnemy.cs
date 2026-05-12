@@ -77,6 +77,8 @@ namespace MagnetPanic.Combat
         [SerializeField] float attackRange = 1.8f;
         [SerializeField] float attackHitDelay = 0.2f;
         [SerializeField] float attackRecovery = 0.55f;
+        [SerializeField, Tooltip("Tolerance factor applied to attackRange when validating the impact frame. Player outside this radius takes no damage.")]
+        float hitRangeTolerance = 1.25f;
         [SerializeField] bool useLinearCharge;
         [SerializeField] float chargeSpeed = 11f;
         [SerializeField] float chargeDuration = 0.55f;
@@ -387,11 +389,26 @@ namespace MagnetPanic.Combat
 
         public void HitEvent()
         {
-            if (playerCombat == null || attackHitApplied)
-                return;
+            TryApplyAttackHit();
+        }
+
+        bool TryApplyAttackHit()
+        {
+            if (playerCombat == null || attackHitApplied || !isAttacking)
+                return false;
+
+            float allowedRange = isMagnetRepelProjectile
+                ? float.PositiveInfinity
+                : useLinearCharge
+                    ? Mathf.Max(chargeHitRadius, attackRange * 0.5f) * hitRangeTolerance
+                    : attackRange * hitRangeTolerance;
+
+            if (DistanceToPlayer() > allowedRange)
+                return false;
 
             attackHitApplied = true;
             playerCombat.ReceiveDamage(this);
+            return true;
         }
 
         public void ApplyMark(int stacks)
@@ -606,15 +623,15 @@ namespace MagnetPanic.Combat
 
             StopMoving();
 
-            if (animator != null)
+            bool inRange = playerCombat != null && DistanceToPlayer() <= attackRange * hitRangeTolerance;
+
+            if (inRange && animator != null)
                 animator.SetTrigger(AirPunchHash);
 
-            yield return new WaitForSeconds(attackHitDelay);
-
-            if (!attackHitApplied && playerCombat != null)
+            if (inRange)
             {
-                attackHitApplied = true;
-                playerCombat.ReceiveDamage(this);
+                yield return new WaitForSeconds(attackHitDelay);
+                TryApplyAttackHit();
             }
 
             yield return new WaitForSeconds(attackRecovery);
@@ -668,10 +685,7 @@ namespace MagnetPanic.Combat
                     Vector3 delta = playerCombat.transform.position - transform.position;
                     delta.y = 0f;
                     if (delta.sqrMagnitude <= hitRadiusSqr)
-                    {
-                        attackHitApplied = true;
-                        playerCombat.ReceiveDamage(this);
-                    }
+                        TryApplyAttackHit();
                 }
 
                 if ((flags & CollisionFlags.Sides) != 0)
