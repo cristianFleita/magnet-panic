@@ -232,3 +232,22 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_092559
+### Commits
+973dccd chore: health popup
+3e8b904 chore: damage popup
+0666dd6 fix: magnetic objects
+e471b9c fix: overloard scrap limit
+77b200c chore: adjust animations and input from the player
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Combat/Tests/EditMode/ArenaSystemTests.cs
+design/gdd/arena-system.md
+design/gdd/systems-index.md
+design/gdd/wave-director.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

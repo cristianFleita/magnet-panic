@@ -56,6 +56,69 @@ namespace MagnetPanic.Combat.Tests
         }
 
         [Test]
+        public void TryGetDoor_ReturnsDoorWithMatchingId()
+        {
+            // Arrange
+            ArenaDoor north = CreateDoor("Door_North", ArenaDoorId.North, new Vector3(0f, 0f, 5f), Vector3.back);
+            ArenaDoor east = CreateDoor("Door_East", ArenaDoorId.East, new Vector3(10f, 0f, 0f), Vector3.left);
+            arena.RebuildSpawnCache();
+
+            // Act
+            bool foundNorth = arena.TryGetDoor(ArenaDoorId.North, out ArenaDoor resolvedNorth);
+            bool foundEast = arena.TryGetDoor(ArenaDoorId.East, out ArenaDoor resolvedEast);
+            bool foundSouth = arena.TryGetDoor(ArenaDoorId.South, out ArenaDoor resolvedSouth);
+
+            // Assert
+            Assert.That(foundNorth, Is.True);
+            Assert.That(resolvedNorth, Is.SameAs(north));
+            Assert.That(foundEast, Is.True);
+            Assert.That(resolvedEast, Is.SameAs(east));
+            Assert.That(foundSouth, Is.False);
+            Assert.That(resolvedSouth, Is.Null);
+        }
+
+        [Test]
+        public void IsInsidePlayableArea_RespectsWallInset()
+        {
+            // Arrange: bounds are 20x10 centered at origin, inset 2m.
+            Vector3 nearWall = new Vector3(9.5f, 0f, 0f);
+            Vector3 wellInside = new Vector3(5f, 0f, 0f);
+
+            // Act
+            bool nearWallInside = arena.IsInsidePlayableArea(nearWall, 2f);
+            bool wellInsideOk = arena.IsInsidePlayableArea(wellInside, 2f);
+
+            // Assert
+            Assert.That(nearWallInside, Is.False);
+            Assert.That(wellInsideOk, Is.True);
+        }
+
+        [Test]
+        public void TryFindScrapSpawnPoint_ReturnsPointInsideArenaAwayFromPlayer()
+        {
+            // Arrange
+            ScrapSpawnQuery query = new ScrapSpawnQuery
+            {
+                PlayerPosition = Vector3.zero,
+                MinRadius = 2f,
+                MaxRadius = 6f,
+                PlayerMinDistance = 2f,
+                DoorMinDistance = 0f,
+                EnemyMinDistance = 0f,
+                WallInset = 0.5f,
+                Attempts = 32
+            };
+
+            // Act
+            bool found = arena.TryFindScrapSpawnPoint(query, null, out Vector3 position);
+
+            // Assert
+            Assert.That(found, Is.True);
+            Assert.That(arena.IsInsidePlayableArea(position, 0.5f), Is.True);
+            Assert.That(Vector2.Distance(new Vector2(position.x, position.z), Vector2.zero), Is.GreaterThanOrEqualTo(2f));
+        }
+
+        [Test]
         public void MapColliderBuilder_AddsMeshAndGroundProxyColliders()
         {
             GameObject map = new GameObject("Map");
@@ -83,6 +146,17 @@ namespace MagnetPanic.Combat.Tests
             ArenaSpawnPoint point = spawn.AddComponent<ArenaSpawnPoint>();
             point.Configure(category);
             return point;
+        }
+
+        ArenaDoor CreateDoor(string name, ArenaDoorId id, Vector3 position, Vector3 facingLocal)
+        {
+            GameObject doorObject = new GameObject(name);
+            doorObject.transform.SetParent(owner.transform, false);
+            doorObject.transform.position = position;
+
+            ArenaDoor door = doorObject.AddComponent<ArenaDoor>();
+            door.Configure(id, facingLocal);
+            return door;
         }
 
         static Mesh CreateQuadMesh()

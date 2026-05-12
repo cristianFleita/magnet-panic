@@ -88,6 +88,7 @@ Todavía falta para cerrar el loop de run:
 
 - `wave-director`, `scoring-xp-system`, `upgrade-system`, `hud-system` y `meta-flow-system`.
 - Con el pivot a run infinita, `leaderboard/score-submit` sube de Full Vision a MVP y `boss-system` pasa a evento opcional o hito de dificultad.
+- Plan operativo recomendado: [combat-vertical-slice-plan.md](combat-vertical-slice-plan.md).
 
 ---
 

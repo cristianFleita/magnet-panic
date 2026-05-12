@@ -5,6 +5,27 @@ using UnityEngine.Events;
 
 namespace MagnetPanic.Combat
 {
+    public struct ArenaSpawnValidation
+    {
+        public float PlayerMinDistance;
+        public float DoorMinDistance;
+        public float WallInset;
+        public float OccupancyRadius;
+        public LayerMask BlockingMask;
+    }
+
+    public struct ScrapSpawnQuery
+    {
+        public Vector3 PlayerPosition;
+        public float MinRadius;
+        public float MaxRadius;
+        public float PlayerMinDistance;
+        public float DoorMinDistance;
+        public float EnemyMinDistance;
+        public float WallInset;
+        public int Attempts;
+    }
+
     [DisallowMultipleComponent]
     public sealed class ArenaSystem : MonoBehaviour
     {
@@ -16,6 +37,7 @@ namespace MagnetPanic.Combat
         [Header("Bounds")]
         [SerializeField] Vector3 localPlayableCenter = new Vector3(-26.5f, 4.4f, 2.5f);
         [SerializeField] Vector3 localPlayableSize = new Vector3(30f, 8f, 58f);
+        [SerializeField] Vector3 localPlayerStart = new Vector3(-26.5f, 4.4f, 2.5f);
 
         [Header("Spawn Selection")]
         [SerializeField, Min(0f)] float minSpawnDistanceFromPlayer = 8f;
@@ -26,6 +48,10 @@ namespace MagnetPanic.Combat
         [Header("Map Defaults")]
         [SerializeField] bool createDefaultMapSpawnsWhenEmpty = true;
 
+        [Header("Scrap Sampling Defaults")]
+        [SerializeField, Min(0f)] float defaultScrapWallInset = 1.5f;
+        [SerializeField, Min(0f)] float defaultScrapDoorMinDistance = 4f;
+
         [Header("Wall Slam")]
         [SerializeField, Min(0)] int baseSlamDamage = 2;
         [SerializeField, Min(0.1f)] float speedDamageRatio = 5f;
@@ -35,6 +61,8 @@ namespace MagnetPanic.Combat
         readonly List<ArenaSpawnPoint> scrapSpawns = new List<ArenaSpawnPoint>();
         readonly List<ArenaSpawnPoint> pickupSpawns = new List<ArenaSpawnPoint>();
         readonly List<ArenaSpawnPoint> spawnScratch = new List<ArenaSpawnPoint>();
+        readonly List<ArenaDoor> doors = new List<ArenaDoor>();
+        static readonly IReadOnlyList<Vector3> EmptyEnemyPositions = Array.Empty<Vector3>();
 
         public event Action<GameObject, Vector3, int, float> WallSlammed;
 
@@ -53,8 +81,11 @@ namespace MagnetPanic.Combat
             }
         }
 
+        public Vector3 PlayerStart => transform.TransformPoint(localPlayerStart);
         public WallSlamUnityEvent OnWallSlam => onWallSlam;
         public float MinSpawnDistanceFromPlayer => minSpawnDistanceFromPlayer;
+        public IReadOnlyList<ArenaDoor> Doors => doors;
+        public IReadOnlyList<ArenaSpawnPoint> PickupSpawns => pickupSpawns;
 
         void Awake()
         {
@@ -80,6 +111,11 @@ namespace MagnetPanic.Combat
                 Mathf.Max(1f, localSize.z));
         }
 
+        public void ConfigurePlayerStart(Vector3 localStart)
+        {
+            localPlayerStart = localStart;
+        }
+
         public void ConfigureWallSlamDamage(int baseDamage, float speedRatio)
         {
             baseSlamDamage = Mathf.Max(0, baseDamage);
@@ -91,6 +127,7 @@ namespace MagnetPanic.Combat
             enemySpawns.Clear();
             scrapSpawns.Clear();
             pickupSpawns.Clear();
+            doors.Clear();
 
             ArenaSpawnPoint[] points = GetComponentsInChildren<ArenaSpawnPoint>(true);
             for (int i = 0; i < points.Length; i++)
@@ -112,7 +149,17 @@ namespace MagnetPanic.Combat
                         break;
                 }
             }
+
+            ArenaDoor[] doorComponents = GetComponentsInChildren<ArenaDoor>(true);
+            for (int i = 0; i < doorComponents.Length; i++)
+            {
+                ArenaDoor door = doorComponents[i];
+                if (door != null)
+                    doors.Add(door);
+            }
         }
+
+        // ----- Bounds -----
 
         public bool IsInsideArena(Vector3 position)
         {
@@ -123,6 +170,16 @@ namespace MagnetPanic.Combat
                 && position.z <= bounds.max.z;
         }
 
+        public bool IsInsidePlayableArea(Vector3 position, float wallInset)
+        {
+            Bounds bounds = PlayableBounds;
+            float inset = Mathf.Max(0f, wallInset);
+            return position.x >= bounds.min.x + inset
+                && position.x <= bounds.max.x - inset
+                && position.z >= bounds.min.z + inset
+                && position.z <= bounds.max.z - inset;
+        }
+
         public Vector3 ClampToArena(Vector3 position)
         {
             Bounds bounds = PlayableBounds;
@@ -130,6 +187,265 @@ namespace MagnetPanic.Combat
             position.z = Mathf.Clamp(position.z, bounds.min.z, bounds.max.z);
             return position;
         }
+
+        public Vector3 ClampToPlayableArea(Vector3 position, float wallInset)
+        {
+            Bounds bounds = PlayableBounds;
+            float inset = Mathf.Max(0f, wallInset);
+            float minX = bounds.min.x + inset;
+            float maxX = bounds.max.x - inset;
+            float minZ = bounds.min.z + inset;
+            float maxZ = bounds.max.z - inset;
+            if (minX > maxX) minX = maxX = bounds.center.x;
+            if (minZ > maxZ) minZ = maxZ = bounds.center.z;
+            position.x = Mathf.Clamp(position.x, minX, maxX);
+            position.z = Mathf.Clamp(position.z, minZ, maxZ);
+            return position;
+        }
+
+        public Vector3 RandomPointInsideArena(float wallInset = 0f)
+        {
+            Bounds bounds = PlayableBounds;
+            float inset = Mathf.Max(0f, wallInset);
+            float minX = bounds.min.x + inset;
+            float maxX = bounds.max.x - inset;
+            float minZ = bounds.min.z + inset;
+            float maxZ = bounds.max.z - inset;
+            if (minX > maxX) { minX = bounds.center.x; maxX = bounds.center.x; }
+            if (minZ > maxZ) { minZ = bounds.center.z; maxZ = bounds.center.z; }
+            return new Vector3(
+                UnityEngine.Random.Range(minX, maxX),
+                bounds.center.y,
+                UnityEngine.Random.Range(minZ, maxZ));
+        }
+
+        public Vector3 GetNearestWallNormal(Vector3 position)
+        {
+            Bounds bounds = PlayableBounds;
+            float left = Mathf.Abs(position.x - bounds.min.x);
+            float right = Mathf.Abs(bounds.max.x - position.x);
+            float back = Mathf.Abs(position.z - bounds.min.z);
+            float front = Mathf.Abs(bounds.max.z - position.z);
+
+            float best = left;
+            Vector3 normal = Vector3.right;
+
+            if (right < best)
+            {
+                best = right;
+                normal = Vector3.left;
+            }
+
+            if (back < best)
+            {
+                best = back;
+                normal = Vector3.forward;
+            }
+
+            if (front < best)
+                normal = Vector3.back;
+
+            return normal;
+        }
+
+        // ----- Doors -----
+
+        public bool TryGetDoor(ArenaDoorId id, out ArenaDoor door)
+        {
+            for (int i = 0; i < doors.Count; i++)
+            {
+                ArenaDoor candidate = doors[i];
+                if (candidate != null && candidate.DoorId == id)
+                {
+                    door = candidate;
+                    return true;
+                }
+            }
+
+            door = null;
+            return false;
+        }
+
+        public ArenaDoor GetDoor(ArenaDoorId id)
+        {
+            TryGetDoor(id, out ArenaDoor door);
+            return door;
+        }
+
+        public ArenaDoor GetFarthestDoorFrom(Vector3 position)
+        {
+            ArenaDoor best = null;
+            float bestDistSqr = -1f;
+            for (int i = 0; i < doors.Count; i++)
+            {
+                ArenaDoor door = doors[i];
+                if (door == null || !door.IsEnabled)
+                    continue;
+
+                Vector3 delta = door.ExitPosition - position;
+                delta.y = 0f;
+                float distSqr = delta.sqrMagnitude;
+                if (distSqr > bestDistSqr)
+                {
+                    bestDistSqr = distSqr;
+                    best = door;
+                }
+            }
+
+            return best;
+        }
+
+        public float DistanceToNearestDoor(Vector3 position)
+        {
+            float bestSqr = float.PositiveInfinity;
+            for (int i = 0; i < doors.Count; i++)
+            {
+                ArenaDoor door = doors[i];
+                if (door == null)
+                    continue;
+
+                Vector3 delta = door.ExitPosition - position;
+                delta.y = 0f;
+                float distSqr = delta.sqrMagnitude;
+                if (distSqr < bestSqr)
+                    bestSqr = distSqr;
+            }
+
+            return float.IsPositiveInfinity(bestSqr) ? float.PositiveInfinity : Mathf.Sqrt(bestSqr);
+        }
+
+        public bool IsNearDoor(Vector3 position, float radius)
+        {
+            float r = Mathf.Max(0f, radius);
+            float rSqr = r * r;
+            for (int i = 0; i < doors.Count; i++)
+            {
+                ArenaDoor door = doors[i];
+                if (door == null)
+                    continue;
+
+                Vector3 delta = door.ExitPosition - position;
+                delta.y = 0f;
+                if (delta.sqrMagnitude <= rSqr)
+                    return true;
+            }
+
+            return false;
+        }
+
+        // ----- Spawn validation -----
+
+        public bool IsValidSpawnPosition(Vector3 position, Vector3 playerPosition, ArenaSpawnValidation validation)
+        {
+            if (!IsInsidePlayableArea(position, validation.WallInset))
+                return false;
+
+            Vector3 toPlayer = position - playerPosition;
+            toPlayer.y = 0f;
+            if (toPlayer.sqrMagnitude < validation.PlayerMinDistance * validation.PlayerMinDistance)
+                return false;
+
+            if (validation.DoorMinDistance > 0f && IsNearDoor(position, validation.DoorMinDistance))
+                return false;
+
+            if (validation.OccupancyRadius > 0f)
+            {
+                Collider[] hits = Physics.OverlapSphere(position, validation.OccupancyRadius, validation.BlockingMask.value != 0 ? validation.BlockingMask.value : ~0, QueryTriggerInteraction.Ignore);
+                if (hits.Length > 0)
+                    return false;
+            }
+
+            return true;
+        }
+
+        // ----- Scrap sampling -----
+
+        public bool TryFindScrapSpawnPoint(ScrapSpawnQuery query, IReadOnlyList<Vector3> enemyPositions, out Vector3 position)
+        {
+            int attempts = query.Attempts > 0 ? query.Attempts : 16;
+            float minRadius = Mathf.Max(0f, query.MinRadius);
+            float maxRadius = Mathf.Max(minRadius + 0.1f, query.MaxRadius);
+            float playerMinSqr = query.PlayerMinDistance * query.PlayerMinDistance;
+            float doorMin = Mathf.Max(0f, query.DoorMinDistance);
+            float enemyMinSqr = query.EnemyMinDistance * query.EnemyMinDistance;
+            float wallInset = query.WallInset > 0f ? query.WallInset : defaultScrapWallInset;
+            IReadOnlyList<Vector3> enemies = enemyPositions ?? EmptyEnemyPositions;
+
+            for (int i = 0; i < attempts; i++)
+            {
+                float angle = UnityEngine.Random.value * Mathf.PI * 2f;
+                float radius = Mathf.Lerp(minRadius, maxRadius, UnityEngine.Random.value);
+                Vector3 candidate = new Vector3(
+                    query.PlayerPosition.x + Mathf.Cos(angle) * radius,
+                    PlayableBounds.center.y,
+                    query.PlayerPosition.z + Mathf.Sin(angle) * radius);
+
+                if (!IsInsidePlayableArea(candidate, wallInset))
+                    continue;
+
+                Vector3 toPlayer = candidate - query.PlayerPosition;
+                toPlayer.y = 0f;
+                if (toPlayer.sqrMagnitude < playerMinSqr)
+                    continue;
+
+                if (doorMin > 0f && IsNearDoor(candidate, doorMin))
+                    continue;
+
+                if (enemyMinSqr > 0f && IsTooCloseToAny(candidate, enemies, enemyMinSqr))
+                    continue;
+
+                position = candidate;
+                return true;
+            }
+
+            // Fallback: clamp ring midpoint inside the area, away from player.
+            Vector3 fallback = query.PlayerPosition + new Vector3(0f, 0f, Mathf.Max(query.PlayerMinDistance, minRadius + 1f));
+            fallback = ClampToPlayableArea(fallback, wallInset);
+            position = fallback;
+            return false;
+        }
+
+        static bool IsTooCloseToAny(Vector3 candidate, IReadOnlyList<Vector3> others, float minDistanceSqr)
+        {
+            for (int i = 0; i < others.Count; i++)
+            {
+                Vector3 delta = others[i] - candidate;
+                delta.y = 0f;
+                if (delta.sqrMagnitude < minDistanceSqr)
+                    return true;
+            }
+
+            return false;
+        }
+
+        // ----- Pickup pads -----
+
+        public bool TryGetPickupSpawn(Vector3 playerPosition, out ArenaSpawnPoint point)
+        {
+            spawnScratch.Clear();
+            for (int i = 0; i < pickupSpawns.Count; i++)
+            {
+                ArenaSpawnPoint pad = pickupSpawns[i];
+                if (pad == null)
+                    continue;
+
+                if (IsSpawnOccupied(pad))
+                    continue;
+
+                spawnScratch.Add(pad);
+            }
+
+            if (spawnScratch.Count == 0)
+            {
+                point = null;
+                return false;
+            }
+
+            point = WeightedSpawnFromScratch(playerPosition);
+            return point != null;
+        }
+
+        // ----- Legacy enemy spawn API (kept for back-compat) -----
 
         public Vector3 GetRandomSpawnPoint(ArenaSpawnCategory category)
         {
@@ -174,6 +490,8 @@ namespace MagnetPanic.Combat
             return GetSpawnPointAwayFromPlayer(category, playerPosition, minSpawnDistanceFromPlayer);
         }
 
+        // ----- Wall slam -----
+
         public int CalculateWallSlamDamage(float impactSpeed)
         {
             return baseSlamDamage + Mathf.FloorToInt(Mathf.Max(0f, impactSpeed) / speedDamageRatio);
@@ -192,34 +510,7 @@ namespace MagnetPanic.Combat
             WallSlammed?.Invoke(target, normal, finalDamage, Mathf.Max(0f, impactSpeed));
         }
 
-        public Vector3 GetNearestWallNormal(Vector3 position)
-        {
-            Bounds bounds = PlayableBounds;
-            float left = Mathf.Abs(position.x - bounds.min.x);
-            float right = Mathf.Abs(bounds.max.x - position.x);
-            float back = Mathf.Abs(position.z - bounds.min.z);
-            float front = Mathf.Abs(bounds.max.z - position.z);
-
-            float best = left;
-            Vector3 normal = Vector3.right;
-
-            if (right < best)
-            {
-                best = right;
-                normal = Vector3.left;
-            }
-
-            if (back < best)
-            {
-                best = back;
-                normal = Vector3.forward;
-            }
-
-            if (front < best)
-                normal = Vector3.back;
-
-            return normal;
-        }
+        // ----- Internal helpers -----
 
         List<ArenaSpawnPoint> SpawnsFor(ArenaSpawnCategory category)
         {
@@ -315,73 +606,78 @@ namespace MagnetPanic.Combat
             return best;
         }
 
-        Vector3 RandomPointInsideArena()
-        {
-            Bounds bounds = PlayableBounds;
-            return new Vector3(
-                UnityEngine.Random.Range(bounds.min.x, bounds.max.x),
-                bounds.center.y,
-                UnityEngine.Random.Range(bounds.min.z, bounds.max.z));
-        }
+        // ----- Default spawn point generation -----
 
         void EnsureDefaultSpawnPoints()
         {
-            if (!createDefaultMapSpawnsWhenEmpty || GetComponentInChildren<ArenaSpawnPoint>(true) != null)
+            if (!createDefaultMapSpawnsWhenEmpty)
+                return;
+
+            bool hasSpawns = GetComponentInChildren<ArenaSpawnPoint>(true) != null;
+            bool hasDoors = GetComponentInChildren<ArenaDoor>(true) != null;
+            if (hasSpawns || hasDoors)
                 return;
 
             Transform root = new GameObject("Generated Arena Spawns").transform;
             root.SetParent(transform, false);
 
-            CreateDefaultSpawns(root, "EnemySpawns", ArenaSpawnCategory.Enemy, new[]
-            {
-                new Vector3(-39f, 4.4f, -11f),
-                new Vector3(-14f, 4.4f, -11f),
-                new Vector3(-39f, 4.4f, 16f),
-                new Vector3(-14f, 4.4f, 16f),
-                new Vector3(-27f, 4.4f, -21f),
-                new Vector3(-27f, 4.4f, 24f),
-                new Vector3(-40f, 4.4f, 2.5f),
-                new Vector3(-13f, 4.4f, 2.5f)
-            });
-
-            CreateDefaultSpawns(root, "ScrapSpawns", ArenaSpawnCategory.Scrap, new[]
-            {
-                new Vector3(-34f, 4.4f, -7f),
-                new Vector3(-28f, 4.4f, -8f),
-                new Vector3(-21f, 4.4f, -6f),
-                new Vector3(-35f, 4.4f, 2f),
-                new Vector3(-28f, 4.4f, 0f),
-                new Vector3(-20f, 4.4f, 3f),
-                new Vector3(-34f, 4.4f, 10f),
-                new Vector3(-27f, 4.4f, 12f),
-                new Vector3(-20f, 4.4f, 10f),
-                new Vector3(-31f, 4.4f, 18f),
-                new Vector3(-24f, 4.4f, -15f),
-                new Vector3(-17f, 4.4f, -1f)
-            });
-
-            CreateDefaultSpawns(root, "PickupSpawns", ArenaSpawnCategory.Pickup, new[]
-            {
-                new Vector3(-36f, 4.4f, -8f),
-                new Vector3(-18f, 4.4f, -8f),
-                new Vector3(-36f, 4.4f, 13f),
-                new Vector3(-18f, 4.4f, 13f)
-            });
+            CreateDefaultDoors(root);
+            CreateDefaultPickupPads(root);
         }
 
-        static void CreateDefaultSpawns(Transform parent, string groupName, ArenaSpawnCategory category, Vector3[] localPositions)
+        void CreateDefaultDoors(Transform parent)
         {
-            Transform group = new GameObject(groupName).transform;
+            Transform group = new GameObject("Doors").transform;
             group.SetParent(parent, false);
 
-            for (int i = 0; i < localPositions.Length; i++)
+            Vector3 localCenter = localPlayableCenter;
+            float halfX = localPlayableSize.x * 0.5f;
+            float halfZ = localPlayableSize.z * 0.5f;
+            float y = localCenter.y;
+
+            CreateDoor(group, ArenaDoorId.North, new Vector3(localCenter.x, y, localCenter.z + halfZ), Vector3.back);
+            CreateDoor(group, ArenaDoorId.South, new Vector3(localCenter.x, y, localCenter.z - halfZ), Vector3.forward);
+            CreateDoor(group, ArenaDoorId.East, new Vector3(localCenter.x + halfX, y, localCenter.z), Vector3.left);
+            CreateDoor(group, ArenaDoorId.West, new Vector3(localCenter.x - halfX, y, localCenter.z), Vector3.right);
+        }
+
+        void CreateDefaultPickupPads(Transform parent)
+        {
+            Transform group = new GameObject("PickupPads").transform;
+            group.SetParent(parent, false);
+
+            Vector3 localCenter = localPlayableCenter;
+            float quarterX = localPlayableSize.x * 0.33f;
+            float quarterZ = localPlayableSize.z * 0.28f;
+            float y = localCenter.y;
+
+            Vector3[] padPositions =
             {
-                GameObject pointObject = new GameObject(category + " Spawn " + (i + 1).ToString("00"));
-                pointObject.transform.SetParent(group, false);
-                pointObject.transform.localPosition = localPositions[i];
-                ArenaSpawnPoint point = pointObject.AddComponent<ArenaSpawnPoint>();
-                point.Configure(category);
+                new Vector3(localCenter.x - quarterX, y, localCenter.z + quarterZ),
+                new Vector3(localCenter.x + quarterX, y, localCenter.z + quarterZ),
+                new Vector3(localCenter.x - quarterX, y, localCenter.z - quarterZ),
+                new Vector3(localCenter.x + quarterX, y, localCenter.z - quarterZ)
+            };
+
+            string[] padNames = { "Pickup_NW", "Pickup_NE", "Pickup_SW", "Pickup_SE" };
+
+            for (int i = 0; i < padPositions.Length; i++)
+            {
+                GameObject pad = new GameObject(padNames[i]);
+                pad.transform.SetParent(group, false);
+                pad.transform.localPosition = padPositions[i];
+                ArenaSpawnPoint point = pad.AddComponent<ArenaSpawnPoint>();
+                point.Configure(ArenaSpawnCategory.Pickup);
             }
+        }
+
+        void CreateDoor(Transform parent, ArenaDoorId id, Vector3 localPosition, Vector3 facingLocal)
+        {
+            GameObject obj = new GameObject("Door_" + id);
+            obj.transform.SetParent(parent, false);
+            obj.transform.localPosition = localPosition;
+            ArenaDoor door = obj.AddComponent<ArenaDoor>();
+            door.Configure(id, facingLocal);
         }
 
         static Vector3 Abs(Vector3 value)
@@ -396,6 +692,18 @@ namespace MagnetPanic.Combat
             Gizmos.DrawCube(bounds.center, bounds.size);
             Gizmos.color = new Color(0.2f, 0.8f, 1f, 0.85f);
             Gizmos.DrawWireCube(bounds.center, bounds.size);
+
+            Gizmos.color = new Color(0.2f, 1f, 0.6f, 0.9f);
+            Gizmos.DrawWireSphere(PlayerStart, 0.6f);
+
+            for (int i = 0; i < pickupSpawns.Count; i++)
+            {
+                ArenaSpawnPoint pad = pickupSpawns[i];
+                if (pad == null)
+                    continue;
+                Gizmos.color = new Color(0.2f, 0.6f, 1f, 0.85f);
+                Gizmos.DrawWireSphere(pad.Position, 0.8f);
+            }
         }
     }
 }
