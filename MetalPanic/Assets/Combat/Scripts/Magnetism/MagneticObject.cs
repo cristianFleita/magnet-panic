@@ -68,6 +68,8 @@ namespace MagnetPanic.Combat
 
             if (useTypeDefaults)
                 ApplyTypeDefaults(objectType);
+
+            ResetAsWorldScrap();
         }
 
         void OnEnable()
@@ -89,7 +91,7 @@ namespace MagnetPanic.Combat
             hitEnemies.Clear();
             objectCollider.enabled = true;
             RestoreColliderMode();
-            SetKinematic(false);
+            ResetAsWorldScrap();
 
             if (trail != null)
             {
@@ -226,7 +228,7 @@ namespace MagnetPanic.Combat
                 return;
 
             state = MagneticObjectState.InWorld;
-            SetKinematic(false);
+            ResetAsWorldScrap();
             if (trail != null)
                 trail.emitting = false;
             RestoreColliderMode();
@@ -441,7 +443,10 @@ namespace MagnetPanic.Combat
             if (value)
             {
                 if (!body.isKinematic)
+                {
                     body.linearVelocity = Vector3.zero;
+                    body.angularVelocity = Vector3.zero;
+                }
 
                 body.isKinematic = true;
                 return;
@@ -454,6 +459,20 @@ namespace MagnetPanic.Combat
         {
             if (objectCollider != null && cachedOriginalColliderState)
                 objectCollider.isTrigger = originalColliderIsTrigger;
+        }
+
+        void ResetAsWorldScrap()
+        {
+            EnsureReferences();
+            body.useGravity = false;
+            if (body.isKinematic)
+                body.isKinematic = false;
+            body.linearVelocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
+            body.isKinematic = true;
+            if (objectCollider != null)
+                objectCollider.enabled = true;
+            RestoreColliderMode();
         }
 
         static void PlayParticle(ParticleSystem particle)

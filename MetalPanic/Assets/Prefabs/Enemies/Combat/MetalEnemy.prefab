@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1295847799000801082}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hit Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 6201501325197513852}
   - component: {fileID: 2655477963620305722}
   - component: {fileID: 3275506768157221163}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +135,8 @@ GameObject:
   - component: {fileID: 302839383051251704}
   - component: {fileID: 7106029408107021932}
   - component: {fileID: 6425317549515159455}
-  m_Layer: 0
+  - component: {fileID: 7333755958898154418}
+  m_Layer: 7
   m_Name: MetalEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,6 +237,9 @@ MonoBehaviour:
   OnDamageApplied:
     m_PersistentCalls:
       m_Calls: []
+  OnHealApplied:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7106029408107021932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,11 +327,53 @@ MonoBehaviour:
   worldOffset: {x: 0, y: 2.35, z: 0}
   horizontalJitter: 0.35
   verticalJitter: 0.12
-  color: {r: 0.007843138, g: 0.5411765, b: 0.9529412, a: 1}
-  enableCritical: 1
-  criticalThreshold: 4
-  criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
-  minimumAmount: 1
+  depthJitter: 0.12
+  damageStyle:
+    enabled: 1
+    color: {r: 1, g: 0.32, b: 0.32, a: 1}
+    prefix: '-'
+    suffix: 
+    scaleMultiplier: 1
+    fontSizeMultiplier: 1
+    lifetimeMultiplier: 1
+    drift: {x: 0, y: 1, z: 0}
+    minimumAmount: 1
+    criticalEnabled: 1
+    criticalThreshold: 4
+    criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
+    criticalPrefix: 
+    criticalSuffix: '!'
+    criticalScaleMultiplier: 1.35
+    criticalFontMultiplier: 1.15
+  healStyle:
+    enabled: 0
+    color: {r: 0.36, g: 0.9, b: 0.42, a: 1}
+    prefix: +
+    suffix: 
+    scaleMultiplier: 0.85
+    fontSizeMultiplier: 0.9
+    lifetimeMultiplier: 1
+    drift: {x: 0, y: 1, z: 0}
+    minimumAmount: 1
+    criticalEnabled: 0
+    criticalThreshold: 4
+    criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
+    criticalPrefix: 
+    criticalSuffix: '!'
+    criticalScaleMultiplier: 1.35
+    criticalFontMultiplier: 1.15
+--- !u!114 &7333755958898154418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6465465380206952774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f4daa7aae664fa1be4cb329f6cf602b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MagnetPanic.Combat.Pooling::MagnetPanic.Combat.PoolIdentity
 --- !u!1 &7190573592289827246
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,7 +385,7 @@ GameObject:
   - component: {fileID: 1874480977955810341}
   - component: {fileID: 3338704155512678896}
   - component: {fileID: 9079977871261695333}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CounterCue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -427,7 +473,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2332934915829607852}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -459,7 +505,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2475302970525497710}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

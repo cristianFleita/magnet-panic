@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 223572298552665594}
   - component: {fileID: 9086674593158642993}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,7 +160,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5494138977735685537}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -192,7 +192,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1694400516694448012}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 5349395641751847759}
   - component: {fileID: 4645319561724226979}
   - component: {fileID: 2655181374396864651}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ImpactBurst
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5122,7 +5122,7 @@ GameObject:
   - component: {fileID: 2206507955647975651}
   - component: {fileID: 3482926520242258538}
   - component: {fileID: 7426638457149178845}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: OrbitGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9959,7 +9959,8 @@ GameObject:
   - component: {fileID: 2975409031418712467}
   - component: {fileID: 7228106449997850448}
   - component: {fileID: 6436947938477084603}
-  m_Layer: 0
+  - component: {fileID: 6104655983528531512}
+  m_Layer: 10
   m_Name: LightScrap_Attractable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10075,6 +10076,18 @@ MonoBehaviour:
   OnImpact:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6104655983528531512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7416488614549297532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f4daa7aae664fa1be4cb329f6cf602b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MagnetPanic.Combat.Pooling::MagnetPanic.Combat.PoolIdentity
 --- !u!1 &8243158964724462586
 GameObject:
   m_ObjectHideFlags: 0
@@ -10086,7 +10099,7 @@ GameObject:
   - component: {fileID: 5450440858507531005}
   - component: {fileID: 1625157506294934700}
   - component: {fileID: 8064508302341889704}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

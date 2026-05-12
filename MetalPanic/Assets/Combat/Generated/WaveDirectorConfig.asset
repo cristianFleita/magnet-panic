@@ -1,0 +1,193 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5bd4bf61e1d349298088947c020f757, type: 3}
+  m_Name: WaveDirectorConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.WaveDirectorConfig
+  maxEnemiesAlive: 18
+  reinforcementThreshold: 2
+  baseRest: 2
+  minRest: 0.55
+  restReductionPerAct: 0.25
+  warmupDuration: 2.5
+  doorWarningTime: 0.75
+  spawnIntervalRange: {x: 0.2, y: 0.45}
+  doorPlayerMinDistance: 6
+  maxSameDoorStreak: 2
+  underusedDoorBonus: 4
+  sameDoorPenalty: 3
+  playerCampingDoorPenalty: 6
+  waveBudgetGrowth: 0.5
+  acts:
+  - actName: Act 1 - Onboarding
+    startTime: 0
+    baseBudget: 3
+    maxBudget: 5
+    activeDoorsMin: 1
+    activeDoorsMax: 2
+    restBase: 2
+    enemyPool:
+    - label: Scrapling
+      prefab: {fileID: 1136252165750342493, guid: 7ffce7bb6c2e947cc8d48531975e2df2, type: 3}
+      definition: {fileID: 11400000, guid: c77fe0e1db8634d8da05bce8e6496315, type: 2}
+      threatCost: 1
+      weight: 5
+  - actName: Act 2 - Pressure
+    startTime: 90
+    baseBudget: 5
+    maxBudget: 9
+    activeDoorsMin: 2
+    activeDoorsMax: 2
+    restBase: 1.8
+    enemyPool:
+    - label: Scrapling
+      prefab: {fileID: 1136252165750342493, guid: 7ffce7bb6c2e947cc8d48531975e2df2, type: 3}
+      definition: {fileID: 11400000, guid: c77fe0e1db8634d8da05bce8e6496315, type: 2}
+      threatCost: 1
+      weight: 4
+    - label: MetalEnemy
+      prefab: {fileID: 6465465380206952774, guid: def0f1bd43e9c4cf4a6f5b455d91226b, type: 3}
+      definition: {fileID: 11400000, guid: 719084e9dd2274f2d94d4631e0482799, type: 2}
+      threatCost: 2
+      weight: 2
+  - actName: Act 3 - Mix
+    startTime: 210
+    baseBudget: 8
+    maxBudget: 14
+    activeDoorsMin: 2
+    activeDoorsMax: 3
+    restBase: 1.6
+    enemyPool:
+    - label: Scrapling
+      prefab: {fileID: 1136252165750342493, guid: 7ffce7bb6c2e947cc8d48531975e2df2, type: 3}
+      definition: {fileID: 11400000, guid: c77fe0e1db8634d8da05bce8e6496315, type: 2}
+      threatCost: 1
+      weight: 4
+    - label: MetalEnemy
+      prefab: {fileID: 6465465380206952774, guid: def0f1bd43e9c4cf4a6f5b455d91226b, type: 3}
+      definition: {fileID: 11400000, guid: 719084e9dd2274f2d94d4631e0482799, type: 2}
+      threatCost: 2
+      weight: 3
+    - label: RunnerBot
+      prefab: {fileID: 9214702288554825509, guid: 10aedb6cc0f614578b3be1c4aa9cc20c, type: 3}
+      definition: {fileID: 11400000, guid: 371287392dbd241149312940e51b1cf2, type: 2}
+      threatCost: 3
+      weight: 2
+  - actName: Act 4 - Heavy Arrival
+    startTime: 360
+    baseBudget: 12
+    maxBudget: 20
+    activeDoorsMin: 3
+    activeDoorsMax: 4
+    restBase: 1.3
+    enemyPool:
+    - label: Scrapling
+      prefab: {fileID: 1136252165750342493, guid: 7ffce7bb6c2e947cc8d48531975e2df2, type: 3}
+      definition: {fileID: 11400000, guid: c77fe0e1db8634d8da05bce8e6496315, type: 2}
+      threatCost: 1
+      weight: 3
+    - label: MetalEnemy
+      prefab: {fileID: 6465465380206952774, guid: def0f1bd43e9c4cf4a6f5b455d91226b, type: 3}
+      definition: {fileID: 11400000, guid: 719084e9dd2274f2d94d4631e0482799, type: 2}
+      threatCost: 2
+      weight: 3
+    - label: RunnerBot
+      prefab: {fileID: 9214702288554825509, guid: 10aedb6cc0f614578b3be1c4aa9cc20c, type: 3}
+      definition: {fileID: 11400000, guid: 371287392dbd241149312940e51b1cf2, type: 2}
+      threatCost: 3
+      weight: 3
+    - label: HeavyBot
+      prefab: {fileID: 4391651092749095801, guid: be2dbc8c7b4f34d27ab8d24d30414014, type: 3}
+      definition: {fileID: 11400000, guid: 09700d1dfa3ca4065a35da07a439e441, type: 2}
+      threatCost: 4
+      weight: 1.4
+  - actName: Act 5 - Storm
+    startTime: 540
+    baseBudget: 16
+    maxBudget: 28
+    activeDoorsMin: 4
+    activeDoorsMax: 4
+    restBase: 1.1
+    enemyPool:
+    - label: Scrapling
+      prefab: {fileID: 1136252165750342493, guid: 7ffce7bb6c2e947cc8d48531975e2df2, type: 3}
+      definition: {fileID: 11400000, guid: c77fe0e1db8634d8da05bce8e6496315, type: 2}
+      threatCost: 1
+      weight: 3
+    - label: MetalEnemy
+      prefab: {fileID: 6465465380206952774, guid: def0f1bd43e9c4cf4a6f5b455d91226b, type: 3}
+      definition: {fileID: 11400000, guid: 719084e9dd2274f2d94d4631e0482799, type: 2}
+      threatCost: 2
+      weight: 3
+    - label: RunnerBot
+      prefab: {fileID: 9214702288554825509, guid: 10aedb6cc0f614578b3be1c4aa9cc20c, type: 3}
+      definition: {fileID: 11400000, guid: 371287392dbd241149312940e51b1cf2, type: 2}
+      threatCost: 3
+      weight: 3
+    - label: HeavyBot
+      prefab: {fileID: 4391651092749095801, guid: be2dbc8c7b4f34d27ab8d24d30414014, type: 3}
+      definition: {fileID: 11400000, guid: 09700d1dfa3ca4065a35da07a439e441, type: 2}
+      threatCost: 4
+      weight: 2
+  scrapTypes:
+  - label: LightScrap
+    prefab: {fileID: 7416488614549297532, guid: 41b90235f4e1f4fa18650d74e13cc3e9, type: 3}
+    type: 0
+    weightPerAct:
+    - 3
+    - 3
+    - 2
+    - 2
+    - 2
+  - label: Plate
+    prefab: {fileID: 7155153706887768389, guid: f1ea063433edc4647a3d77e1896d9a6c, type: 3}
+    type: 1
+    weightPerAct:
+    - 0.3
+    - 1
+    - 1.5
+    - 1.5
+    - 1.5
+  - label: Mine
+    prefab: {fileID: 8765991567480137937, guid: 53fd16b4a13514ba58d58486e939781e, type: 3}
+    type: 2
+    weightPerAct:
+    - 0
+    - 0.3
+    - 0.6
+    - 0.8
+    - 0.8
+  - label: Heavy
+    prefab: {fileID: 1787011575614051783, guid: 6bbdcdf85c6d04239bffe22f5955e4e5, type: 3}
+    type: 3
+    weightPerAct:
+    - 0
+    - 0
+    - 0.3
+    - 0.6
+    - 0.8
+  scrapNearMinRadius: 4
+  scrapNearMaxRadius: 10
+  scrapPlayerMinDistance: 2.5
+  scrapDoorMinDistance: 3
+  scrapEnemyMinDistance: 1.5
+  scrapWallInset: 1
+  scrapMaxActive: 14
+  scrapAmmoFloorNearPlayer: 4
+  scrapAmmoFloorBonusPerAct: 1
+  scrapRefillCadence: 0.6
+  scrapBurstPerRefill: 3
+  scrapSamplingAttempts: 16
+  healingPickupPrefab: {fileID: 3659959118954070853, guid: cfaa533c44bac417ebc7ec6c8391dce5, type: 3}
+  healingSpawnCooldown: 30
+  healingHpThreshold: 0.5
+  healingMaxActive: 1
+  healingFirstSpawnDelay: 15

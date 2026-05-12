@@ -124,6 +124,8 @@ namespace MagnetPanic.Combat
 
         public void RebuildSpawnCache()
         {
+            EnsureDefaultSpawnPoints();
+
             enemySpawns.Clear();
             scrapSpawns.Clear();
             pickupSpawns.Clear();
@@ -574,6 +576,8 @@ namespace MagnetPanic.Combat
                 Collider hit = hits[i];
                 if (hit == null || hit.GetComponentInParent<ArenaSpawnPoint>() == point)
                     continue;
+                if (IsStaticArenaCollider(hit))
+                    continue;
 
                 return true;
             }
@@ -613,16 +617,32 @@ namespace MagnetPanic.Combat
             if (!createDefaultMapSpawnsWhenEmpty)
                 return;
 
-            bool hasSpawns = GetComponentInChildren<ArenaSpawnPoint>(true) != null;
             bool hasDoors = GetComponentInChildren<ArenaDoor>(true) != null;
-            if (hasSpawns || hasDoors)
+            bool hasPickupSpawns = false;
+            ArenaSpawnPoint[] spawnPoints = GetComponentsInChildren<ArenaSpawnPoint>(true);
+            for (int i = 0; i < spawnPoints.Length; i++)
+            {
+                if (spawnPoints[i] != null && spawnPoints[i].Category == ArenaSpawnCategory.Pickup)
+                {
+                    hasPickupSpawns = true;
+                    break;
+                }
+            }
+
+            if (hasDoors && hasPickupSpawns)
                 return;
 
-            Transform root = new GameObject("Generated Arena Spawns").transform;
-            root.SetParent(transform, false);
+            Transform root = transform.Find("Generated Arena Spawns");
+            if (root == null)
+            {
+                root = new GameObject("Generated Arena Spawns").transform;
+                root.SetParent(transform, false);
+            }
 
-            CreateDefaultDoors(root);
-            CreateDefaultPickupPads(root);
+            if (!hasDoors)
+                CreateDefaultDoors(root);
+            if (!hasPickupSpawns)
+                CreateDefaultPickupPads(root);
         }
 
         void CreateDefaultDoors(Transform parent)
@@ -683,6 +703,13 @@ namespace MagnetPanic.Combat
         static Vector3 Abs(Vector3 value)
         {
             return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
+        }
+
+        static bool IsStaticArenaCollider(Collider hit)
+        {
+            int layer = hit.gameObject.layer;
+            return layer == LayerMask.NameToLayer("Ground")
+                || layer == LayerMask.NameToLayer("ArenaWall");
         }
 
         void OnDrawGizmosSelected()

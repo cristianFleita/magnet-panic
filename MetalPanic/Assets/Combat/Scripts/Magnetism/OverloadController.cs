@@ -97,6 +97,22 @@ namespace MagnetPanic.Combat
             graceTimer = overloadGracePeriod;
         }
 
+        public void Configure(
+            MagnetismController magneticController,
+            ArkhamPlayerMotor playerMotor,
+            ArkhamSimpleCameraFollow followCamera,
+            ArkhamEnemyManager manager)
+        {
+            if (magneticController != null)
+                magnetism = magneticController;
+            if (playerMotor != null)
+                motor = playerMotor;
+            if (followCamera != null)
+                cameraRig = followCamera;
+            if (manager != null)
+                enemyManager = manager;
+        }
+
         void Update()
         {
             TickRing();
