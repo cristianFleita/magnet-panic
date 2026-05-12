@@ -13,6 +13,7 @@ namespace MagnetPanic.Combat
         public UnityEvent<CombatHealth> OnDeath = new UnityEvent<CombatHealth>();
         public UnityEvent<CombatHealth> OnHealed = new UnityEvent<CombatHealth>();
         public UnityEvent<CombatHealth> OnDamaged = new UnityEvent<CombatHealth>();
+        public UnityEvent<CombatHealth, int> OnDamageApplied = new UnityEvent<CombatHealth, int>();
 
         HealthPool pool;
         bool deathRaised;
@@ -56,6 +57,7 @@ namespace MagnetPanic.Combat
             if (!changed)
                 return false;
 
+            OnDamageApplied.Invoke(this, amount);
             OnDamaged.Invoke(this);
             OnHealthChanged.Invoke(this);
 

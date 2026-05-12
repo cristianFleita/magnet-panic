@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 5479360575904876137}
   - component: {fileID: 302839383051251704}
   - component: {fileID: 7106029408107021932}
+  - component: {fileID: 6425317549515159455}
   m_Layer: 0
   m_Name: MetalEnemy
   m_TagString: Untagged
@@ -232,6 +233,9 @@ MonoBehaviour:
   OnDamaged:
     m_PersistentCalls:
       m_Calls: []
+  OnDamageApplied:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7106029408107021932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,6 +306,28 @@ MonoBehaviour:
   OnCountered:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6425317549515159455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6465465380206952774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a12a955b7cf9e4ebe9a6defc863e3827, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.DamageNumberSpawner
+  health: {fileID: 302839383051251704}
+  cameraOverride: {fileID: 0}
+  worldOffset: {x: 0, y: 2.35, z: 0}
+  horizontalJitter: 0.35
+  verticalJitter: 0.12
+  color: {r: 0.007843138, g: 0.5411765, b: 0.9529412, a: 1}
+  enableCritical: 1
+  criticalThreshold: 4
+  criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
+  minimumAmount: 1
 --- !u!1 &7190573592289827246
 GameObject:
   m_ObjectHideFlags: 0

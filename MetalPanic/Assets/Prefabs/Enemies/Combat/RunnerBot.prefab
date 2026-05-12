@@ -379,6 +379,7 @@ GameObject:
   - component: {fileID: 6467074734602623683}
   - component: {fileID: 3386761481991369912}
   - component: {fileID: 7302798646155508807}
+  - component: {fileID: 7698364757373387974}
   m_Layer: 0
   m_Name: RunnerBot
   m_TagString: Untagged
@@ -477,6 +478,9 @@ MonoBehaviour:
   OnDamaged:
     m_PersistentCalls:
       m_Calls: []
+  OnDamageApplied:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &7302798646155508807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -547,3 +551,25 @@ MonoBehaviour:
   OnCountered:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7698364757373387974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9214702288554825509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a12a955b7cf9e4ebe9a6defc863e3827, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.DamageNumberSpawner
+  health: {fileID: 3386761481991369912}
+  cameraOverride: {fileID: 0}
+  worldOffset: {x: 0, y: 2.35, z: 0}
+  horizontalJitter: 0.35
+  verticalJitter: 0.12
+  color: {r: 0.007843138, g: 0.5411765, b: 0.9529412, a: 1}
+  enableCritical: 1
+  criticalThreshold: 4
+  criticalColor: {r: 1, g: 0.78, b: 0.18, a: 1}
+  minimumAmount: 1

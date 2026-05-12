@@ -172,3 +172,29 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_052718
+### Commits
+0666dd6 fix: magnetic objects
+e471b9c fix: overloard scrap limit
+77b200c chore: adjust animations and input from the player
+### Uncommitted Changes
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260512_053454
+### Commits
+0666dd6 fix: magnetic objects
+e471b9c fix: overloard scrap limit
+77b200c chore: adjust animations and input from the player
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Health/CombatHealth.cs
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
