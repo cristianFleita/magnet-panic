@@ -30,6 +30,7 @@ namespace MagnetPanic.Combat
         [SerializeField] float orbitHeight = 0.95f;
         [SerializeField] float orbitAngularSpeed = 210f;
         [SerializeField] float maxCapacity = 8f;
+        [SerializeField] float overflowHeadroom = 0.5f;
         [SerializeField] float orbitRejectSpeed = 7f;
         [SerializeField] float chargePenaltyAtFull = 0.2f;
 
@@ -342,19 +343,11 @@ namespace MagnetPanic.Combat
                 if (!magneticObject.IsCloseEnoughForOrbit(center, orbitRadius))
                     continue;
 
-                if (CanFit(magneticObject.MagneticMass))
-                {
-                    attractingObjects.RemoveAt(i);
-                    orbitingObjects.Add(magneticObject);
-                    AddCharge(magneticObject.MagneticMass);
-                    magneticObject.EnterOrbit(orbitCenter);
-                    OnObjectOrbited.Invoke(magneticObject);
-                }
-                else
-                {
-                    attractingObjects.RemoveAt(i);
-                    magneticObject.RejectFromOrbit(center, orbitRejectSpeed);
-                }
+                attractingObjects.RemoveAt(i);
+                orbitingObjects.Add(magneticObject);
+                AddCharge(magneticObject.MagneticMass);
+                magneticObject.EnterOrbit(orbitCenter);
+                OnObjectOrbited.Invoke(magneticObject);
             }
         }
 
@@ -553,11 +546,6 @@ namespace MagnetPanic.Combat
             return (Quaternion.AngleAxis(offset, Vector3.up) * aim).normalized;
         }
 
-        bool CanFit(float mass)
-        {
-            return currentCharge + mass <= maxCapacity + 0.001f;
-        }
-
         void AddCharge(float amount)
         {
             SetCharge(currentCharge + amount);
@@ -565,7 +553,8 @@ namespace MagnetPanic.Combat
 
         void SetCharge(float value)
         {
-            currentCharge = Mathf.Clamp(value, 0f, maxCapacity);
+            float ceiling = maxCapacity * (1f + Mathf.Max(0f, overflowHeadroom));
+            currentCharge = Mathf.Clamp(value, 0f, ceiling);
             OnChargeChanged.Invoke(currentCharge, maxCapacity);
         }
 
