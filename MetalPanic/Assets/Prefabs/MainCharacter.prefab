@@ -191,6 +191,9 @@ MonoBehaviour:
   counterCooldown: 0.65
   counterDodgeDuration: 0.16
   counterRadius: 4
+  dodgeDistance: 2.35
+  dodgeDuration: 0.28
+  dodgeCooldown: 0.45
   OnTrajectory:
     m_PersistentCalls:
       m_Calls: []

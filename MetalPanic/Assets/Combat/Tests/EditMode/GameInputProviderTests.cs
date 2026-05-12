@@ -54,5 +54,29 @@ namespace MagnetPanic.Combat.Tests
             Assert.That(provider.ConsumeBuffered(GameInputIntent.Counter), Is.True);
             Assert.That(provider.ConsumeBuffered(GameInputIntent.Strike), Is.False);
         }
+
+        [Test]
+        public void DodgePressedInSameFrame_SuppressesStrike()
+        {
+            provider.OnStrike();
+            provider.OnDodge();
+
+            Assert.That(provider.DodgePressed, Is.True);
+            Assert.That(provider.StrikePressed, Is.False);
+            Assert.That(provider.ConsumeBuffered(GameInputIntent.Dodge), Is.True);
+            Assert.That(provider.ConsumeBuffered(GameInputIntent.Strike), Is.False);
+        }
+
+        [Test]
+        public void CounterPressedInSameFrame_SuppressesDodge()
+        {
+            provider.OnDodge();
+            provider.OnCounter();
+
+            Assert.That(provider.CounterPressed, Is.True);
+            Assert.That(provider.DodgePressed, Is.False);
+            Assert.That(provider.ConsumeBuffered(GameInputIntent.Counter), Is.True);
+            Assert.That(provider.ConsumeBuffered(GameInputIntent.Dodge), Is.False);
+        }
     }
 }

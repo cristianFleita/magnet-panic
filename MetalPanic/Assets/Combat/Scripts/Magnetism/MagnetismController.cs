@@ -419,6 +419,7 @@ namespace MagnetPanic.Combat
             bool empty = total == 0;
             Vector3 aim = AimDirection();
             int slot = 0;
+            FaceRepelDirection(aim);
 
             for (int i = orbitingObjects.Count - 1; i >= 0; i--)
             {
@@ -531,6 +532,15 @@ namespace MagnetPanic.Combat
                 return motor.WorldMoveDirection.normalized;
 
             return transform.forward;
+        }
+
+        void FaceRepelDirection(Vector3 direction)
+        {
+            direction.y = 0f;
+            if (direction.sqrMagnitude <= 0.0001f)
+                return;
+
+            transform.rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
         }
 
         Vector3 DirectionInCone(Vector3 aim, int slot, int total)

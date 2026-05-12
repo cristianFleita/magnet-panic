@@ -132,7 +132,7 @@ namespace MagnetPanic.Combat.Editor
             Selection.activeGameObject = root;
             EditorUtility.DisplayDialog(
                 "Arkham Combat Demo",
-                "Created a URP-safe prototype setup. Press Play, use WASD to move, left click to Pull, left click again to Repel, right click to strike, and Space to counter.",
+                "Created a URP-safe prototype setup. Press Play, use WASD to move, left click to Pull, left click again to Repel, right click to strike, Q or Left Ctrl to dodge, and Space to counter.",
                 "Nice");
         }
 

@@ -40,6 +40,11 @@ namespace MagnetPanic.Combat
         [SerializeField] float counterDodgeDuration = 0.16f;
         [SerializeField] float counterRadius = 4f;
 
+        [Header("Dodge")]
+        [SerializeField] float dodgeDistance = 2.35f;
+        [SerializeField] float dodgeDuration = 0.28f;
+        [SerializeField] float dodgeCooldown = 0.45f;
+
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnTrajectory = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnHit = new UnityEvent<ArkhamEnemy>();
@@ -51,13 +56,16 @@ namespace MagnetPanic.Combat
         CharacterController characterController;
         Coroutine attackCoroutine;
         Coroutine damageCoroutine;
+        Coroutine dodgeCoroutine;
         int attackIndex = -1;
         float nextCounterTime;
+        float nextDodgeTime;
         bool hitAppliedThisAttack;
         bool currentAttackIsCounter;
 
         public bool isAttackingEnemy { get; private set; }
         public bool isCountering { get; private set; }
+        public bool isDodging { get; private set; }
         public ArkhamEnemy LockedTarget => lockedTarget;
         public CombatHealth Health => health;
         public bool IsAlive => health == null || health.IsAlive;
@@ -94,6 +102,13 @@ namespace MagnetPanic.Combat
             characterController = GetComponent<CharacterController>();
         }
 
+        void OnValidate()
+        {
+            dodgeDistance = Mathf.Max(0f, dodgeDistance);
+            dodgeDuration = Mathf.Max(0.01f, dodgeDuration);
+            dodgeCooldown = Mathf.Max(0f, dodgeCooldown);
+        }
+
         void Update()
         {
             PumpInput();
@@ -121,6 +136,9 @@ namespace MagnetPanic.Combat
 
             if (inputProvider == null)
                 inputProvider = GameInputProvider.EnsureOn(gameObject);
+
+            if (characterController == null)
+                characterController = GetComponent<CharacterController>();
         }
 
         void EnsureEvents()
@@ -134,7 +152,7 @@ namespace MagnetPanic.Combat
 
         public void AttackCheck()
         {
-            if (!IsAlive || isAttackingEnemy)
+            if (!IsAlive || isAttackingEnemy || isDodging)
                 return;
 
             ArkhamEnemy target = targetScanner != null
@@ -152,7 +170,7 @@ namespace MagnetPanic.Combat
 
         public void CounterCheck()
         {
-            if (!IsAlive || isCountering || isAttackingEnemy || Time.time < nextCounterTime || enemyManager == null)
+            if (!IsAlive || isCountering || isAttackingEnemy || isDodging || Time.time < nextCounterTime || enemyManager == null)
                 return;
 
             ArkhamEnemy target = enemyManager.ClosestCounterableEnemy(transform.position, counterRadius);
@@ -165,6 +183,14 @@ namespace MagnetPanic.Combat
             attackCoroutine = StartCoroutine(CounterRoutine(target));
         }
 
+        public void DodgeCheck()
+        {
+            if (!CanAcceptDodgeInput())
+                return;
+
+            StartDodge(ResolveDodgeDirection());
+        }
+
         public void HitEvent()
         {
             ApplyHit();
@@ -172,7 +198,7 @@ namespace MagnetPanic.Combat
 
         public void ReceiveDamage(ArkhamEnemy source)
         {
-            if (!IsAlive || isCountering || isAttackingEnemy || health == null)
+            if (!IsAlive || isCountering || isAttackingEnemy || isDodging || health == null)
                 return;
 
             if (!health.ApplyDamage(damagePerEnemyHit))
@@ -207,13 +233,19 @@ namespace MagnetPanic.Combat
                 return;
             }
 
+            if (CanAcceptDodgeInput() && inputProvider.ConsumeBuffered(GameInputIntent.Dodge))
+            {
+                DodgeCheck();
+                return;
+            }
+
             if (CanAcceptStrikeInput() && inputProvider.ConsumeBuffered(GameInputIntent.Strike))
                 AttackCheck();
         }
 
         bool CanAcceptStrikeInput()
         {
-            return IsAlive && !isAttackingEnemy;
+            return IsAlive && !isAttackingEnemy && !isDodging;
         }
 
         bool CanAcceptCounterInput()
@@ -221,8 +253,19 @@ namespace MagnetPanic.Combat
             return IsAlive
                 && !isCountering
                 && !isAttackingEnemy
+                && !isDodging
                 && Time.time >= nextCounterTime
                 && enemyManager != null;
+        }
+
+        bool CanAcceptDodgeInput()
+        {
+            return IsAlive
+                && !isDodging
+                && !isCountering
+                && !isAttackingEnemy
+                && damageCoroutine == null
+                && Time.time >= nextDodgeTime;
         }
 
         void StartAttack(ArkhamEnemy target, bool counterAttack)
@@ -231,6 +274,14 @@ namespace MagnetPanic.Combat
                 StopCoroutine(attackCoroutine);
 
             attackCoroutine = StartCoroutine(AttackRoutine(target, counterAttack));
+        }
+
+        void StartDodge(Vector3 direction)
+        {
+            if (dodgeCoroutine != null)
+                StopCoroutine(dodgeCoroutine);
+
+            dodgeCoroutine = StartCoroutine(DodgeRoutine(direction));
         }
 
         IEnumerator AttackRoutine(ArkhamEnemy target, bool counterAttack)
@@ -289,6 +340,43 @@ namespace MagnetPanic.Combat
             yield return AttackRoutine(target, true);
         }
 
+        IEnumerator DodgeRoutine(Vector3 direction)
+        {
+            nextDodgeTime = Time.time + dodgeCooldown;
+            isDodging = true;
+            motor.SetMovementLocked(true);
+
+            if (direction.sqrMagnitude > 0.01f)
+                transform.rotation = Quaternion.LookRotation(direction.normalized);
+
+            if (animator != null)
+                animator.SetTrigger(DodgeHash);
+
+            Vector3 start = transform.position;
+            Vector3 destination = start + direction.normalized * dodgeDistance;
+            float elapsed = 0f;
+
+            while (elapsed < dodgeDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / dodgeDuration);
+                Vector3 next = Vector3.Lerp(start, destination, SmoothStep(t));
+                Vector3 delta = next - transform.position;
+                delta.y = 0f;
+
+                if (characterController != null && characterController.enabled)
+                    characterController.Move(delta);
+                else
+                    transform.position += delta;
+
+                yield return null;
+            }
+
+            isDodging = false;
+            motor.SetMovementLocked(false);
+            dodgeCoroutine = null;
+        }
+
         IEnumerator DamageRoutine(ArkhamEnemy source)
         {
             motor.SetMovementLocked(true, true);
@@ -312,8 +400,12 @@ namespace MagnetPanic.Combat
             if (damageCoroutine != null)
                 StopCoroutine(damageCoroutine);
 
+            if (dodgeCoroutine != null)
+                StopCoroutine(dodgeCoroutine);
+
             isAttackingEnemy = false;
             isCountering = false;
+            isDodging = false;
             lockedTarget = null;
             motor.SetMovementLocked(true, true);
 
@@ -399,6 +491,24 @@ namespace MagnetPanic.Combat
         {
             Vector3 position = target.position;
             return Vector3.MoveTowards(position, transform.position, targetOffset);
+        }
+
+        Vector3 ResolveDodgeDirection()
+        {
+            Vector3 direction = motor != null ? motor.WorldMoveDirection : Vector3.zero;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.01f && inputProvider != null)
+            {
+                direction = inputProvider.AimWorldDirection;
+                direction.y = 0f;
+            }
+
+            if (direction.sqrMagnitude <= 0.01f)
+                direction = transform.forward;
+
+            direction.y = 0f;
+            return direction.sqrMagnitude > 0.01f ? direction.normalized : Vector3.forward;
         }
 
         static float SmoothStep(float t)

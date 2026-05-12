@@ -7,10 +7,11 @@ namespace MagnetPanic.Combat
         PullToggle = 0,
         Strike = 1,
         Counter = 2,
-        Upgrade1 = 3,
-        Upgrade2 = 4,
-        Upgrade3 = 5,
-        Pause = 6
+        Dodge = 3,
+        Upgrade1 = 4,
+        Upgrade2 = 5,
+        Upgrade3 = 6,
+        Pause = 7
     }
 
     public enum GameInputState

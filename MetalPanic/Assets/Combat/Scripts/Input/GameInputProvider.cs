@@ -30,6 +30,7 @@ namespace MagnetPanic.Combat
         bool pullTogglePressed;
         bool strikePressed;
         bool counterPressed;
+        bool dodgePressed;
         bool sprintPressed;
         bool upgrade1Pressed;
         bool upgrade2Pressed;
@@ -50,6 +51,7 @@ namespace MagnetPanic.Combat
         public bool PullTogglePressed => GameplayEnabled && pullTogglePressed;
         public bool StrikePressed => GameplayEnabled && strikePressed;
         public bool CounterPressed => GameplayEnabled && counterPressed;
+        public bool DodgePressed => GameplayEnabled && dodgePressed;
         public bool SprintPressed => GameplayEnabled && sprintPressed;
         public bool Upgrade1Pressed => UiEnabled && upgrade1Pressed;
         public bool Upgrade2Pressed => UiEnabled && upgrade2Pressed;
@@ -231,12 +233,13 @@ namespace MagnetPanic.Combat
 
         public void OnDodge(InputValue value)
         {
-            OnCounter(value);
+            if (value.isPressed)
+                RegisterCombatPress(GameInputIntent.Dodge);
         }
 
         public void OnDodge()
         {
-            OnCounter();
+            RegisterCombatPress(GameInputIntent.Dodge);
         }
 
         public void OnUpgrade1(InputValue value)
@@ -307,14 +310,25 @@ namespace MagnetPanic.Combat
             {
                 counterPressed = true;
                 strikePressed = false;
+                dodgePressed = false;
                 combatBuffer.Clear(GameInputIntent.Strike);
+                combatBuffer.Clear(GameInputIntent.Dodge);
             }
             else if (intent == GameInputIntent.Strike)
+            {
+                if (counterPressed || dodgePressed)
+                    return;
+
+                strikePressed = true;
+            }
+            else if (intent == GameInputIntent.Dodge)
             {
                 if (counterPressed)
                     return;
 
-                strikePressed = true;
+                dodgePressed = true;
+                strikePressed = false;
+                combatBuffer.Clear(GameInputIntent.Strike);
             }
             else if (intent == GameInputIntent.PullToggle)
             {
@@ -427,6 +441,7 @@ namespace MagnetPanic.Combat
             pullTogglePressed = false;
             strikePressed = false;
             counterPressed = false;
+            dodgePressed = false;
             upgrade1Pressed = false;
             upgrade2Pressed = false;
             upgrade3Pressed = false;
@@ -437,7 +452,8 @@ namespace MagnetPanic.Combat
         {
             return intent == GameInputIntent.PullToggle
                 || intent == GameInputIntent.Strike
-                || intent == GameInputIntent.Counter;
+                || intent == GameInputIntent.Counter
+                || intent == GameInputIntent.Dodge;
         }
     }
 }

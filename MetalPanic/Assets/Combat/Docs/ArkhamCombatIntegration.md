@@ -33,6 +33,7 @@ Controls use the existing `InputSystem_Actions` asset:
 - Left mouse / PullToggle intent: first click pulls, second click repels
 - Right mouse / Strike intent: strike
 - Space / Counter intent: counter pulse
+- Q or Left Ctrl / Dodge intent: roll dodge
 - 1 / 2 / 3: upgrade choices while the input state is UI
 - Escape / Pause intent: pause
 
