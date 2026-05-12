@@ -130,3 +130,20 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260511_201725
+### Commits
+ef59914 fix: attractable heavy object clamp
+48e3f1d chore: enemies and attractable object prefabs wip
+00d771f chore: overload system wip
+d17a8eb chore: fix collider on character
+972c30a chore: movement + camera
+cae265b chore: wip pool objects system
+08e2a5c chore: wip arena system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

@@ -218,6 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e526590ec8224e08aa051d035907af9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.MagnetismController
+  animator: {fileID: 5724546336832868324}
   cameraOverride: {fileID: 0}
   motor: {fileID: 680580263455245825}
   enemyManager: {fileID: 0}
@@ -240,7 +241,6 @@ MonoBehaviour:
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
-  heldEnemySpacing: 0.9
   autoCreateAimIndicator: 1
   aimLine: {fileID: 417033637546984419}
   aimTip: {fileID: 1176439106275208016}

@@ -131,7 +131,7 @@ namespace MagnetPanic.Combat
         void UpdateHorizontalMovement()
         {
             float inputMagnitude = Mathf.Clamp01(moveAxis.magnitude);
-            float animatedMagnitude = movementLocked ? 0f : inputMagnitude * acceleration;
+            float animatedMagnitude = movementLocked ? 0f : inputMagnitude * acceleration * SprintMultiplier;
 
             if (animator != null)
                 animator.SetFloat(InputMagnitudeHash, animatedMagnitude, 0.1f, Time.deltaTime);

@@ -51,7 +51,7 @@ namespace MagnetPanic.Combat
         CharacterController characterController;
         Coroutine attackCoroutine;
         Coroutine damageCoroutine;
-        int attackIndex;
+        int attackIndex = -1;
         float nextCounterTime;
         bool hitAppliedThisAttack;
         bool currentAttackIsCounter;

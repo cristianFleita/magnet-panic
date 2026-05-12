@@ -7,7 +7,12 @@ namespace MagnetPanic.Combat
     [RequireComponent(typeof(ArkhamPlayerMotor))]
     public sealed class MagnetismController : MonoBehaviour
     {
+        static readonly int PullHash = Animator.StringToHash("Pull");
+        static readonly int RepelHash = Animator.StringToHash("Repel");
+        static readonly int PullingHash = Animator.StringToHash("Pulling");
+
         [Header("References")]
+        [SerializeField] Animator animator;
         [SerializeField] Camera cameraOverride;
         [SerializeField] ArkhamPlayerMotor motor;
         [SerializeField] ArkhamEnemyManager enemyManager;
@@ -36,7 +41,6 @@ namespace MagnetPanic.Combat
 
         [Header("Enemy Pull")]
         [SerializeField] float heldEnemyDistance = 1.9f;
-        [SerializeField] float heldEnemySpacing = 0.9f;
 
         [Header("Aim Assist")]
         [SerializeField] bool autoCreateAimIndicator = true;
@@ -60,6 +64,7 @@ namespace MagnetPanic.Combat
         readonly List<MagneticObject> attractingObjects = new List<MagneticObject>();
         readonly List<MagneticObject> orbitingObjects = new List<MagneticObject>();
         readonly List<ArkhamEnemy> pulledEnemies = new List<ArkhamEnemy>();
+        readonly List<Vector3> pulledEnemyAnchors = new List<Vector3>();
 
         float currentCharge;
         float nextRepelTime;
@@ -86,6 +91,7 @@ namespace MagnetPanic.Combat
                 if (pullActive)
                 {
                     pullActive = false;
+                    StopPullAnimation();
                     OnPullStopped.Invoke();
                 }
             }
@@ -105,6 +111,9 @@ namespace MagnetPanic.Combat
         {
             if (motor == null)
                 motor = GetComponent<ArkhamPlayerMotor>();
+
+            if (animator == null)
+                animator = GetComponentInChildren<Animator>();
 
             if (cameraOverride == null)
                 cameraOverride = Camera.main;
@@ -142,6 +151,9 @@ namespace MagnetPanic.Combat
             if (inputProvider == null)
                 inputProvider = GameInputProvider.EnsureOn(gameObject);
 
+            if (animator == null)
+                animator = GetComponentInChildren<Animator>();
+
             EnsureAimIndicator();
         }
 
@@ -158,6 +170,7 @@ namespace MagnetPanic.Combat
 
             pullHeld = true;
             pullActive = true;
+            PlayPullAnimation();
             OnPullStarted.Invoke();
         }
 
@@ -170,6 +183,7 @@ namespace MagnetPanic.Combat
                 return;
 
             RepelOrbitingPayload();
+            PlayRepelAnimation();
             CancelAttractingPayload();
             pullActive = false;
             nextRepelTime = Time.time + repelCooldown;
@@ -202,9 +216,11 @@ namespace MagnetPanic.Combat
 
             orbitingObjects.Clear();
             pulledEnemies.Clear();
+            pulledEnemyAnchors.Clear();
             SetCharge(0f);
             pullActive = false;
             pullHeld = false;
+            StopPullAnimation();
             nextRepelTime = Time.time + repelCooldown;
             UpdateAimIndicator();
         }
@@ -234,6 +250,7 @@ namespace MagnetPanic.Combat
             if (!pullActive)
             {
                 pullActive = true;
+                PlayPullAnimation();
                 OnPullStarted.Invoke();
             }
 
@@ -283,9 +300,23 @@ namespace MagnetPanic.Combat
 
                 enemy.BeginMagneticPull();
                 pulledEnemies.Add(enemy);
+                pulledEnemyAnchors.Add(CaptureEnemyAnchor(enemy));
                 OnEnemyPulled.Invoke(enemy);
                 OnEnemyOrbited.Invoke(enemy);
             }
+        }
+
+        Vector3 CaptureEnemyAnchor(ArkhamEnemy enemy)
+        {
+            Vector3 delta = enemy.transform.position - transform.position;
+            delta.y = 0f;
+            if (delta.sqrMagnitude < 0.0001f)
+            {
+                Vector3 fallback = transform.forward;
+                fallback.y = 0f;
+                return fallback.sqrMagnitude > 0.0001f ? fallback.normalized : Vector3.forward;
+            }
+            return delta.normalized;
         }
 
         void PullObjects(Vector3 center)
@@ -329,25 +360,33 @@ namespace MagnetPanic.Combat
 
         void PullEnemies()
         {
-            Vector3 aim = AimDirection();
             for (int i = pulledEnemies.Count - 1; i >= 0; i--)
             {
                 ArkhamEnemy enemy = pulledEnemies[i];
                 if (enemy == null || !enemy.IsAlive)
                 {
-                    pulledEnemies.RemoveAt(i);
+                    RemovePulledEnemyAt(i);
                     continue;
                 }
 
                 if (!enemy.CanBePulledByMagnet)
                 {
                     enemy.CancelMagneticPull();
-                    pulledEnemies.RemoveAt(i);
+                    RemovePulledEnemyAt(i);
                     continue;
                 }
 
-                enemy.MagnetPullTowards(EnemyHoldPosition(aim, i, pulledEnemies.Count), enemyPullSpeed, Time.deltaTime);
+                Vector3 anchor = pulledEnemyAnchors[i];
+                Vector3 hold = transform.position + anchor * heldEnemyDistance;
+                enemy.MagnetPullTowards(hold, enemyPullSpeed, Time.deltaTime);
             }
+        }
+
+        void RemovePulledEnemyAt(int index)
+        {
+            pulledEnemies.RemoveAt(index);
+            if (index < pulledEnemyAnchors.Count)
+                pulledEnemyAnchors.RemoveAt(index);
         }
 
         void TickOrbit()
@@ -403,6 +442,7 @@ namespace MagnetPanic.Combat
 
             orbitingObjects.Clear();
             pulledEnemies.Clear();
+            pulledEnemyAnchors.Clear();
             SetCharge(0f);
             OnRepelFired.Invoke(empty);
             UpdateAimIndicator();
@@ -427,7 +467,36 @@ namespace MagnetPanic.Combat
             CancelAttractingPayload();
 
             if (wasPulling)
+            {
+                StopPullAnimation();
                 OnPullStopped.Invoke();
+            }
+        }
+
+        void PlayPullAnimation()
+        {
+            if (animator == null)
+                return;
+
+            animator.ResetTrigger(RepelHash);
+            animator.SetBool(PullingHash, true);
+            animator.SetTrigger(PullHash);
+        }
+
+        void PlayRepelAnimation()
+        {
+            if (animator == null)
+                return;
+
+            animator.ResetTrigger(PullHash);
+            animator.SetBool(PullingHash, false);
+            animator.SetTrigger(RepelHash);
+        }
+
+        void StopPullAnimation()
+        {
+            if (animator != null)
+                animator.SetBool(PullingHash, false);
         }
 
         Vector3 OrbitPosition()
@@ -451,16 +520,6 @@ namespace MagnetPanic.Combat
             float angle = orbitAngle + (360f / Mathf.Max(1, total)) * slot;
             Vector3 offset = Quaternion.AngleAxis(angle, Vector3.up) * Vector3.forward * orbitRadius;
             return center + offset;
-        }
-
-        Vector3 EnemyHoldPosition(Vector3 aim, int slot, int total)
-        {
-            Vector3 center = transform.position + aim.normalized * heldEnemyDistance;
-            Vector3 right = Quaternion.AngleAxis(90f, Vector3.up) * aim.normalized;
-            float offset = slot - (Mathf.Max(1, total) - 1f) * 0.5f;
-            center += right * offset * heldEnemySpacing;
-            center.y = transform.position.y;
-            return center;
         }
 
         Vector3 AimDirection()
