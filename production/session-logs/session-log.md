@@ -159,3 +159,16 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_052146
+### Commits
+e471b9c fix: overloard scrap limit
+77b200c chore: adjust animations and input from the player
+a927fe5 chore: adjust animations WIP
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticObject.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

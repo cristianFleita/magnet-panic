@@ -271,14 +271,20 @@ namespace MagnetPanic.Combat
             if (direction.sqrMagnitude < 0.01f)
                 direction = transform.forward;
 
-            state = MagneticObjectState.InWorld;
+            state = MagneticObjectState.Projectile;
             projectileAge = 0f;
+            pierceRemaining = Mathf.Max(1, maxPierceCount);
+            hitEnemies.Clear();
             SetKinematic(false);
+            body.useGravity = true;
             objectCollider.enabled = true;
-            RestoreColliderMode();
-            StopParticle(orbitParticle);
+            objectCollider.isTrigger = true;
             if (trail != null)
-                trail.emitting = false;
+            {
+                trail.Clear();
+                trail.emitting = true;
+            }
+            StopParticle(orbitParticle);
             body.linearVelocity = direction.normalized * speed;
             body.WakeUp();
         }
