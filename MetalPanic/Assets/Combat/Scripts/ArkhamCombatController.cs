@@ -161,6 +161,9 @@ namespace MagnetPanic.Combat
             if (!IsAlive || isAttackingEnemy || isDodging)
                 return;
 
+            if (TryStartCounterFromStrike())
+                return;
+
             ArkhamEnemy target = targetScanner != null
                 ? targetScanner.FindTarget(enemyManager, transform.position, motor.WorldMoveDirection)
                 : null;
@@ -174,19 +177,20 @@ namespace MagnetPanic.Combat
             StartAttack(target, false);
         }
 
-        public void CounterCheck()
+        bool TryStartCounterFromStrike()
         {
-            if (!IsAlive || isCountering || isAttackingEnemy || isDodging || Time.time < nextCounterTime || enemyManager == null)
-                return;
+            if (isCountering || enemyManager == null || Time.time < nextCounterTime)
+                return false;
 
-            ArkhamEnemy target = enemyManager.ClosestCounterableEnemy(transform.position, counterRadius);
-            if (target == null)
-                return;
+            ArkhamEnemy counterTarget = enemyManager.ClosestCounterableEnemy(transform.position, counterRadius);
+            if (counterTarget == null)
+                return false;
 
             if (attackCoroutine != null)
                 StopCoroutine(attackCoroutine);
 
-            attackCoroutine = StartCoroutine(CounterRoutine(target));
+            attackCoroutine = StartCoroutine(CounterRoutine(counterTarget));
+            return true;
         }
 
         public void DodgeCheck()
@@ -239,12 +243,6 @@ namespace MagnetPanic.Combat
             if (inputProvider == null)
                 return;
 
-            if (CanAcceptCounterInput() && inputProvider.ConsumeBuffered(GameInputIntent.Counter))
-            {
-                CounterCheck();
-                return;
-            }
-
             if (CanAcceptDodgeInput() && inputProvider.ConsumeBuffered(GameInputIntent.Dodge))
             {
                 DodgeCheck();
@@ -258,16 +256,6 @@ namespace MagnetPanic.Combat
         bool CanAcceptStrikeInput()
         {
             return IsAlive && !isAttackingEnemy && !isDodging;
-        }
-
-        bool CanAcceptCounterInput()
-        {
-            return IsAlive
-                && !isCountering
-                && !isAttackingEnemy
-                && !isDodging
-                && Time.time >= nextCounterTime
-                && enemyManager != null;
         }
 
         bool CanAcceptDodgeInput()
