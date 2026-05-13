@@ -539,7 +539,18 @@ namespace MagnetPanic.Combat
                 return;
 
             hitAppliedThisAttack = true;
-            lockedTarget.TakeStrike(this, strikeDamage, currentAttackIsCounter);
+
+            int damageToApply = strikeDamage;
+
+            if (!currentAttackIsCounter && attackTriggers != null && attackTriggers.Length > 0)
+            {
+                if (comboIndex >= attackTriggers.Length)
+                    damageToApply = 3; // Finisher
+                else if (comboIndex == attackTriggers.Length - 1)
+                    damageToApply = 2; // Hit before finisher
+            }
+
+            lockedTarget.TakeStrike(this, damageToApply, currentAttackIsCounter);
             OnHit.Invoke(lockedTarget);
 
             // Record sticky target for combo continuity
