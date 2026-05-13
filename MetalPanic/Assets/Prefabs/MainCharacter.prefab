@@ -182,7 +182,7 @@ MonoBehaviour:
   cameraRig: {fileID: 0}
   inputProvider: {fileID: 4891748938443140591}
   health: {fileID: 8821852847888320764}
-  maxHealth: 6
+  maxHealth: 10
   damagePerEnemyHit: 1
   strikeDamage: 1
   attackCooldown: 0.38

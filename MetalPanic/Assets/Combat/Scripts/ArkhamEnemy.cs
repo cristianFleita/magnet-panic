@@ -1082,13 +1082,26 @@ namespace MagnetPanic.Combat
                 }
                 else
                 {
-                    int random = Random.Range(0, 3);
-                    moveMode = random switch
+                    if (DistanceToPlayer() > attackRange * 1.5f)
                     {
-                        0 => MoveMode.None,
-                        1 => MoveMode.StrafeLeft,
-                        _ => MoveMode.StrafeRight
-                    };
+                        int random = Random.Range(0, 10);
+                        if (random < 4)
+                            moveMode = MoveMode.Approach;
+                        else if (random < 7)
+                            moveMode = MoveMode.None;
+                        else
+                            moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
+                    }
+                    else
+                    {
+                        int random = Random.Range(0, 3);
+                        moveMode = random switch
+                        {
+                            0 => MoveMode.None,
+                            1 => MoveMode.StrafeLeft,
+                            _ => MoveMode.StrafeRight
+                        };
+                    }
                 }
 
                 yield return new WaitForSeconds(
@@ -1156,7 +1169,40 @@ namespace MagnetPanic.Combat
             }
 
             if (direction.sqrMagnitude > 0.01f)
+            {
+                if (manager != null)
+                {
+                    Vector3 separation = Vector3.zero;
+                    int neighbors = 0;
+                    float separationRadius = 1.8f;
+                    float sqrRadius = separationRadius * separationRadius;
+                    
+                    for (int i = 0; i < manager.Enemies.Count; i++)
+                    {
+                        var other = manager.Enemies[i];
+                        if (other == null || !other.IsAlive || other == this)
+                            continue;
+                            
+                        Vector3 diff = transform.position - other.transform.position;
+                        diff.y = 0f;
+                        float sqrDist = diff.sqrMagnitude;
+                        
+                        if (sqrDist > 0.01f && sqrDist < sqrRadius)
+                        {
+                            separation += diff.normalized * (1f - (Mathf.Sqrt(sqrDist) / separationRadius));
+                            neighbors++;
+                        }
+                    }
+                    
+                    if (neighbors > 0)
+                    {
+                        direction += (separation / neighbors) * 1.5f;
+                        direction.Normalize();
+                    }
+                }
+
                 MoveBy(direction * speed * Time.deltaTime);
+            }
 
             AnimateMove(speed / approachSpeed, strafing, strafeDirection);
         }

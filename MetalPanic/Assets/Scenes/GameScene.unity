@@ -150,6 +150,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.ArkhamEnemyManager
   startAttackDirectorOnPlay: 1
   attackDelayRange: {x: 0.65, y: 1.5}
+  simultaneousAttackThreshold: 5
+  delayReductionPerMinute: 0.06
+  minDelay: 0.35
 --- !u!4 &335756982
 Transform:
   m_ObjectHideFlags: 0
@@ -257,6 +260,10 @@ PrefabInstance:
       propertyPath: cameraOverride
       value: 
       objectReference: {fileID: 1583158216}
+    - target: {fileID: 8821852847888320764, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      propertyPath: maxHealth
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

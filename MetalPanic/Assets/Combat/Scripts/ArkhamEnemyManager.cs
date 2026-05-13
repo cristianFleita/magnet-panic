@@ -137,7 +137,20 @@ namespace MagnetPanic.Combat
             if (available.Count == 0)
                 return null;
 
-            return available[Random.Range(0, available.Count)];
+            ArkhamCombatController player = FindFirstObjectByType<ArkhamCombatController>();
+            if (player != null)
+            {
+                available.Sort((a, b) => 
+                {
+                    float distA = (a.transform.position - player.transform.position).sqrMagnitude;
+                    float distB = (b.transform.position - player.transform.position).sqrMagnitude;
+                    return distA.CompareTo(distB);
+                });
+            }
+
+            // Bias towards the closest available enemies
+            int maxIndex = Mathf.Min(available.Count, Mathf.Max(2, available.Count / 2));
+            return available[Random.Range(0, maxIndex)];
         }
 
         ArkhamEnemy RandomAvailableEnemyExcluding(List<ArkhamEnemy> excluded)
@@ -154,7 +167,20 @@ namespace MagnetPanic.Combat
             if (available.Count == 0)
                 return null;
 
-            return available[Random.Range(0, available.Count)];
+            ArkhamCombatController player = FindFirstObjectByType<ArkhamCombatController>();
+            if (player != null)
+            {
+                available.Sort((a, b) => 
+                {
+                    float distA = (a.transform.position - player.transform.position).sqrMagnitude;
+                    float distB = (b.transform.position - player.transform.position).sqrMagnitude;
+                    return distA.CompareTo(distB);
+                });
+            }
+
+            // Bias towards the closest available enemies
+            int maxIndex = Mathf.Min(available.Count, Mathf.Max(2, available.Count / 2));
+            return available[Random.Range(0, maxIndex)];
         }
 
         float GetScaledDelay()
