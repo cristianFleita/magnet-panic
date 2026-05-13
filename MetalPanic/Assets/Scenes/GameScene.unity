@@ -605,10 +605,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.ArkhamSimpleCameraFollow
   target: {fileID: 394681428}
-  offset: {x: 0, y: 14, z: -8}
+  pivotHeight: 1.55
+  distance: 4.8
+  shoulderOffset: {x: 0.55, y: 0.15}
   followSharpness: 8
-  lookAhead: 0.5
-  lookAtHeightOffset: 0.8
+  rotationSharpness: 22
+  mouseYawSensitivity: 0.16
+  mousePitchSensitivity: 0.12
+  gamepadYawSensitivity: 160
+  gamepadPitchSensitivity: 120
+  gamepadDeadzone: 0.15
+  invertY: 0
+  minPitch: -20
+  maxPitch: 55
+  initialYaw: 0
+  initialPitch: 16
+  lockCursorOnAwake: 1
+  relockOnClick: 1
   shakeYAttenuation: 0.35
 --- !u!20 &1583158216
 Camera:
@@ -677,13 +690,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1583158214}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4907638, y: 0, z: 0, w: 0.8712927}
-  m_LocalPosition: {x: 0, y: 14, z: -8}
+  m_LocalRotation: {x: 0.14030558, y: -0.037955675, z: 0.005382633, w: 0.9893659}
+  m_LocalPosition: {x: 0.35, y: 2.97, z: -4.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 16.143, y: -4.394, z: 0}
 --- !u!114 &1583158219
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -103,9 +103,7 @@ namespace MagnetPanic.Combat
             if (!combat.IsAlive)
                 return null;
 
-            if (hideWhileAttacking && (combat.isAttackingEnemy || combat.isCountering || combat.isDodging))
-                return null;
-
+            // Counter indicator always takes priority
             ArkhamEnemyManager manager = combat.EnemyManager;
             if (manager != null)
             {
@@ -116,6 +114,18 @@ namespace MagnetPanic.Combat
                     return counter;
                 }
             }
+
+            // Sticky target ring stays visible even mid-attack for combo feedback
+            ArkhamEnemy sticky = combat.LastHitEnemy;
+            if (sticky != null && sticky.IsAlive)
+            {
+                state = StrikeTargetState.Normal;
+                return sticky;
+            }
+
+            // No lock — hide while attacking/dodging
+            if (hideWhileAttacking && (combat.isAttackingEnemy || combat.isCountering || combat.isDodging))
+                return null;
 
             ArkhamTargetScanner scanner = combat.TargetScanner;
             if (scanner == null)

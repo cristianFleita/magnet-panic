@@ -10,6 +10,8 @@ namespace MagnetPanic.Combat
         [SerializeField] float directionalAngle = 70f;
         [SerializeField] float nearestTargetWeight = 0.35f;
 
+        public float MaximumDistance => maximumDistance;
+
         public ArkhamEnemy FindTarget(
             ArkhamEnemyManager manager,
             Vector3 origin,

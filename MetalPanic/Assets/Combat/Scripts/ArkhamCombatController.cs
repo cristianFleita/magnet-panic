@@ -37,6 +37,15 @@ namespace MagnetPanic.Combat
         [SerializeField] string[] attackTriggers = { "AirKick", "AirKick2", "AirPunch", "AirKick3" };
         [SerializeField] bool useAnimationEventsForHits = false;
 
+        [Header("Sticky Target")]
+        [SerializeField, Tooltip("Idle seconds before the sticky lock expires (only when NOT attacking/comboing).")] float stickyTargetTimeout = 3f;
+        [SerializeField] float stickyYawBreakThreshold = 25f;
+
+        [Header("Combo")]
+        [SerializeField] float comboWindow = 0.55f;
+        [SerializeField] float comboFinisherRecovery = 0.55f;
+        [SerializeField] float comboLungeMultiplier = 1.15f;
+
         [Header("Counter")]
         [SerializeField] float counterCooldown = 0.65f;
         [SerializeField] float counterDodgeDuration = 0.16f;
@@ -59,11 +68,15 @@ namespace MagnetPanic.Combat
         public UnityEvent OnDeath = new UnityEvent();
 
         ArkhamEnemy lockedTarget;
+        ArkhamEnemy lastHitEnemy;
         CharacterController characterController;
         Coroutine attackCoroutine;
         Coroutine damageCoroutine;
         Coroutine dodgeCoroutine;
-        int attackIndex = -1;
+        int comboIndex;
+        float comboWindowEndTime;
+        float lastHitTime;
+        float lastHitYaw;
         float nextCounterTime;
         float nextDodgeTime;
         bool hitAppliedThisAttack;
@@ -73,6 +86,7 @@ namespace MagnetPanic.Combat
         public bool isCountering { get; private set; }
         public bool isDodging { get; private set; }
         public ArkhamEnemy LockedTarget => lockedTarget;
+        public ArkhamEnemy LastHitEnemy => PeekStickyTarget();
         public CombatHealth Health => health;
         public bool IsAlive => health == null || health.IsAlive;
         public float CounterRadius => counterRadius;
@@ -123,6 +137,7 @@ namespace MagnetPanic.Combat
 
         void Update()
         {
+            DecayStickyTarget();
             PumpInput();
         }
 
@@ -170,12 +185,16 @@ namespace MagnetPanic.Combat
             if (TryStartCounterFromStrike())
                 return;
 
-            ArkhamEnemy target = targetScanner != null
-                ? targetScanner.FindTarget(enemyManager, transform.position, ResolveStrikeDirection())
-                : null;
+            // 1. Try sticky target first (last-hit enemy stays locked)
+            ArkhamEnemy target = PeekStickyTarget();
+
+            // 2. Fall back to scanner
+            if (target == null && targetScanner != null)
+                target = targetScanner.FindTarget(enemyManager, transform.position, ResolveStrikeDirection());
 
             if (target == null)
             {
+                ResetCombo();
                 PlayWhiffAttack();
                 return;
             }
@@ -298,17 +317,28 @@ namespace MagnetPanic.Combat
             isAttackingEnemy = true;
             motor.SetMovementLocked(true);
 
+            // Refresh yaw baseline each combo hit so micro-drift doesn't break lock
+            if (target == lastHitEnemy && cameraRig != null)
+                lastHitYaw = cameraRig.Yaw;
+
             try
             {
-                string trigger = NextAttackTrigger(counterAttack);
+                string trigger = NextComboTrigger(counterAttack);
                 if (animator != null)
                     animator.SetTrigger(trigger);
+
+                Debug.Log("attack trigger " + trigger);
 
                 if (target != null)
                 {
                     target.LockAsTarget(true);
                     OnTrajectory.Invoke(target);
-                    yield return MoveTowardTarget(target, attackLungeDuration);
+
+                    // Combo chain gets slightly faster lunges
+                    float lungeDur = comboIndex > 1
+                        ? attackLungeDuration / comboLungeMultiplier
+                        : attackLungeDuration;
+                    yield return MoveTowardTarget(target, lungeDur);
                 }
 
                 yield return new WaitForSeconds(attackImpactDelay);
@@ -316,7 +346,19 @@ namespace MagnetPanic.Combat
                 if (!useAnimationEventsForHits)
                     ApplyHit();
 
-                yield return new WaitForSeconds(attackCooldown);
+                // Finisher has longer recovery
+                bool isFinisher = attackTriggers != null && comboIndex >= attackTriggers.Length;
+                float recovery = isFinisher
+                    ? attackCooldown + comboFinisherRecovery
+                    : attackCooldown;
+
+                yield return new WaitForSeconds(recovery);
+
+                // Open combo window or reset after finisher
+                if (!isFinisher && !counterAttack)
+                    comboWindowEndTime = Time.time + comboWindow;
+                else
+                    ResetCombo();
             }
             finally
             {
@@ -488,6 +530,13 @@ namespace MagnetPanic.Combat
             hitAppliedThisAttack = true;
             lockedTarget.TakeStrike(this, strikeDamage, currentAttackIsCounter);
             OnHit.Invoke(lockedTarget);
+
+            // Record sticky target for combo continuity
+            lastHitEnemy = lockedTarget;
+
+            lastHitTime = Time.time;
+            if (cameraRig != null) lastHitYaw = cameraRig.Yaw;
+
             cameraRig?.Shake(0.11f + Mathf.Min(0.25f, Vector3.Distance(transform.position, lockedTarget.transform.position) * 0.02f), 0.14f);
         }
 
@@ -520,16 +569,76 @@ namespace MagnetPanic.Combat
             }
         }
 
-        string NextAttackTrigger(bool counterAttack)
+        string NextComboTrigger(bool counterAttack)
         {
             if (attackTriggers == null || attackTriggers.Length == 0)
                 return "AirPunch";
 
             if (counterAttack)
+            {
+                ResetCombo();
                 return "AirPunch";
+            }
 
-            attackIndex = (attackIndex + 1) % attackTriggers.Length;
-            return attackTriggers[attackIndex];
+            // Reset combo if outside the chain window
+            if (Time.time > comboWindowEndTime && comboIndex > 0)
+                ResetCombo();
+
+            int idx = Mathf.Clamp(comboIndex, 0, attackTriggers.Length - 1);
+            comboIndex = idx + 1;
+            return attackTriggers[idx];
+        }
+
+        void ResetCombo()
+        {
+            comboIndex = 0;
+            comboWindowEndTime = 0f;
+        }
+
+        /// <summary>
+        /// Pure read — returns the sticky target if still valid, never clears the field.
+        /// The ONLY way to intentionally break the lock is moving the camera past the
+        /// yaw threshold. Timeout is handled separately by DecayStickyTarget.
+        /// </summary>
+        ArkhamEnemy PeekStickyTarget()
+        {
+            if (lastHitEnemy == null || !lastHitEnemy.IsAlive)
+                return null;
+
+            // Camera movement is the deliberate unlock mechanism
+            if (cameraRig != null && Mathf.Abs(Mathf.DeltaAngle(lastHitYaw, cameraRig.Yaw)) > stickyYawBreakThreshold)
+                return null;
+
+            float maxRange = targetScanner != null ? targetScanner.MaximumDistance : 13f;
+            if (Vector3.Distance(transform.position, lastHitEnemy.transform.position) > maxRange)
+                return null;
+
+            return lastHitEnemy;
+        }
+
+        /// <summary>
+        /// Called once per Update — clears the sticky reference when it expires.
+        /// Never clears during active combat or combo window so rapid hits stay locked.
+        /// </summary>
+        void DecayStickyTarget()
+        {
+            if (lastHitEnemy == null)
+                return;
+
+            // Always clear dead enemies
+            if (!lastHitEnemy.IsAlive)
+            {
+                lastHitEnemy = null;
+                return;
+            }
+
+            // Don't expire while attacking or inside the combo window
+            if (isAttackingEnemy || isCountering || Time.time < comboWindowEndTime)
+                return;
+
+            // Idle timeout — player stopped comboing
+            if (Time.time - lastHitTime > stickyTargetTimeout)
+                lastHitEnemy = null;
         }
 
         Vector3 TargetOffset(Transform target)
