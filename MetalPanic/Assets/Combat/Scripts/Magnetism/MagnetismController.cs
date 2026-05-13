@@ -553,13 +553,15 @@ namespace MagnetPanic.Combat
 
         Vector3 AimDirection()
         {
-            if (inputProvider != null && inputProvider.AimWorldDirection.sqrMagnitude > 0.01f)
-                return inputProvider.AimWorldDirection.normalized;
+            Vector3 fwd = transform.forward;
+            fwd.y = 0f;
+            if (fwd.sqrMagnitude > 0.01f)
+                return fwd.normalized;
 
             if (motor != null && motor.WorldMoveDirection.sqrMagnitude > 0.01f)
                 return motor.WorldMoveDirection.normalized;
 
-            return transform.forward;
+            return Vector3.forward;
         }
 
         void FaceRepelDirection(Vector3 direction)

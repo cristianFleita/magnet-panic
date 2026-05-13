@@ -75,6 +75,10 @@ namespace MagnetPanic.Combat
         public ArkhamEnemy LockedTarget => lockedTarget;
         public CombatHealth Health => health;
         public bool IsAlive => health == null || health.IsAlive;
+        public float CounterRadius => counterRadius;
+        public ArkhamEnemyManager EnemyManager => enemyManager;
+        public ArkhamTargetScanner TargetScanner => targetScanner;
+        public Vector3 PreferredStrikeDirection => ResolveStrikeDirection();
 
         void Awake()
         {
@@ -106,6 +110,8 @@ namespace MagnetPanic.Combat
 
             health.Configure(maxHealth, true);
             characterController = GetComponent<CharacterController>();
+
+            StrikeTargetIndicator.EnsureOn(gameObject, this);
         }
 
         void OnValidate()
@@ -158,14 +164,14 @@ namespace MagnetPanic.Combat
 
         public void AttackCheck()
         {
-            if (!IsAlive || isAttackingEnemy || isDodging)
+            if (!IsAlive || isAttackingEnemy || isDodging || isCountering)
                 return;
 
             if (TryStartCounterFromStrike())
                 return;
 
             ArkhamEnemy target = targetScanner != null
-                ? targetScanner.FindTarget(enemyManager, transform.position, motor.WorldMoveDirection)
+                ? targetScanner.FindTarget(enemyManager, transform.position, ResolveStrikeDirection())
                 : null;
 
             if (target == null)
@@ -292,32 +298,38 @@ namespace MagnetPanic.Combat
             isAttackingEnemy = true;
             motor.SetMovementLocked(true);
 
-            string trigger = NextAttackTrigger(counterAttack);
-            if (animator != null)
-                animator.SetTrigger(trigger);
-
-            if (target != null)
+            try
             {
-                target.LockAsTarget(true);
-                OnTrajectory.Invoke(target);
-                yield return MoveTowardTarget(target, attackLungeDuration);
+                string trigger = NextAttackTrigger(counterAttack);
+                if (animator != null)
+                    animator.SetTrigger(trigger);
+
+                if (target != null)
+                {
+                    target.LockAsTarget(true);
+                    OnTrajectory.Invoke(target);
+                    yield return MoveTowardTarget(target, attackLungeDuration);
+                }
+
+                yield return new WaitForSeconds(attackImpactDelay);
+
+                if (!useAnimationEventsForHits)
+                    ApplyHit();
+
+                yield return new WaitForSeconds(attackCooldown);
             }
+            finally
+            {
+                if (lockedTarget != null)
+                    lockedTarget.LockAsTarget(false);
 
-            yield return new WaitForSeconds(attackImpactDelay);
-
-            if (!useAnimationEventsForHits)
-                ApplyHit();
-
-            yield return new WaitForSeconds(attackCooldown);
-
-            if (lockedTarget != null)
-                lockedTarget.LockAsTarget(false);
-
-            lockedTarget = null;
-            currentAttackIsCounter = false;
-            isAttackingEnemy = false;
-            motor.SetMovementLocked(false);
-            attackCoroutine = null;
+                lockedTarget = null;
+                currentAttackIsCounter = false;
+                isAttackingEnemy = false;
+                if (IsAlive)
+                    motor.SetMovementLocked(false);
+                attackCoroutine = null;
+            }
         }
 
         IEnumerator CounterRoutine(ArkhamEnemy target)
@@ -334,9 +346,15 @@ namespace MagnetPanic.Combat
 
             cameraRig?.Shake(0.15f, 0.16f);
 
-            yield return new WaitForSeconds(counterDodgeDuration);
+            try
+            {
+                yield return new WaitForSeconds(counterDodgeDuration);
+            }
+            finally
+            {
+                isCountering = false;
+            }
 
-            isCountering = false;
             yield return AttackRoutine(target, true);
         }
 
@@ -346,35 +364,41 @@ namespace MagnetPanic.Combat
             isDodging = true;
             motor.SetMovementLocked(true);
 
-            if (direction.sqrMagnitude > 0.01f)
-                transform.rotation = Quaternion.LookRotation(direction.normalized);
-
-            if (animator != null)
-                animator.SetTrigger(DodgeHash);
-
-            Vector3 start = transform.position;
-            Vector3 destination = start + direction.normalized * dodgeDistance;
-            float elapsed = 0f;
-
-            while (elapsed < dodgeDuration)
+            try
             {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / dodgeDuration);
-                Vector3 next = Vector3.Lerp(start, destination, SmoothStep(t));
-                Vector3 delta = next - transform.position;
-                delta.y = 0f;
+                if (direction.sqrMagnitude > 0.01f)
+                    transform.rotation = Quaternion.LookRotation(direction.normalized);
 
-                if (characterController != null && characterController.enabled)
-                    characterController.Move(delta);
-                else
-                    transform.position += delta;
+                if (animator != null)
+                    animator.SetTrigger(DodgeHash);
 
-                yield return null;
+                Vector3 start = transform.position;
+                Vector3 destination = start + direction.normalized * dodgeDistance;
+                float elapsed = 0f;
+
+                while (elapsed < dodgeDuration)
+                {
+                    elapsed += Time.deltaTime;
+                    float t = Mathf.Clamp01(elapsed / dodgeDuration);
+                    Vector3 next = Vector3.Lerp(start, destination, SmoothStep(t));
+                    Vector3 delta = next - transform.position;
+                    delta.y = 0f;
+
+                    if (characterController != null && characterController.enabled)
+                        characterController.Move(delta);
+                    else
+                        transform.position += delta;
+
+                    yield return null;
+                }
             }
-
-            isDodging = false;
-            motor.SetMovementLocked(false);
-            dodgeCoroutine = null;
+            finally
+            {
+                isDodging = false;
+                if (IsAlive)
+                    motor.SetMovementLocked(false);
+                dodgeCoroutine = null;
+            }
         }
 
         IEnumerator DamageRoutine(ArkhamEnemy source, bool knockdown)
@@ -382,22 +406,28 @@ namespace MagnetPanic.Combat
             motor.SetMovementLocked(true, true);
             OnDamaged.Invoke(source);
 
-            if (animator != null)
+            try
             {
-                if (knockdown)
-                    animator.CrossFade(KnockbackStateName, 0.05f, 0);
-                else
-                    animator.SetTrigger(HitHash);
+                if (animator != null)
+                {
+                    if (knockdown)
+                        animator.CrossFade(KnockbackStateName, 0.05f, 0);
+                    else
+                        animator.SetTrigger(HitHash);
+                }
+
+                cameraRig?.Shake(knockdown ? 0.32f : 0.2f, knockdown ? 0.28f : 0.2f);
+                yield return new WaitForSeconds(knockdown ? Mathf.Max(0.4f, knockdownDuration) : 0.42f);
+
+                if (knockdown && animator != null)
+                    animator.CrossFade(IdleStateName, 0.15f, 0);
             }
-
-            cameraRig?.Shake(knockdown ? 0.32f : 0.2f, knockdown ? 0.28f : 0.2f);
-            yield return new WaitForSeconds(knockdown ? Mathf.Max(0.4f, knockdownDuration) : 0.42f);
-
-            if (knockdown && animator != null)
-                animator.CrossFade(IdleStateName, 0.15f, 0);
-
-            motor.SetMovementLocked(false);
-            damageCoroutine = null;
+            finally
+            {
+                if (IsAlive)
+                    motor.SetMovementLocked(false);
+                damageCoroutine = null;
+            }
         }
 
         void Die()
@@ -474,13 +504,20 @@ namespace MagnetPanic.Combat
             isAttackingEnemy = true;
             motor.SetMovementLocked(true);
 
-            if (animator != null)
-                animator.SetTrigger(GroundPunchHash);
+            try
+            {
+                if (animator != null)
+                    animator.SetTrigger(GroundPunchHash);
 
-            yield return new WaitForSeconds(0.2f);
-            isAttackingEnemy = false;
-            motor.SetMovementLocked(false);
-            attackCoroutine = null;
+                yield return new WaitForSeconds(0.2f);
+            }
+            finally
+            {
+                isAttackingEnemy = false;
+                if (IsAlive)
+                    motor.SetMovementLocked(false);
+                attackCoroutine = null;
+            }
         }
 
         string NextAttackTrigger(bool counterAttack)
@@ -499,6 +536,24 @@ namespace MagnetPanic.Combat
         {
             Vector3 position = target.position;
             return Vector3.MoveTowards(position, transform.position, targetOffset);
+        }
+
+        Vector3 ResolveStrikeDirection()
+        {
+            Vector3 fwd = transform.forward;
+            fwd.y = 0f;
+            if (fwd.sqrMagnitude > 0.01f)
+                return fwd.normalized;
+
+            if (motor != null)
+            {
+                Vector3 move = motor.WorldMoveDirection;
+                move.y = 0f;
+                if (move.sqrMagnitude > 0.01f)
+                    return move.normalized;
+            }
+
+            return Vector3.forward;
         }
 
         Vector3 ResolveDodgeDirection()

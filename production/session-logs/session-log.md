@@ -444,3 +444,78 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260513_013518
+### Commits
+04980fd chore: adjust counter
+26cdd56 chore: adjut arene with 3 exits
+3086da1 chore: adjust magnetic pull with enemies
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260513_014459
+### Commits
+04980fd chore: adjust counter
+26cdd56 chore: adjut arene with 3 exits
+3086da1 chore: adjust magnetic pull with enemies
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260513_015900
+### Commits
+04980fd chore: adjust counter
+26cdd56 chore: adjut arene with 3 exits
+3086da1 chore: adjust magnetic pull with enemies
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamSimpleCameraFollow.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260513_034240
+### Commits
+04980fd chore: adjust counter
+26cdd56 chore: adjut arene with 3 exits
+3086da1 chore: adjust magnetic pull with enemies
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamSimpleCameraFollow.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Combat/Scripts/Pooling/Pool.cs
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

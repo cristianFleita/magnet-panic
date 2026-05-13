@@ -161,13 +161,14 @@ namespace MagnetPanic.Combat
 
             int totalCreated;
             int softCap;
+            bool warnedAboveSoftCap;
 
             public PoolBucket(GameObject prefab, int prefabId, Transform root)
             {
                 this.prefab = prefab;
                 this.prefabId = prefabId;
                 this.root = root;
-                softCap = 4;
+                softCap = 16;
             }
 
             public void Warmup(int count)
@@ -262,8 +263,11 @@ namespace MagnetPanic.Combat
                 identity.Configure(prefabId, this);
                 totalCreated++;
 
-                if (totalCreated > softCap)
-                    Debug.LogWarning($"Pool for '{prefab.name}' grew past soft cap ({softCap}). Active spawn pressure may be too high.", prefab);
+                if (totalCreated > softCap && !warnedAboveSoftCap)
+                {
+                    warnedAboveSoftCap = true;
+                    Debug.LogWarning($"Pool for '{prefab.name}' grew past soft cap ({softCap}). Consider calling Pool.Warmup with the expected active count.", prefab);
+                }
 
                 return identity;
             }
