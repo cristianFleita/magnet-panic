@@ -137,6 +137,7 @@ GameObject:
   - component: {fileID: 6425317549515159455}
   - component: {fileID: 7333755958898154418}
   - component: {fileID: 7893448434390266929}
+  - component: {fileID: -5494567275085708888}
   m_Layer: 7
   m_Name: MetalEnemy
   m_TagString: Untagged
@@ -405,6 +406,40 @@ MonoBehaviour:
   cueHeight: 2.45
   cueScale: {x: 0.42, y: 0.42, z: 0.42}
   cueColor: {r: 1, g: 0.18, b: 0.18, a: 0.9}
+--- !u!114 &-5494567275085708888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6465465380206952774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ddb211d1f6a4b7a86ef68f309fef8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.GrapplerBehavior
+  enemy: {fileID: 7106029408107021932}
+  playerCombat: {fileID: 0}
+  grappleRange: 2.6
+  mashesRequired: 1
+  maxHoldTime: 3.5
+  grappleDamagePerTick: 1
+  grappleDamageInterval: 1.2
+  escapeStunDuration: 0.8
+  escapeKnockback: 2
+  grappleCooldown: 3
+  grappleChance: 0.8
+  lungeSpeed: 8
+  lungeDuration: 0.35
+  OnGrappleStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGrappleEscape:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGrappleTimeout:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7190573592289827246
 GameObject:
   m_ObjectHideFlags: 0

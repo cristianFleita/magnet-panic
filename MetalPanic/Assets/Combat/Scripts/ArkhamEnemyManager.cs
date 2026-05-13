@@ -195,7 +195,7 @@ namespace MagnetPanic.Combat
                 attackingEnemy.BeginAttack();
                 activeAttackers.Add(attackingEnemy);
 
-                // Simultaneous second attacker at higher enemy counts
+                        // Simultaneous second attacker at higher enemy counts (normal pressure)
                 int aliveCount = AliveEnemyCount();
                 if (aliveCount >= simultaneousAttackThreshold)
                 {

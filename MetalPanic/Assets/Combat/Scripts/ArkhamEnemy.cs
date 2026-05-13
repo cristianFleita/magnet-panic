@@ -106,7 +106,13 @@ namespace MagnetPanic.Combat
         public UnityEvent<ArkhamEnemy> OnAnchorReleased = new UnityEvent<ArkhamEnemy>();
 
         int magneticMarks;
-        bool isPreparingAttack;
+        bool _isPreparingAttack;
+        public bool isPreparingAttack 
+        { 
+            get => _isPreparingAttack; 
+            set => _isPreparingAttack = value; 
+        }
+
         bool isAttacking;
         bool isRetreating;
         bool isLockedTarget;
@@ -128,9 +134,10 @@ namespace MagnetPanic.Combat
 
         // Behavior add-ons (detected at runtime)
         SpitterDroneBehavior spitterDrone;
-        ScrapThiefBehavior scrapThief;
+        GrapplerBehavior grappler;
 
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
+        public bool IsStunned => isStunned;
         public bool IsAttackable => IsAlive && !isLockedTarget;
         public bool IsCounterable => IsAlive && (isPreparingAttack || isAttacking);
         public bool IsAttacking => isAttacking;
@@ -175,7 +182,7 @@ namespace MagnetPanic.Combat
                 arenaSystem = FindFirstObjectByType<ArenaSystem>();
 
             spitterDrone = GetComponent<SpitterDroneBehavior>();
-            scrapThief = GetComponent<ScrapThiefBehavior>();
+            grappler = GetComponent<GrapplerBehavior>();
 
             if (definition != null)
                 ApplyDefinitionFields(definition);
@@ -352,8 +359,8 @@ namespace MagnetPanic.Combat
             if (!CanDirectorSelect)
                 return;
 
-            // Scrap thief: attempt grab+throw before normal attack
-            if (scrapThief != null && scrapThief.TryScrapAttack())
+            // Grappler: attempt grab before normal attack
+            if (grappler != null && grappler.TryGrapple())
                 return;
 
             // Spitter drone: fire projectile instead of melee
@@ -412,6 +419,31 @@ namespace MagnetPanic.Combat
             behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, counterPulseDistance, 0.12f, stunDuration));
         }
 
+        /// <summary>
+        /// Forces the enemy into stun state for a specified duration.
+        /// Used by GrapplerBehavior when the player escapes the grapple.
+        /// </summary>
+        public void ForceStun(float duration)
+        {
+            if (!IsAlive)
+                return;
+
+            StopBehaviorCoroutine();
+            HideCounterCue();
+            isPreparingAttack = false;
+            isAttacking = false;
+            isExecutingLinearCharge = false;
+            SetEnemyCollisionsIgnored(false);
+            isRetreating = false;
+            isStunned = true;
+            StopMoving();
+
+            if (animator != null)
+                animator.SetTrigger(HitHash);
+
+            behaviorCoroutine = StartCoroutine(StunRoutine(duration));
+        }
+
         public void TakeStrike(ArkhamCombatController attacker, int damage, bool wasCounter)
         {
             if (!IsAlive)
@@ -427,6 +459,10 @@ namespace MagnetPanic.Combat
             isRetreating = false;
             isStunned = true;
             isLockedTarget = false;
+
+            // If this enemy was grappling the player, release them
+            if (grappler != null && grappler.IsGrappling)
+                grappler.InterruptGrapple();
             StopMoving();
 
             ApplyMark(1);
@@ -1358,6 +1394,11 @@ namespace MagnetPanic.Combat
             UpdateMagnetizedIndicator();
             StopBehaviorCoroutine();
             StopMoving();
+
+            // Release player if dying while grappling
+            if (grappler != null && grappler.IsGrappling)
+                grappler.InterruptGrapple();
+
             OnDeath.Invoke(this);
 
             if (animator != null)
@@ -1392,7 +1433,7 @@ namespace MagnetPanic.Combat
                 arenaSystem = FindFirstObjectByType<ArenaSystem>();
 
             spitterDrone = GetComponent<SpitterDroneBehavior>();
-            scrapThief = GetComponent<ScrapThiefBehavior>();
+            grappler = GetComponent<GrapplerBehavior>();
 
             StopBehaviorCoroutine();
             isDead = false;
@@ -1441,7 +1482,7 @@ namespace MagnetPanic.Combat
             return delta.magnitude;
         }
 
-        void ShowCounterCue()
+        public void ShowCounterCue()
         {
             if (counterIndicator != null)
                 counterIndicator.SetActive(true);
@@ -1450,7 +1491,7 @@ namespace MagnetPanic.Combat
                 counterParticle.Play(true);
         }
 
-        void HideCounterCue()
+        public void HideCounterCue()
         {
             if (counterIndicator != null)
                 counterIndicator.SetActive(false);

@@ -40,8 +40,13 @@ MonoBehaviour:
       definition: {fileID: 11400000, guid: c77fe0e1db8634d8da05bce8e6496315, type: 2}
       threatCost: 1
       weight: 5
+    - label: SpitterDrone
+      prefab: {fileID: 4961922541159132038, guid: 3882eb73e86c546398a1e85ae4aefb92, type: 3}
+      definition: {fileID: 11400000, guid: 23f790f2c95064d34b94fa069b13a887, type: 2}
+      threatCost: 1
+      weight: 4
   - actName: Act 2 - Pressure
-    startTime: 90
+    startTime: 45
     baseBudget: 5
     maxBudget: 9
     activeDoorsMin: 2

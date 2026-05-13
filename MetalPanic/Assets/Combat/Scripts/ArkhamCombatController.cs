@@ -60,12 +60,18 @@ namespace MagnetPanic.Combat
         [SerializeField, Tooltip("How long the player stays locked when knocked down by a charge.")]
         float knockdownDuration = 1.1f;
 
+        [Header("Grapple")]
+        [SerializeField, Tooltip("Brief immunity after escaping a grapple.")]
+        float grappleEscapeImmunity = 0.5f;
+
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnTrajectory = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnHit = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnCounterAttack = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnDamaged = new UnityEvent<ArkhamEnemy>();
         public UnityEvent OnDeath = new UnityEvent();
+        public UnityEvent<GrapplerBehavior> OnGrappled = new UnityEvent<GrapplerBehavior>();
+        public UnityEvent<bool> OnGrappleEnd = new UnityEvent<bool>();
 
         ArkhamEnemy lockedTarget;
         ArkhamEnemy lastHitEnemy;
@@ -241,6 +247,7 @@ namespace MagnetPanic.Combat
             if (!IsAlive || isCountering || isAttackingEnemy || isDodging || health == null)
                 return;
 
+            // If grappled, still take damage (that's the point of the grapple)
             int amount = Mathf.Max(1, damage);
             if (!health.ApplyDamage(amount))
                 return;

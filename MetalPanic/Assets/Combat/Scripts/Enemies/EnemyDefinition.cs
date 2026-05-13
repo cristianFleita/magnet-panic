@@ -76,12 +76,22 @@ namespace MagnetPanic.Combat
         [Tooltip("Tolerance around rangedIdealDistance.")]
         public float rangedIdealTolerance = 1.5f;
 
-        [Header("Scrap Thief")]
-        [Tooltip("When true, this enemy can grab nearby scraps and throw them at the player.")]
-        public bool canThrowScraps;
-        [Tooltip("Chance (0-1) of doing a scrap throw instead of normal attack when scrap is nearby.")]
-        [Range(0f, 1f)] public float scrapThrowChance = 0.35f;
-        [Tooltip("Speed at which thrown scraps fly.")]
-        public float scrapThrowSpeed = 12f;
+        [Header("Grappler")]
+        [Tooltip("When true, this enemy can grab the player and hold them while allies attack.")]
+        public bool canGrapple;
+        [Tooltip("Chance (0-1) of attempting grapple when selected by the Attack Director.")]
+        [Range(0f, 1f)] public float grappleChance = 0.35f;
+        [Tooltip("Number of Q presses required for the player to escape.")]
+        public int grappleMashesRequired = 1;
+        [Tooltip("Maximum number of hits the grappler can deal before auto-releasing.")]
+        public int grappleMaxHits = 2;
+        [Tooltip("Maximum hold time before auto-release (seconds).")]
+        public float grappleMaxHoldTime = 3.5f;
+        [Tooltip("Damage per tick while the player is grappled.")]
+        public int grappleDamagePerTick = 1;
+        [Tooltip("Seconds between damage ticks during grapple.")]
+        public float grappleDamageInterval = 1.2f;
+        [Tooltip("Stun duration applied to the grappler when the player escapes.")]
+        public float grappleEscapeStunDuration = 0.8f;
     }
 }

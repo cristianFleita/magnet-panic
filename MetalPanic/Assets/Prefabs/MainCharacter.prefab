@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4844dba9b72c4ce0b1b73e1ff9563003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CombatHealth
-  maxHealth: 6
+  maxHealth: 10
   refillOnAwake: 1
   OnHealthChanged:
     m_PersistentCalls:
@@ -195,12 +195,19 @@ MonoBehaviour:
   - AirPunch
   - AirKick3
   useAnimationEventsForHits: 0
+  stickyTargetTimeout: 3
+  stickyYawBreakThreshold: 25
+  comboWindow: 0.55
+  comboFinisherRecovery: 0.55
+  comboLungeMultiplier: 1.15
   counterCooldown: 0.65
   counterDodgeDuration: 0.16
   counterRadius: 4
   dodgeDistance: 2.35
   dodgeDuration: 0.28
   dodgeCooldown: 0.45
+  knockdownDuration: 1.1
+  grappleEscapeImmunity: 0.5
   OnTrajectory:
     m_PersistentCalls:
       m_Calls: []
@@ -214,6 +221,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGrappled:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGrappleEnd:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &8252025870227308575
@@ -251,7 +264,10 @@ MonoBehaviour:
   repelCooldown: 0.25
   repelSpeed: 16
   magnetizedEnemyDamage: 5
+  magnetizedEnemyRecoilDamage: 5
+  magnetizedRepelAutoAimRadius: 5
   heldEnemyDistance: 1.9
+  enemyAnchorLockDistance: 0.4
   autoCreateAimIndicator: 1
   aimLine: {fileID: 417033637546984419}
   aimTip: {fileID: 1176439106275208016}

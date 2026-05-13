@@ -148,6 +148,14 @@ namespace MagnetPanic.Combat.Editor
             def.knockbackDistance = 0.55f;
             def.knockbackDuration = 0.16f;
             def.useLinearCharge = false;
+            def.canGrapple = true;
+            def.grappleChance = 0.35f;
+            def.grappleMashesRequired = 1;
+            def.grappleMaxHits = 2;
+            def.grappleMaxHoldTime = 3.5f;
+            def.grappleDamagePerTick = 1;
+            def.grappleDamageInterval = 1.2f;
+            def.grappleEscapeStunDuration = 0.8f;
             EditorUtility.SetDirty(def);
             return def;
         }
@@ -202,9 +210,7 @@ namespace MagnetPanic.Combat.Editor
             def.knockbackDuration = 0.22f;
             def.useLinearCharge = false;
             def.useRangedAttack = false;
-            def.canThrowScraps = true;
-            def.scrapThrowChance = 0.4f;
-            def.scrapThrowSpeed = 10f;
+            def.canGrapple = false;
             EditorUtility.SetDirty(def);
             return def;
         }
@@ -239,7 +245,7 @@ namespace MagnetPanic.Combat.Editor
             def.aimInaccuracy = 6f;
             def.rangedIdealDistance = 7f;
             def.rangedIdealTolerance = 1.5f;
-            def.canThrowScraps = false;
+            def.canGrapple = false;
             EditorUtility.SetDirty(def);
             return def;
         }
@@ -332,6 +338,23 @@ namespace MagnetPanic.Combat.Editor
 
                 ArkhamEnemy enemy = root.AddComponent<ArkhamEnemy>();
                 WireEnemyReferences(enemy, definition, animator, controller, health, counterCue, chargeTelegraph);
+
+                // Add GrapplerBehavior if the definition says this enemy can grapple
+                if (definition.canGrapple)
+                {
+                    GrapplerBehavior grapplerComp = root.AddComponent<GrapplerBehavior>();
+                    SerializedObject grapplerSo = new SerializedObject(grapplerComp);
+                    SetObject(grapplerSo, "enemy", enemy);
+                    SetFloat(grapplerSo, "grappleRange", definition.attackRange);
+                    SetInt(grapplerSo, "mashesRequired", definition.grappleMashesRequired);
+                    SetInt(grapplerSo, "maxGrappleHits", definition.grappleMaxHits);
+                    SetFloat(grapplerSo, "maxHoldTime", definition.grappleMaxHoldTime);
+                    SetInt(grapplerSo, "grappleDamagePerTick", definition.grappleDamagePerTick);
+                    SetFloat(grapplerSo, "grappleDamageInterval", definition.grappleDamageInterval);
+                    SetFloat(grapplerSo, "escapeStunDuration", definition.grappleEscapeStunDuration);
+                    SetFloat(grapplerSo, "grappleChance", definition.grappleChance);
+                    grapplerSo.ApplyModifiedPropertiesWithoutUndo();
+                }
 
                 PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             }

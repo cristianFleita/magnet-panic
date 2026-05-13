@@ -46,6 +46,10 @@ MonoBehaviour:
   aimInaccuracy: 5
   rangedIdealDistance: 7
   rangedIdealTolerance: 1.5
-  canThrowScraps: 0
-  scrapThrowChance: 0.35
-  scrapThrowSpeed: 12
+  canGrapple: 1
+  grappleChance: 0.35
+  grappleMashesRequired: 6
+  grappleMaxHoldTime: 3.5
+  grappleDamagePerTick: 1
+  grappleDamageInterval: 1.2
+  grappleEscapeStunDuration: 0.8

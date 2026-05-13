@@ -32,6 +32,7 @@ namespace MagnetPanic.Combat
         bool counterPressed;
         bool dodgePressed;
         bool sprintPressed;
+        bool strugglePressed;
         bool upgrade1Pressed;
         bool upgrade2Pressed;
         bool upgrade3Pressed;
@@ -53,6 +54,7 @@ namespace MagnetPanic.Combat
         public bool CounterPressed => GameplayEnabled && counterPressed;
         public bool DodgePressed => GameplayEnabled && dodgePressed;
         public bool SprintPressed => GameplayEnabled && sprintPressed;
+        public bool StrugglePressed => GameplayEnabled && strugglePressed;
         public bool Upgrade1Pressed => UiEnabled && upgrade1Pressed;
         public bool Upgrade2Pressed => UiEnabled && upgrade2Pressed;
         public bool Upgrade3Pressed => UiEnabled && upgrade3Pressed;
@@ -242,6 +244,17 @@ namespace MagnetPanic.Combat
             RegisterCombatPress(GameInputIntent.Dodge);
         }
 
+        public void OnStruggle(InputValue value)
+        {
+            if (value.isPressed)
+                RegisterCombatPress(GameInputIntent.Struggle);
+        }
+
+        public void OnStruggle()
+        {
+            RegisterCombatPress(GameInputIntent.Struggle);
+        }
+
         public void OnUpgrade1(InputValue value)
         {
             if (value.isPressed)
@@ -333,6 +346,10 @@ namespace MagnetPanic.Combat
             else if (intent == GameInputIntent.PullToggle)
             {
                 pullTogglePressed = true;
+            }
+            else if (intent == GameInputIntent.Struggle)
+            {
+                strugglePressed = true;
             }
 
             combatBuffer.Record(intent, Time.time);
@@ -442,6 +459,7 @@ namespace MagnetPanic.Combat
             strikePressed = false;
             counterPressed = false;
             dodgePressed = false;
+            strugglePressed = false;
             upgrade1Pressed = false;
             upgrade2Pressed = false;
             upgrade3Pressed = false;
@@ -453,7 +471,8 @@ namespace MagnetPanic.Combat
             return intent == GameInputIntent.PullToggle
                 || intent == GameInputIntent.Strike
                 || intent == GameInputIntent.Counter
-                || intent == GameInputIntent.Dodge;
+                || intent == GameInputIntent.Dodge
+                || intent == GameInputIntent.Struggle;
         }
     }
 }

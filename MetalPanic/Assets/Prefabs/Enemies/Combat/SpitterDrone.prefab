@@ -385,10 +385,10 @@ MonoBehaviour:
   retreatSpeed: 3
   retreatDistance: 6
   disableStrafe: 0
-  prepareAttackTime: 0.5
-  attackRange: 12
+  prepareAttackTime: 0.2
+  attackRange: 15
   attackHitDelay: 0
-  attackRecovery: 0.65
+  attackRecovery: 0.3
   hitRangeTolerance: 1.25
   useLinearCharge: 0
   chargeSpeed: 11
@@ -432,14 +432,14 @@ MonoBehaviour:
   playerCombat: {fileID: 0}
   firePoint: {fileID: 1832456022749954378}
   projectilePrefab: {fileID: 5879022150181931213, guid: 0215f699159f8456c84599932f576f61, type: 3}
-  projectileSpeed: 10
+  projectileSpeed: 25
   projectileDamage: 1
-  burstCount: 2
-  burstInterval: 0.3
+  burstCount: 3
+  burstInterval: 0.2
   aimInaccuracy: 6
-  idealDistance: 7
+  idealDistance: 15
   idealTolerance: 1.5
-  fireReadyDelay: 0.4
+  fireReadyDelay: 0.3
   postFireRecovery: 0.6
   OnFired:
     m_PersistentCalls:

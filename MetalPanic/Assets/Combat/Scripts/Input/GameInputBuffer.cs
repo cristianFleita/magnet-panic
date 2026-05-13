@@ -8,10 +8,11 @@ namespace MagnetPanic.Combat
         Strike = 1,
         Counter = 2,
         Dodge = 3,
-        Upgrade1 = 4,
-        Upgrade2 = 5,
-        Upgrade3 = 6,
-        Pause = 7
+        Struggle = 4,
+        Upgrade1 = 5,
+        Upgrade2 = 6,
+        Upgrade3 = 7,
+        Pause = 8
     }
 
     public enum GameInputState
@@ -23,7 +24,7 @@ namespace MagnetPanic.Combat
 
     public sealed class GameInputBuffer
     {
-        const int IntentCount = (int)GameInputIntent.Pause + 1;
+        const int IntentCount = (int)GameInputIntent.Pause + 1;  // auto-adjusts
 
         readonly bool[] buffered = new bool[IntentCount];
         readonly float[] timestamps = new float[IntentCount];
