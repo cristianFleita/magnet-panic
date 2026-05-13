@@ -519,3 +519,21 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260513_041001
+### Commits
+24a5e28 chore: Adjust combat system + camera + target strike indicators
+04980fd chore: adjust counter
+26cdd56 chore: adjut arene with 3 exits
+3086da1 chore: adjust magnetic pull with enemies
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

@@ -55,7 +55,8 @@ namespace MagnetPanic.Combat
         [SerializeField] float magneticMass = 3f;
         [SerializeField] float magneticPullSnapSharpness = 18f;
         [SerializeField] float magnetizedRepelDuration = 0.42f;
-        [SerializeField] float magnetizedProjectileRadius = 0.8f;
+        [SerializeField, Tooltip("Extra hit radius added to the projectile center when sweeping for enemy-vs-enemy collisions while flying as a magnet repel projectile. Combined with the target's CharacterController radius.")]
+        float magnetizedProjectileRadius = 0.8f;
         [SerializeField] float markedProjectileDamageMultiplier = 1.2f;
         [SerializeField] float wallSlamBounceDistance = 0.18f;
         [SerializeField] float counterPulseDistance = 1.1f;
@@ -64,6 +65,10 @@ namespace MagnetPanic.Combat
         [SerializeField] bool autoCreateMagnetizedIndicator = true;
         [SerializeField] float magnetizedIndicatorHeight = 2.15f;
         [SerializeField] Color magnetizedIndicatorColor = new Color(1f, 0.82f, 0.16f, 0.85f);
+
+        [Header("Debug")]
+        [SerializeField, Tooltip("Print Console messages and draw debug lines for magnet-repel projectile collisions against other enemies.")]
+        bool debugMagnetProjectileCollisions = false;
 
         [Header("Movement")]
         [SerializeField] float strafeSpeed = 1.25f;
@@ -135,6 +140,7 @@ namespace MagnetPanic.Combat
         public float MagneticMass => magneticMass;
         public bool CanBePulledByMagnet => IsAlive && IsMagneticPullTarget && !isLockedTarget;
         public bool IsMagneticPullTarget => alwaysPullableByMagnet || markState == MagneticMarkState.Magnetized;
+        public float BodyRadius => characterController != null ? characterController.radius : 0.45f;
 
         public bool CanDirectorSelect =>
             IsAlive &&
@@ -891,12 +897,16 @@ namespace MagnetPanic.Combat
             float elapsed = 0f;
             HashSet<ArkhamEnemy> hitEnemies = new HashSet<ArkhamEnemy>();
 
+            if (debugMagnetProjectileCollisions)
+                Debug.Log($"[MagnetRepel] {name} launched dir={direction} speed={speed:F2} impactDmg={impactDamage} recoilDmg={recoilDamage} hitRadius={magnetizedProjectileRadius:F2}", this);
+
             while (elapsed < magnetizedRepelDuration && IsAlive)
             {
                 elapsed += Time.deltaTime;
                 lastArenaWallHitNormal = Vector3.zero;
+                Vector3 prevPosition = transform.position;
                 CollisionFlags collision = MoveBy(direction * speed * Time.deltaTime);
-                DamageEnemiesTouchedByMagneticProjectile(hitEnemies, impactDamage, recoilDamage);
+                DamageEnemiesTouchedByMagneticProjectile(hitEnemies, impactDamage, recoilDamage, prevPosition);
                 if (!IsAlive)
                     yield break;
 
@@ -1087,13 +1097,26 @@ namespace MagnetPanic.Combat
                 SetMarkState(MagneticMarkState.Normal);
         }
 
-        void DamageEnemiesTouchedByMagneticProjectile(HashSet<ArkhamEnemy> hitEnemies, int impactDamage, int recoilDamage)
+        void DamageEnemiesTouchedByMagneticProjectile(HashSet<ArkhamEnemy> hitEnemies, int impactDamage, int recoilDamage, Vector3 previousPosition)
         {
             if (manager == null)
                 return;
 
+            Vector3 segStart = previousPosition;
+            Vector3 segEnd = transform.position;
+            segStart.y = 0f;
+            segEnd.y = 0f;
+
+            float projectileBodyRadius = BodyRadius;
+
+            if (debugMagnetProjectileCollisions)
+            {
+                Vector3 drawA = previousPosition + Vector3.up * 1f;
+                Vector3 drawB = transform.position + Vector3.up * 1f;
+                Debug.DrawLine(drawA, drawB, Color.cyan, 1.5f, false);
+            }
+
             IReadOnlyList<ArkhamEnemy> enemies = manager.Enemies;
-            float radiusSqr = magnetizedProjectileRadius * magnetizedProjectileRadius;
 
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -1101,19 +1124,51 @@ namespace MagnetPanic.Combat
                 if (enemy == null || enemy == this || !enemy.IsAlive || hitEnemies.Contains(enemy))
                     continue;
 
-                Vector3 delta = enemy.transform.position - transform.position;
-                delta.y = 0f;
-                if (delta.sqrMagnitude > radiusSqr)
+                Vector3 target = enemy.transform.position;
+                target.y = 0f;
+
+                float combinedRadius = magnetizedProjectileRadius + projectileBodyRadius + enemy.BodyRadius;
+                float distSqr = SqrDistanceFromPointToSegment(target, segStart, segEnd);
+
+                if (distSqr > combinedRadius * combinedRadius)
+                {
+                    if (debugMagnetProjectileCollisions)
+                    {
+                        float dist = Mathf.Sqrt(distSqr);
+                        if (dist <= combinedRadius * 1.5f)
+                            Debug.Log($"[MagnetRepel] {name} MISS {enemy.name} segDist={dist:F2} threshold={combinedRadius:F2}", this);
+                    }
                     continue;
+                }
 
                 hitEnemies.Add(enemy);
                 Vector3 contactPoint = enemy.transform.position;
+
+                if (debugMagnetProjectileCollisions)
+                {
+                    float dist = Mathf.Sqrt(distSqr);
+                    Debug.Log($"[MagnetRepel] {name} HIT {enemy.name} segDist={dist:F2} threshold={combinedRadius:F2} impactDmg={impactDamage} recoilDmg={recoilDamage}", this);
+                    Debug.DrawLine(transform.position + Vector3.up * 1f, contactPoint + Vector3.up * 1f, Color.red, 1.5f, false);
+                }
+
                 enemy.ReceiveMagneticImpact(impactDamage, transform.position, knockbackDistance * 1.5f, false);
                 ApplyProjectileRecoil(recoilDamage, contactPoint);
 
                 if (!IsAlive)
                     return;
             }
+        }
+
+        static float SqrDistanceFromPointToSegment(Vector3 point, Vector3 a, Vector3 b)
+        {
+            Vector3 ab = b - a;
+            float abSqr = ab.sqrMagnitude;
+            if (abSqr < 1e-6f)
+                return (point - a).sqrMagnitude;
+
+            float t = Mathf.Clamp01(Vector3.Dot(point - a, ab) / abSqr);
+            Vector3 projection = a + ab * t;
+            return (point - projection).sqrMagnitude;
         }
 
         void ApplyProjectileRecoil(int damage, Vector3 contactPoint)
