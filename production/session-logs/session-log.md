@@ -364,3 +364,50 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_224322
+### Commits
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260512_230156
+### Commits
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260512_230807
+### Commits
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

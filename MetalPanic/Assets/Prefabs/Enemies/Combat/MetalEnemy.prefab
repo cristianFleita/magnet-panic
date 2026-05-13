@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 7106029408107021932}
   - component: {fileID: 6425317549515159455}
   - component: {fileID: 7333755958898154418}
+  - component: {fileID: 7893448434390266929}
   m_Layer: 7
   m_Name: MetalEnemy
   m_TagString: Untagged
@@ -294,10 +295,15 @@ MonoBehaviour:
   attackRange: 1.8
   attackHitDelay: 0.22
   attackRecovery: 0.6
+  hitRangeTolerance: 1.25
   useLinearCharge: 0
   chargeSpeed: 11
   chargeDuration: 0.55
   chargeHitRadius: 1.1
+  chargeDamage: 2
+  chargeCausesKnockdown: 1
+  chargeIdealDistance: 5
+  chargeIdealTolerance: 1.2
   OnDamaged:
     m_PersistentCalls:
       m_Calls: []
@@ -308,6 +314,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnCountered:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAnchored:
+    m_PersistentCalls:
+      m_Calls: []
+  OnAnchorReleased:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &6425317549515159455
@@ -374,6 +386,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f4daa7aae664fa1be4cb329f6cf602b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: MagnetPanic.Combat.Pooling::MagnetPanic.Combat.PoolIdentity
+--- !u!114 &7893448434390266929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6465465380206952774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e744ca89d9c8419da186b6118eb1bab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.MagneticStunCue
+  enemy: {fileID: 7106029408107021932}
+  cueOverride: {fileID: 0}
+  autoCreateCue: 1
+  cueHeight: 2.45
+  cueScale: {x: 0.42, y: 0.42, z: 0.42}
+  cueColor: {r: 1, g: 0.18, b: 0.18, a: 0.9}
 --- !u!1 &7190573592289827246
 GameObject:
   m_ObjectHideFlags: 0

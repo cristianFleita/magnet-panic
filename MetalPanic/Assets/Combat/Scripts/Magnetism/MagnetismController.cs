@@ -46,6 +46,8 @@ namespace MagnetPanic.Combat
 
         [Header("Enemy Pull")]
         [SerializeField] float heldEnemyDistance = 1.9f;
+        [SerializeField, Tooltip("Once a magnetized enemy gets within this distance of the hold point, it locks in place and stops following the player. Enables the Pull → Strike → Repel combo.")]
+        float enemyAnchorLockDistance = 0.4f;
 
         [Header("Aim Assist")]
         [SerializeField] bool autoCreateAimIndicator = true;
@@ -69,7 +71,14 @@ namespace MagnetPanic.Combat
         readonly List<MagneticObject> attractingObjects = new List<MagneticObject>();
         readonly List<MagneticObject> orbitingObjects = new List<MagneticObject>();
         readonly List<ArkhamEnemy> pulledEnemies = new List<ArkhamEnemy>();
-        readonly List<Vector3> pulledEnemyAnchors = new List<Vector3>();
+        readonly List<PulledEnemyHold> pulledEnemyHolds = new List<PulledEnemyHold>();
+
+        struct PulledEnemyHold
+        {
+            public Vector3 ApproachDirection;
+            public Vector3 AnchorPosition;
+            public bool IsAnchored;
+        }
 
         float currentCharge;
         float nextRepelTime;
@@ -222,7 +231,7 @@ namespace MagnetPanic.Combat
 
             orbitingObjects.Clear();
             pulledEnemies.Clear();
-            pulledEnemyAnchors.Clear();
+            pulledEnemyHolds.Clear();
             SetCharge(0f);
             pullActive = false;
             pullHeld = false;
@@ -306,7 +315,12 @@ namespace MagnetPanic.Combat
 
                 enemy.BeginMagneticPull();
                 pulledEnemies.Add(enemy);
-                pulledEnemyAnchors.Add(CaptureEnemyAnchor(enemy));
+                pulledEnemyHolds.Add(new PulledEnemyHold
+                {
+                    ApproachDirection = CaptureEnemyAnchor(enemy),
+                    AnchorPosition = Vector3.zero,
+                    IsAnchored = false,
+                });
                 OnEnemyPulled.Invoke(enemy);
                 OnEnemyOrbited.Invoke(enemy);
             }
@@ -374,17 +388,31 @@ namespace MagnetPanic.Combat
                     continue;
                 }
 
-                Vector3 anchor = pulledEnemyAnchors[i];
-                Vector3 hold = transform.position + anchor * heldEnemyDistance;
-                enemy.MagnetPullTowards(hold, enemyPullSpeed, Time.deltaTime);
+                PulledEnemyHold hold = pulledEnemyHolds[i];
+
+                if (hold.IsAnchored)
+                    continue;
+
+                Vector3 holdPoint = transform.position + hold.ApproachDirection * heldEnemyDistance;
+                enemy.MagnetPullTowards(holdPoint, enemyPullSpeed, Time.deltaTime);
+
+                Vector3 delta = enemy.transform.position - holdPoint;
+                delta.y = 0f;
+                if (delta.sqrMagnitude <= enemyAnchorLockDistance * enemyAnchorLockDistance)
+                {
+                    hold.IsAnchored = true;
+                    hold.AnchorPosition = enemy.transform.position;
+                    pulledEnemyHolds[i] = hold;
+                    enemy.AnchorMagneticHold();
+                }
             }
         }
 
         void RemovePulledEnemyAt(int index)
         {
             pulledEnemies.RemoveAt(index);
-            if (index < pulledEnemyAnchors.Count)
-                pulledEnemyAnchors.RemoveAt(index);
+            if (index < pulledEnemyHolds.Count)
+                pulledEnemyHolds.RemoveAt(index);
         }
 
         void TickOrbit()
@@ -443,7 +471,7 @@ namespace MagnetPanic.Combat
 
             orbitingObjects.Clear();
             pulledEnemies.Clear();
-            pulledEnemyAnchors.Clear();
+            pulledEnemyHolds.Clear();
             SetCharge(0f);
             OnRepelFired.Invoke(empty);
             UpdateAimIndicator();

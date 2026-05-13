@@ -97,6 +97,8 @@ namespace MagnetPanic.Combat
         public UnityEvent<ArkhamEnemy> OnDeath = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnMagnetized = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnCountered = new UnityEvent<ArkhamEnemy>();
+        public UnityEvent<ArkhamEnemy> OnAnchored = new UnityEvent<ArkhamEnemy>();
+        public UnityEvent<ArkhamEnemy> OnAnchorReleased = new UnityEvent<ArkhamEnemy>();
 
         int magneticMarks;
         bool isPreparingAttack;
@@ -107,6 +109,7 @@ namespace MagnetPanic.Combat
         bool isDead;
         bool isMagnetized;
         bool isMagneticallyControlled;
+        bool isAnchorHeld;
         bool attackHitApplied;
         float lastMarkTime = -999f;
         MoveMode moveMode;
@@ -168,6 +171,7 @@ namespace MagnetPanic.Combat
             EnsureHealthBar();
             EnsureMagnetizedIndicator();
             UpdateMagnetizedIndicator();
+            ReleaseAnchor();
             HideChargeTelegraph();
         }
 
@@ -256,6 +260,7 @@ namespace MagnetPanic.Combat
         {
             StopBehaviorCoroutine();
             HideCounterCue();
+            ReleaseAnchor();
             SetEnemyCollisionsIgnored(false);
             isDead = true;
             isPreparingAttack = false;
@@ -265,6 +270,7 @@ namespace MagnetPanic.Combat
             isStunned = false;
             isMagnetized = false;
             isMagneticallyControlled = false;
+            isAnchorHeld = false;
             isMagnetRepelProjectile = false;
             isExecutingLinearCharge = false;
             attackHitApplied = false;
@@ -305,6 +311,7 @@ namespace MagnetPanic.Combat
             EnsureHealthBar();
             EnsureMagnetizedIndicator();
             UpdateMagnetizedIndicator();
+            ReleaseAnchor();
         }
 
         void EnsureEvents()
@@ -595,7 +602,40 @@ namespace MagnetPanic.Combat
 
             isMagneticallyControlled = false;
             isStunned = false;
+            ReleaseAnchor();
             StartIdleMovement();
+        }
+
+        public void AnchorMagneticHold()
+        {
+            if (!IsAlive)
+                return;
+
+            StopMoving();
+
+            if (playerCombat != null)
+            {
+                Vector3 lookPosition = playerCombat.transform.position;
+                lookPosition.y = transform.position.y;
+                Vector3 direction = lookPosition - transform.position;
+                if (direction.sqrMagnitude > 0.01f)
+                    transform.rotation = Quaternion.LookRotation(direction);
+            }
+
+            if (!isAnchorHeld)
+            {
+                isAnchorHeld = true;
+                OnAnchored.Invoke(this);
+            }
+        }
+
+        void ReleaseAnchor()
+        {
+            if (!isAnchorHeld)
+                return;
+
+            isAnchorHeld = false;
+            OnAnchorReleased.Invoke(this);
         }
 
         public void RejectMagneticPull(Vector3 center, float speed)
@@ -611,6 +651,7 @@ namespace MagnetPanic.Combat
 
             isStunned = true;
             isMagneticallyControlled = false;
+            ReleaseAnchor();
             behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, speed * 0.12f, 0.12f, stunDuration * 0.5f));
         }
 
@@ -631,6 +672,7 @@ namespace MagnetPanic.Combat
             isStunned = true;
             isMagneticallyControlled = true;
             isMagnetRepelProjectile = true;
+            ReleaseAnchor();
 
             int resolvedRecoil = recoilDamage < 0 ? impactDamage : recoilDamage;
             behaviorCoroutine = StartCoroutine(MagneticRepelRoutine(direction.normalized, speed, impactDamage, resolvedRecoil));
@@ -651,6 +693,7 @@ namespace MagnetPanic.Combat
             isLockedTarget = false;
             isStunned = true;
             isMagneticallyControlled = false;
+            ReleaseAnchor();
             StopMoving();
 
             float multiplier = markState == MagneticMarkState.Marked || markState == MagneticMarkState.Magnetized
@@ -1178,6 +1221,7 @@ namespace MagnetPanic.Combat
         {
             isDead = true;
             HideCounterCue();
+            ReleaseAnchor();
             SetEnemyCollisionsIgnored(false);
             UpdateMagnetizedIndicator();
             StopBehaviorCoroutine();
@@ -1224,6 +1268,7 @@ namespace MagnetPanic.Combat
             isStunned = false;
             isMagnetized = false;
             isMagneticallyControlled = false;
+            isAnchorHeld = false;
             isMagnetRepelProjectile = false;
             isExecutingLinearCharge = false;
             attackHitApplied = false;
@@ -1247,6 +1292,7 @@ namespace MagnetPanic.Combat
             EnsureHealthBar();
             EnsureMagnetizedIndicator();
             HideCounterCue();
+            ReleaseAnchor();
             UpdateMagnetizedIndicator();
         }
 
