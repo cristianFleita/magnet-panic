@@ -43,8 +43,8 @@ MonoBehaviour:
     - label: SpitterDrone
       prefab: {fileID: 4961922541159132038, guid: 3882eb73e86c546398a1e85ae4aefb92, type: 3}
       definition: {fileID: 11400000, guid: 23f790f2c95064d34b94fa069b13a887, type: 2}
-      threatCost: 1
-      weight: 4
+      threatCost: 3
+      weight: 2
   - actName: Act 2 - Pressure
     startTime: 45
     baseBudget: 5
@@ -207,7 +207,7 @@ MonoBehaviour:
   scrapBurstPerRefill: 3
   scrapSamplingAttempts: 16
   healingPickupPrefab: {fileID: 3659959118954070853, guid: cfaa533c44bac417ebc7ec6c8391dce5, type: 3}
-  healingSpawnCooldown: 30
-  healingHpThreshold: 0.5
-  healingMaxActive: 1
-  healingFirstSpawnDelay: 15
+  healingSpawnCooldown: 20
+  healingHpThreshold: 0.7
+  healingMaxActive: 2
+  healingFirstSpawnDelay: 0
