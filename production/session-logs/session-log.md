@@ -537,3 +537,42 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260513_194400
+### Commits
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+30f3dc9 chore: adjust enemies
+b5c3059 chore: new enemies + adjust enemies pressure
+b77e03d chore: combo logs
+b9e1876 chore: adjust character sticky attack
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamSimpleCameraFollow.cs
+MetalPanic/Packages/manifest.json
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260513_201633
+### Commits
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+30f3dc9 chore: adjust enemies
+b5c3059 chore: new enemies + adjust enemies pressure
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamSimpleCameraFollow.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Packages/manifest.json
+MetalPanic/Packages/packages-lock.json
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
