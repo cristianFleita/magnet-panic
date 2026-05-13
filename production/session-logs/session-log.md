@@ -411,3 +411,20 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_233016
+### Commits
+3086da1 chore: adjust magnetic pull with enemies
+0e62bcf chore: adjust magnetism repel enemies
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Prefabs/Arena.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

@@ -2522,7 +2522,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2496073676996920394
 Transform:
   m_ObjectHideFlags: 0
@@ -2560,7 +2560,7 @@ MonoBehaviour:
   warningLight: {fileID: 3981162728848528233}
   spawnRadius: 1.5
   occupancyRadius: 1.5
-  isEnabled: 1
+  isEnabled: 0
   localFacingDirection: {x: 0, y: 0, z: 1}
 --- !u!1 &7970573987188374253
 GameObject:

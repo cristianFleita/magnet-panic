@@ -156,8 +156,9 @@ namespace MagnetPanic.Combat
             for (int i = 0; i < doorComponents.Length; i++)
             {
                 ArenaDoor door = doorComponents[i];
-                if (door != null)
-                    doors.Add(door);
+                if (door == null || !door.IsEnabled || !door.gameObject.activeInHierarchy)
+                    continue;
+                doors.Add(door);
             }
         }
 
@@ -656,7 +657,6 @@ namespace MagnetPanic.Combat
             float y = localCenter.y;
 
             CreateDoor(group, ArenaDoorId.North, new Vector3(localCenter.x, y, localCenter.z + halfZ), Vector3.back);
-            CreateDoor(group, ArenaDoorId.South, new Vector3(localCenter.x, y, localCenter.z - halfZ), Vector3.forward);
             CreateDoor(group, ArenaDoorId.East, new Vector3(localCenter.x + halfX, y, localCenter.z), Vector3.left);
             CreateDoor(group, ArenaDoorId.West, new Vector3(localCenter.x - halfX, y, localCenter.z), Vector3.right);
         }
