@@ -126,6 +126,10 @@ namespace MagnetPanic.Combat
         Vector3 lastArenaWallHitNormal;
         readonly List<Collider> ignoredEnemyColliders = new List<Collider>();
 
+        // Behavior add-ons (detected at runtime)
+        SpitterDroneBehavior spitterDrone;
+        ScrapThiefBehavior scrapThief;
+
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsAttackable => IsAlive && !isLockedTarget;
         public bool IsCounterable => IsAlive && (isPreparingAttack || isAttacking);
@@ -169,6 +173,9 @@ namespace MagnetPanic.Combat
 
             if (arenaSystem == null)
                 arenaSystem = FindFirstObjectByType<ArenaSystem>();
+
+            spitterDrone = GetComponent<SpitterDroneBehavior>();
+            scrapThief = GetComponent<ScrapThiefBehavior>();
 
             if (definition != null)
                 ApplyDefinitionFields(definition);
@@ -344,6 +351,22 @@ namespace MagnetPanic.Combat
         {
             if (!CanDirectorSelect)
                 return;
+
+            // Scrap thief: attempt grab+throw before normal attack
+            if (scrapThief != null && scrapThief.TryScrapAttack())
+                return;
+
+            // Spitter drone: fire projectile instead of melee
+            if (spitterDrone != null)
+            {
+                StopBehaviorCoroutine();
+                isExecutingLinearCharge = false;
+                SetEnemyCollisionsIgnored(false);
+                isPreparingAttack = true;
+                ShowCounterCue();
+                behaviorCoroutine = StartCoroutine(RangedAttackRoutine());
+                return;
+            }
 
             StopBehaviorCoroutine();
             isExecutingLinearCharge = false;
@@ -843,6 +866,36 @@ namespace MagnetPanic.Combat
             behaviorCoroutine = null;
         }
 
+        IEnumerator RangedAttackRoutine()
+        {
+            isPreparingAttack = true;
+            ShowCounterCue();
+            yield return new WaitForSeconds(prepareAttackTime);
+
+            isPreparingAttack = false;
+            isAttacking = true;
+
+            if (spitterDrone != null && IsAlive)
+                spitterDrone.FireProjectile();
+
+            // Wait for the spitter to finish its burst
+            if (spitterDrone != null)
+            {
+                float safety = 0f;
+                while (spitterDrone.IsFiring && IsAlive && safety < 4f)
+                {
+                    safety += Time.deltaTime;
+                    yield return null;
+                }
+            }
+
+            yield return new WaitForSeconds(attackRecovery);
+
+            isAttacking = false;
+            HideCounterCue();
+            behaviorCoroutine = null;
+        }
+
         IEnumerator RetreatRoutine()
         {
             isRetreating = true;
@@ -956,7 +1009,28 @@ namespace MagnetPanic.Combat
         {
             while (IsAlive && !isLockedTarget && !isStunned && !isPreparingAttack && !isAttacking && !isRetreating)
             {
-                if (useLinearCharge)
+                // Ranged enemy: maintain ideal distance like a linear charger
+                if (spitterDrone != null)
+                {
+                    float idealDist = spitterDrone.GetIdealDistance();
+                    float idealTol = spitterDrone.GetIdealTolerance();
+                    float distance = DistanceToPlayer();
+                    if (distance > idealDist + idealTol)
+                        moveMode = MoveMode.Approach;
+                    else if (distance < idealDist - idealTol)
+                        moveMode = MoveMode.Retreat;
+                    else
+                    {
+                        int r = Random.Range(0, 3);
+                        moveMode = r switch
+                        {
+                            0 => MoveMode.None,
+                            1 => MoveMode.StrafeLeft,
+                            _ => MoveMode.StrafeRight
+                        };
+                    }
+                }
+                else if (useLinearCharge)
                 {
                     float distance = DistanceToPlayer();
                     if (distance > chargeIdealDistance + chargeIdealTolerance)
@@ -981,7 +1055,10 @@ namespace MagnetPanic.Combat
                     };
                 }
 
-                yield return new WaitForSeconds(useLinearCharge ? Random.Range(0.18f, 0.32f) : Random.Range(0.7f, 1.2f));
+                yield return new WaitForSeconds(
+                    useLinearCharge || spitterDrone != null
+                        ? Random.Range(0.18f, 0.32f)
+                        : Random.Range(0.7f, 1.2f));
             }
 
             movementCoroutine = null;
@@ -1313,6 +1390,9 @@ namespace MagnetPanic.Combat
 
             if (arenaSystem == null)
                 arenaSystem = FindFirstObjectByType<ArenaSystem>();
+
+            spitterDrone = GetComponent<SpitterDroneBehavior>();
+            scrapThief = GetComponent<ScrapThiefBehavior>();
 
             StopBehaviorCoroutine();
             isDead = false;

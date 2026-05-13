@@ -197,6 +197,7 @@ MonoBehaviour:
   autoCreateMagnetizedIndicator: 1
   magnetizedIndicatorHeight: 2.15
   magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
+  debugMagnetProjectileCollisions: 0
   strafeSpeed: 1.25
   approachSpeed: 5
   retreatSpeed: 2.25

@@ -8,6 +8,7 @@ namespace MagnetPanic.Combat
         MetalEnemy,
         RunnerBot,
         HeavyBot,
+        SpitterDrone,
         Custom
     }
 
@@ -56,5 +57,31 @@ namespace MagnetPanic.Combat
         public float chargeIdealDistance = 5f;
         [Tooltip("Tolerance around chargeIdealDistance before the bot decides to approach or retreat.")]
         public float chargeIdealTolerance = 1.2f;
+
+        [Header("Ranged (Spitter Drone)")]
+        [Tooltip("When true, this enemy uses ranged attacks via SpitterDroneBehavior instead of melee.")]
+        public bool useRangedAttack;
+        [Tooltip("Prefab for the projectile fired by ranged enemies.")]
+        public GameObject projectilePrefab;
+        public float projectileSpeed = 10f;
+        public int projectileDamage = 1;
+        [Tooltip("Number of projectiles per burst.")]
+        public int burstCount = 1;
+        [Tooltip("Delay between burst shots.")]
+        public float burstInterval = 0.25f;
+        [Tooltip("Aim inaccuracy in degrees — keeps ranged enemies fair.")]
+        public float aimInaccuracy = 5f;
+        [Tooltip("Preferred distance from player for ranged enemies.")]
+        public float rangedIdealDistance = 7f;
+        [Tooltip("Tolerance around rangedIdealDistance.")]
+        public float rangedIdealTolerance = 1.5f;
+
+        [Header("Scrap Thief")]
+        [Tooltip("When true, this enemy can grab nearby scraps and throw them at the player.")]
+        public bool canThrowScraps;
+        [Tooltip("Chance (0-1) of doing a scrap throw instead of normal attack when scrap is nearby.")]
+        [Range(0f, 1f)] public float scrapThrowChance = 0.35f;
+        [Tooltip("Speed at which thrown scraps fly.")]
+        public float scrapThrowSpeed = 12f;
     }
 }

@@ -11,8 +11,15 @@ namespace MagnetPanic.Combat
         [Header("Attack Director")]
         [SerializeField] bool startAttackDirectorOnPlay = true;
         [SerializeField] Vector2 attackDelayRange = new Vector2(0.65f, 1.5f);
+        [SerializeField, Tooltip("When alive enemies >= this threshold, the director may send a second simultaneous attacker.")]
+        int simultaneousAttackThreshold = 5;
+        [SerializeField, Tooltip("Delay reduction per director cycle tick, for ramping pressure over time.")]
+        float delayReductionPerMinute = 0.06f;
+        [SerializeField, Tooltip("Minimum delay floor to avoid overwhelming the player.")]
+        float minDelay = 0.35f;
 
         Coroutine attackDirectorCoroutine;
+        float directorStartTime;
 
         public IReadOnlyList<ArkhamEnemy> Enemies => enemies;
 
@@ -56,6 +63,7 @@ namespace MagnetPanic.Combat
             if (attackDirectorCoroutine != null)
                 StopCoroutine(attackDirectorCoroutine);
 
+            directorStartTime = Time.time;
             attackDirectorCoroutine = StartCoroutine(AttackDirector());
         }
 
@@ -132,10 +140,37 @@ namespace MagnetPanic.Combat
             return available[Random.Range(0, available.Count)];
         }
 
+        ArkhamEnemy RandomAvailableEnemyExcluding(List<ArkhamEnemy> excluded)
+        {
+            List<ArkhamEnemy> available = new List<ArkhamEnemy>();
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ArkhamEnemy enemy = enemies[i];
+                if (enemy != null && enemy.CanDirectorSelect && !excluded.Contains(enemy))
+                    available.Add(enemy);
+            }
+
+            if (available.Count == 0)
+                return null;
+
+            return available[Random.Range(0, available.Count)];
+        }
+
+        float GetScaledDelay()
+        {
+            float elapsed = Time.time - directorStartTime;
+            float minutesElapsed = elapsed / 60f;
+            float baseDelay = Random.Range(attackDelayRange.x, attackDelayRange.y);
+            float reduction = minutesElapsed * delayReductionPerMinute;
+            return Mathf.Max(minDelay, baseDelay - reduction);
+        }
+
         IEnumerator AttackDirector()
         {
             ArkhamEnemy previousEnemy = null;
             WaitForSeconds retryDelay = new WaitForSeconds(0.25f);
+            List<ArkhamEnemy> activeAttackers = new List<ArkhamEnemy>(4);
 
             while (enabled)
             {
@@ -145,8 +180,11 @@ namespace MagnetPanic.Combat
                     continue;
                 }
 
-                yield return new WaitForSeconds(Random.Range(attackDelayRange.x, attackDelayRange.y));
+                yield return new WaitForSeconds(GetScaledDelay());
 
+                activeAttackers.Clear();
+
+                // Primary attacker
                 ArkhamEnemy attackingEnemy = RandomAvailableEnemy(previousEnemy);
                 if (attackingEnemy == null)
                     attackingEnemy = RandomAvailableEnemy(null);
@@ -155,17 +193,53 @@ namespace MagnetPanic.Combat
                     continue;
 
                 attackingEnemy.BeginAttack();
+                activeAttackers.Add(attackingEnemy);
 
+                // Simultaneous second attacker at higher enemy counts
+                int aliveCount = AliveEnemyCount();
+                if (aliveCount >= simultaneousAttackThreshold)
+                {
+                    ArkhamEnemy secondAttacker = RandomAvailableEnemyExcluding(activeAttackers);
+                    if (secondAttacker != null)
+                    {
+                        // Small stagger so both attacks don't land simultaneously
+                        yield return new WaitForSeconds(Random.Range(0.2f, 0.45f));
+                        if (secondAttacker.CanDirectorSelect)
+                        {
+                            secondAttacker.BeginAttack();
+                            activeAttackers.Add(secondAttacker);
+                        }
+                    }
+                }
+
+                // Wait for all active attackers to finish
                 yield return new WaitUntil(() =>
-                    attackingEnemy == null ||
-                    !attackingEnemy.IsAlive ||
-                    (!attackingEnemy.IsCounterable && !attackingEnemy.IsAttacking));
+                {
+                    for (int i = activeAttackers.Count - 1; i >= 0; i--)
+                    {
+                        ArkhamEnemy a = activeAttackers[i];
+                        if (a == null || !a.IsAlive)
+                        {
+                            activeAttackers.RemoveAt(i);
+                            continue;
+                        }
+                        if (a.IsCounterable || a.IsAttacking)
+                            return false;
+                    }
+                    return true;
+                });
 
-                if (attackingEnemy != null && attackingEnemy.IsAlive)
-                    attackingEnemy.BeginRetreat();
+                // Retreat surviving attackers
+                for (int i = 0; i < activeAttackers.Count; i++)
+                {
+                    ArkhamEnemy a = activeAttackers[i];
+                    if (a != null && a.IsAlive)
+                        a.BeginRetreat();
+                }
 
                 previousEnemy = attackingEnemy;
             }
         }
     }
 }
+

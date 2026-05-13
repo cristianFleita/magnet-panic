@@ -81,6 +81,11 @@ MonoBehaviour:
       definition: {fileID: 11400000, guid: 371287392dbd241149312940e51b1cf2, type: 2}
       threatCost: 3
       weight: 2
+    - label: SpitterDrone
+      prefab: {fileID: 4961922541159132038, guid: 3882eb73e86c546398a1e85ae4aefb92, type: 3}
+      definition: {fileID: 11400000, guid: 23f790f2c95064d34b94fa069b13a887, type: 2}
+      threatCost: 2
+      weight: 2
   - actName: Act 4 - Heavy Arrival
     startTime: 360
     baseBudget: 12
@@ -109,6 +114,11 @@ MonoBehaviour:
       definition: {fileID: 11400000, guid: 09700d1dfa3ca4065a35da07a439e441, type: 2}
       threatCost: 4
       weight: 1.4
+    - label: SpitterDrone
+      prefab: {fileID: 4961922541159132038, guid: 3882eb73e86c546398a1e85ae4aefb92, type: 3}
+      definition: {fileID: 11400000, guid: 23f790f2c95064d34b94fa069b13a887, type: 2}
+      threatCost: 2
+      weight: 2
   - actName: Act 5 - Storm
     startTime: 540
     baseBudget: 16
@@ -136,6 +146,11 @@ MonoBehaviour:
       prefab: {fileID: 4391651092749095801, guid: be2dbc8c7b4f34d27ab8d24d30414014, type: 3}
       definition: {fileID: 11400000, guid: 09700d1dfa3ca4065a35da07a439e441, type: 2}
       threatCost: 4
+      weight: 2
+    - label: SpitterDrone
+      prefab: {fileID: 4961922541159132038, guid: 3882eb73e86c546398a1e85ae4aefb92, type: 3}
+      definition: {fileID: 11400000, guid: 23f790f2c95064d34b94fa069b13a887, type: 2}
+      threatCost: 2
       weight: 2
   scrapTypes:
   - label: LightScrap
