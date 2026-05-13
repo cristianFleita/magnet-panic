@@ -32,4 +32,8 @@ MonoBehaviour:
   useLinearCharge: 1
   chargeSpeed: 12
   chargeDuration: 0.55
-  chargeHitRadius: 1.2
+  chargeHitRadius: 1.6
+  chargeDamage: 2
+  chargeCausesKnockdown: 1
+  chargeIdealDistance: 5
+  chargeIdealTolerance: 1.2

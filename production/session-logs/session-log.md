@@ -289,3 +289,32 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_205705
+### Commits
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/RunnerBot.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260512_211454
+### Commits
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/RunnerBot.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Enemies/EnemyDefinition.cs
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

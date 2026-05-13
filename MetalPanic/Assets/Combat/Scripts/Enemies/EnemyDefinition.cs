@@ -48,5 +48,13 @@ namespace MagnetPanic.Combat
         public float chargeSpeed = 11f;
         public float chargeDuration = 0.55f;
         public float chargeHitRadius = 1.1f;
+        [Tooltip("Damage dealt when the linear charge connects.")]
+        public int chargeDamage = 2;
+        [Tooltip("When true, the charge knocks the player down (Hit_Knockback state).")]
+        public bool chargeCausesKnockdown = true;
+        [Tooltip("Ideal idle distance from the player for linear-charge enemies (sweet spot for a tackle).")]
+        public float chargeIdealDistance = 5f;
+        [Tooltip("Tolerance around chargeIdealDistance before the bot decides to approach or retreat.")]
+        public float chargeIdealTolerance = 1.2f;
     }
 }

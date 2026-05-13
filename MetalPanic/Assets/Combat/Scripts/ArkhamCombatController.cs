@@ -11,6 +11,8 @@ namespace MagnetPanic.Combat
         static readonly int GroundPunchHash = Animator.StringToHash("GroundPunch");
         static readonly int DodgeHash = Animator.StringToHash("Dodge");
         static readonly int HitHash = Animator.StringToHash("Hit");
+        const string KnockbackStateName = "Armature|Hit_Knockback";
+        const string IdleStateName = "Armature|Idle_Loop";
 
         [Header("References")]
         [SerializeField] ArkhamEnemyManager enemyManager;
@@ -44,6 +46,10 @@ namespace MagnetPanic.Combat
         [SerializeField] float dodgeDistance = 2.35f;
         [SerializeField] float dodgeDuration = 0.28f;
         [SerializeField] float dodgeCooldown = 0.45f;
+
+        [Header("Knockdown")]
+        [SerializeField, Tooltip("How long the player stays locked when knocked down by a charge.")]
+        float knockdownDuration = 1.1f;
 
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnTrajectory = new UnityEvent<ArkhamEnemy>();
@@ -198,10 +204,16 @@ namespace MagnetPanic.Combat
 
         public void ReceiveDamage(ArkhamEnemy source)
         {
+            ReceiveDamage(source, damagePerEnemyHit, false);
+        }
+
+        public void ReceiveDamage(ArkhamEnemy source, int damage, bool knockdown)
+        {
             if (!IsAlive || isCountering || isAttackingEnemy || isDodging || health == null)
                 return;
 
-            if (!health.ApplyDamage(damagePerEnemyHit))
+            int amount = Mathf.Max(1, damage);
+            if (!health.ApplyDamage(amount))
                 return;
 
             if (!health.IsAlive)
@@ -214,7 +226,7 @@ namespace MagnetPanic.Combat
             if (damageCoroutine != null)
                 StopCoroutine(damageCoroutine);
 
-            damageCoroutine = StartCoroutine(DamageRoutine(source));
+            damageCoroutine = StartCoroutine(DamageRoutine(source, knockdown));
         }
 
         public bool Heal(int amount)
@@ -377,16 +389,24 @@ namespace MagnetPanic.Combat
             dodgeCoroutine = null;
         }
 
-        IEnumerator DamageRoutine(ArkhamEnemy source)
+        IEnumerator DamageRoutine(ArkhamEnemy source, bool knockdown)
         {
             motor.SetMovementLocked(true, true);
             OnDamaged.Invoke(source);
 
             if (animator != null)
-                animator.SetTrigger(HitHash);
+            {
+                if (knockdown)
+                    animator.CrossFade(KnockbackStateName, 0.05f, 0);
+                else
+                    animator.SetTrigger(HitHash);
+            }
 
-            cameraRig?.Shake(0.2f, 0.2f);
-            yield return new WaitForSeconds(0.42f);
+            cameraRig?.Shake(knockdown ? 0.32f : 0.2f, knockdown ? 0.28f : 0.2f);
+            yield return new WaitForSeconds(knockdown ? Mathf.Max(0.4f, knockdownDuration) : 0.42f);
+
+            if (knockdown && animator != null)
+                animator.CrossFade(IdleStateName, 0.15f, 0);
 
             motor.SetMovementLocked(false);
             damageCoroutine = null;

@@ -83,6 +83,14 @@ namespace MagnetPanic.Combat
         [SerializeField] float chargeSpeed = 11f;
         [SerializeField] float chargeDuration = 0.55f;
         [SerializeField] float chargeHitRadius = 1.1f;
+        [SerializeField, Tooltip("Damage applied when the linear charge connects with the player.")]
+        int chargeDamage = 2;
+        [SerializeField, Tooltip("When true the charge impact triggers the player's Hit_Knockback state.")]
+        bool chargeCausesKnockdown = true;
+        [SerializeField, Tooltip("Ideal distance for linear-charge enemies to stay from the player while idle.")]
+        float chargeIdealDistance = 5f;
+        [SerializeField, Tooltip("Reposition tolerance around chargeIdealDistance: bot retreats below distance-tolerance, approaches above distance+tolerance.")]
+        float chargeIdealTolerance = 1.2f;
 
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnDamaged = new UnityEvent<ArkhamEnemy>();
@@ -106,7 +114,9 @@ namespace MagnetPanic.Combat
         Coroutine movementCoroutine;
         ArenaSystem arenaSystem;
         bool isMagnetRepelProjectile;
+        bool isExecutingLinearCharge;
         Vector3 lastArenaWallHitNormal;
+        readonly List<Collider> ignoredEnemyColliders = new List<Collider>();
 
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsAttackable => IsAlive && !isLockedTarget;
@@ -196,6 +206,10 @@ namespace MagnetPanic.Combat
             chargeSpeed = def.chargeSpeed;
             chargeDuration = def.chargeDuration;
             chargeHitRadius = def.chargeHitRadius;
+            chargeDamage = Mathf.Max(1, def.chargeDamage);
+            chargeCausesKnockdown = def.chargeCausesKnockdown;
+            chargeIdealDistance = Mathf.Max(0f, def.chargeIdealDistance);
+            chargeIdealTolerance = Mathf.Max(0.1f, def.chargeIdealTolerance);
         }
 
         public void ConfigureMagneticProfile(bool alwaysPullable, float mass)
@@ -242,6 +256,7 @@ namespace MagnetPanic.Combat
         {
             StopBehaviorCoroutine();
             HideCounterCue();
+            SetEnemyCollisionsIgnored(false);
             isDead = true;
             isPreparingAttack = false;
             isAttacking = false;
@@ -251,6 +266,7 @@ namespace MagnetPanic.Combat
             isMagnetized = false;
             isMagneticallyControlled = false;
             isMagnetRepelProjectile = false;
+            isExecutingLinearCharge = false;
             attackHitApplied = false;
             moveMode = MoveMode.None;
             magneticMarks = 0;
@@ -317,7 +333,11 @@ namespace MagnetPanic.Combat
                 return;
 
             StopBehaviorCoroutine();
-            behaviorCoroutine = StartCoroutine(useLinearCharge ? LinearChargeRoutine() : AttackRoutine());
+            isExecutingLinearCharge = false;
+            SetEnemyCollisionsIgnored(false);
+
+            bool wantsCharge = useLinearCharge && DistanceToPlayer() > attackRange;
+            behaviorCoroutine = StartCoroutine(wantsCharge ? LinearChargeRoutine() : AttackRoutine());
         }
 
         public void BeginRetreat()
@@ -340,6 +360,8 @@ namespace MagnetPanic.Combat
             HideCounterCue();
             isPreparingAttack = false;
             isAttacking = false;
+            isExecutingLinearCharge = false;
+            SetEnemyCollisionsIgnored(false);
             isRetreating = false;
             isStunned = true;
             isMagneticallyControlled = false;
@@ -364,6 +386,8 @@ namespace MagnetPanic.Combat
             HideCounterCue();
             isPreparingAttack = false;
             isAttacking = false;
+            isExecutingLinearCharge = false;
+            SetEnemyCollisionsIgnored(false);
             isRetreating = false;
             isStunned = true;
             isLockedTarget = false;
@@ -397,9 +421,11 @@ namespace MagnetPanic.Combat
             if (playerCombat == null || attackHitApplied || !isAttacking)
                 return false;
 
+            bool isCharge = isExecutingLinearCharge && !isMagnetRepelProjectile;
+
             float allowedRange = isMagnetRepelProjectile
                 ? float.PositiveInfinity
-                : useLinearCharge
+                : isCharge
                     ? Mathf.Max(chargeHitRadius, attackRange * 0.5f) * hitRangeTolerance
                     : attackRange * hitRangeTolerance;
 
@@ -407,8 +433,54 @@ namespace MagnetPanic.Combat
                 return false;
 
             attackHitApplied = true;
-            playerCombat.ReceiveDamage(this);
+
+            if (isCharge)
+                playerCombat.ReceiveDamage(this, Mathf.Max(1, chargeDamage), chargeCausesKnockdown);
+            else
+                playerCombat.ReceiveDamage(this);
+
             return true;
+        }
+
+        void SetEnemyCollisionsIgnored(bool ignore)
+        {
+            if (characterController == null)
+                return;
+
+            if (ignore)
+            {
+                ignoredEnemyColliders.Clear();
+                if (manager == null)
+                    return;
+
+                IReadOnlyList<ArkhamEnemy> others = manager.Enemies;
+                for (int i = 0; i < others.Count; i++)
+                {
+                    ArkhamEnemy other = others[i];
+                    if (other == null || other == this)
+                        continue;
+
+                    CharacterController otherCC = other.GetComponent<CharacterController>();
+                    if (otherCC == null || !otherCC.enabled)
+                        continue;
+
+                    Physics.IgnoreCollision(characterController, otherCC, true);
+                    ignoredEnemyColliders.Add(otherCC);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < ignoredEnemyColliders.Count; i++)
+                {
+                    Collider col = ignoredEnemyColliders[i];
+                    if (col == null || !col.enabled || !col.gameObject.activeInHierarchy)
+                        continue;
+
+                    Physics.IgnoreCollision(characterController, col, false);
+                }
+
+                ignoredEnemyColliders.Clear();
+            }
         }
 
         public void ApplyMark(int stacks)
@@ -549,6 +621,8 @@ namespace MagnetPanic.Combat
 
             StopBehaviorCoroutine();
             HideCounterCue();
+            isExecutingLinearCharge = false;
+            SetEnemyCollisionsIgnored(false);
             direction.y = 0f;
             if (direction.sqrMagnitude < 0.01f)
                 direction = transform.forward;
@@ -569,6 +643,8 @@ namespace MagnetPanic.Combat
             HideCounterCue();
             isPreparingAttack = false;
             isAttacking = false;
+            isExecutingLinearCharge = false;
+            SetEnemyCollisionsIgnored(false);
             isRetreating = false;
             isLockedTarget = false;
             isStunned = true;
@@ -644,6 +720,8 @@ namespace MagnetPanic.Combat
         IEnumerator LinearChargeRoutine()
         {
             isPreparingAttack = true;
+            moveMode = MoveMode.None;
+            StopMoving();
             ShowCounterCue();
             ShowChargeTelegraph();
 
@@ -651,6 +729,7 @@ namespace MagnetPanic.Combat
             while (prepTimer < prepareAttackTime && IsAlive)
             {
                 prepTimer += Time.deltaTime;
+                moveMode = MoveMode.None;
                 FacePlayer();
                 yield return null;
             }
@@ -658,6 +737,7 @@ namespace MagnetPanic.Combat
             HideChargeTelegraph();
             isPreparingAttack = false;
             isAttacking = true;
+            isExecutingLinearCharge = true;
             attackHitApplied = false;
             moveMode = MoveMode.None;
 
@@ -672,6 +752,8 @@ namespace MagnetPanic.Combat
 
             if (animator != null)
                 animator.SetTrigger(AirPunchHash);
+
+            SetEnemyCollisionsIgnored(true);
 
             float dashTimer = 0f;
             float hitRadiusSqr = chargeHitRadius * chargeHitRadius;
@@ -689,10 +771,19 @@ namespace MagnetPanic.Combat
                 }
 
                 if ((flags & CollisionFlags.Sides) != 0)
+                {
+                    TryApplyAttackHit();
                     break;
+                }
 
                 yield return null;
             }
+
+            if (!attackHitApplied)
+                TryApplyAttackHit();
+
+            isExecutingLinearCharge = false;
+            SetEnemyCollisionsIgnored(false);
 
             yield return new WaitForSeconds(attackRecovery);
 
@@ -808,7 +899,17 @@ namespace MagnetPanic.Combat
         {
             while (IsAlive && !isLockedTarget && !isStunned && !isPreparingAttack && !isAttacking && !isRetreating)
             {
-                if (disableStrafe)
+                if (useLinearCharge)
+                {
+                    float distance = DistanceToPlayer();
+                    if (distance > chargeIdealDistance + chargeIdealTolerance)
+                        moveMode = MoveMode.Approach;
+                    else if (distance < chargeIdealDistance - chargeIdealTolerance && distance > attackRange * 0.85f)
+                        moveMode = MoveMode.Retreat;
+                    else
+                        moveMode = MoveMode.None;
+                }
+                else if (disableStrafe)
                 {
                     moveMode = DistanceToPlayer() > attackRange * 1.5f ? MoveMode.Approach : MoveMode.None;
                 }
@@ -823,7 +924,7 @@ namespace MagnetPanic.Combat
                     };
                 }
 
-                yield return new WaitForSeconds(Random.Range(0.7f, 1.2f));
+                yield return new WaitForSeconds(useLinearCharge ? Random.Range(0.18f, 0.32f) : Random.Range(0.7f, 1.2f));
             }
 
             movementCoroutine = null;
@@ -917,6 +1018,12 @@ namespace MagnetPanic.Combat
                 StopCoroutine(movementCoroutine);
 
             movementCoroutine = null;
+
+            if (isExecutingLinearCharge)
+            {
+                isExecutingLinearCharge = false;
+                SetEnemyCollisionsIgnored(false);
+            }
         }
 
         void DecayMagneticMark()
@@ -1044,6 +1151,7 @@ namespace MagnetPanic.Combat
         {
             isDead = true;
             HideCounterCue();
+            SetEnemyCollisionsIgnored(false);
             UpdateMagnetizedIndicator();
             StopBehaviorCoroutine();
             StopMoving();
@@ -1090,6 +1198,7 @@ namespace MagnetPanic.Combat
             isMagnetized = false;
             isMagneticallyControlled = false;
             isMagnetRepelProjectile = false;
+            isExecutingLinearCharge = false;
             attackHitApplied = false;
             lastArenaWallHitNormal = Vector3.zero;
             lastMarkTime = -999f;
