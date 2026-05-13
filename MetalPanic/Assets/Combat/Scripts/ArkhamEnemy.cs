@@ -614,7 +614,7 @@ namespace MagnetPanic.Combat
             behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, speed * 0.12f, 0.12f, stunDuration * 0.5f));
         }
 
-        public void MagnetRepel(Vector3 direction, float speed, int impactDamage)
+        public void MagnetRepel(Vector3 direction, float speed, int impactDamage, int recoilDamage = -1)
         {
             if (!IsAlive)
                 return;
@@ -631,7 +631,9 @@ namespace MagnetPanic.Combat
             isStunned = true;
             isMagneticallyControlled = true;
             isMagnetRepelProjectile = true;
-            behaviorCoroutine = StartCoroutine(MagneticRepelRoutine(direction.normalized, speed, impactDamage));
+
+            int resolvedRecoil = recoilDamage < 0 ? impactDamage : recoilDamage;
+            behaviorCoroutine = StartCoroutine(MagneticRepelRoutine(direction.normalized, speed, impactDamage, resolvedRecoil));
         }
 
         public void ReceiveMagneticImpact(int damage, Vector3 sourcePosition, float impactKnockbackDistance, bool clearsMagnetized)
@@ -841,7 +843,7 @@ namespace MagnetPanic.Combat
             yield return StunRoutine(finalStunDuration);
         }
 
-        IEnumerator MagneticRepelRoutine(Vector3 direction, float speed, int impactDamage)
+        IEnumerator MagneticRepelRoutine(Vector3 direction, float speed, int impactDamage, int recoilDamage)
         {
             float elapsed = 0f;
             HashSet<ArkhamEnemy> hitEnemies = new HashSet<ArkhamEnemy>();
@@ -851,7 +853,9 @@ namespace MagnetPanic.Combat
                 elapsed += Time.deltaTime;
                 lastArenaWallHitNormal = Vector3.zero;
                 CollisionFlags collision = MoveBy(direction * speed * Time.deltaTime);
-                DamageEnemiesTouchedByMagneticProjectile(hitEnemies, impactDamage);
+                DamageEnemiesTouchedByMagneticProjectile(hitEnemies, impactDamage, recoilDamage);
+                if (!IsAlive)
+                    yield break;
 
                 if (HitArenaWall(collision) || EscapedArenaBounds())
                 {
@@ -1040,7 +1044,7 @@ namespace MagnetPanic.Combat
                 SetMarkState(MagneticMarkState.Normal);
         }
 
-        void DamageEnemiesTouchedByMagneticProjectile(HashSet<ArkhamEnemy> hitEnemies, int impactDamage)
+        void DamageEnemiesTouchedByMagneticProjectile(HashSet<ArkhamEnemy> hitEnemies, int impactDamage, int recoilDamage)
         {
             if (manager == null)
                 return;
@@ -1060,8 +1064,31 @@ namespace MagnetPanic.Combat
                     continue;
 
                 hitEnemies.Add(enemy);
+                Vector3 contactPoint = enemy.transform.position;
                 enemy.ReceiveMagneticImpact(impactDamage, transform.position, knockbackDistance * 1.5f, false);
+                ApplyProjectileRecoil(recoilDamage, contactPoint);
+
+                if (!IsAlive)
+                    return;
             }
+        }
+
+        void ApplyProjectileRecoil(int damage, Vector3 contactPoint)
+        {
+            if (!IsAlive || combatHealth == null || damage <= 0)
+                return;
+
+            combatHealth.ApplyDamage(damage);
+            OnDamaged.Invoke(this);
+
+            if (!combatHealth.IsAlive)
+            {
+                Die();
+                return;
+            }
+
+            if (animator != null)
+                animator.SetTrigger(HitHash);
         }
 
         CollisionFlags MoveBy(Vector3 displacement)

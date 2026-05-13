@@ -318,3 +318,49 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260512_213814
+### Commits
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260512_214954
+### Commits
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260512_215951
+### Commits
+e0a888d chore: adjust runnerBot
+a44fc69 chore: adjust enemy attack
+e5fc468 chore: wip vertical slice combat system
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

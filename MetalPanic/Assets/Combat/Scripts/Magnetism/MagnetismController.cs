@@ -39,6 +39,10 @@ namespace MagnetPanic.Combat
         [SerializeField] float repelCooldown = 0.25f;
         [SerializeField] float repelSpeed = 16f;
         [SerializeField] int magnetizedEnemyDamage = 5;
+        [SerializeField, Tooltip("Damage the repelled enemy itself takes each time it collides with another enemy mid-flight (mirrors wall-slam recoil).")]
+        int magnetizedEnemyRecoilDamage = 5;
+        [SerializeField, Tooltip("When repelling a magnetized enemy, snap the launch direction toward the nearest enemy or arena wall within this radius. 0 disables auto-aim.")]
+        float magnetizedRepelAutoAimRadius = 5f;
 
         [Header("Enemy Pull")]
         [SerializeField] float heldEnemyDistance = 1.9f;
@@ -74,6 +78,7 @@ namespace MagnetPanic.Combat
         bool pullActive;
         bool pullEnabled = true;
         bool repelEnabled = true;
+        ArenaSystem cachedArena;
 
         public float CurrentCharge => currentCharge;
         public float MaxCapacity => maxCapacity;
@@ -430,7 +435,9 @@ namespace MagnetPanic.Combat
                 if (enemy == null)
                     continue;
 
-                enemy.MagnetRepel(DirectionInCone(aim, slot, total), repelSpeed * 0.78f, magnetizedEnemyDamage);
+                Vector3 coneDir = DirectionInCone(aim, slot, total);
+                Vector3 launchDir = ResolveMagnetizedRepelDirection(enemy, coneDir);
+                enemy.MagnetRepel(launchDir, repelSpeed * 0.78f, magnetizedEnemyDamage, magnetizedEnemyRecoilDamage);
                 slot++;
             }
 
@@ -660,6 +667,97 @@ namespace MagnetPanic.Combat
                 Destroy(target);
             else
                 DestroyImmediate(target);
+        }
+
+        Vector3 ResolveMagnetizedRepelDirection(ArkhamEnemy projectile, Vector3 fallback)
+        {
+            if (magnetizedRepelAutoAimRadius <= 0f || projectile == null)
+                return fallback;
+
+            Vector3 origin = projectile.transform.position;
+            float bestDistSqr = magnetizedRepelAutoAimRadius * magnetizedRepelAutoAimRadius;
+            Vector3 bestTarget = Vector3.zero;
+            bool found = false;
+
+            if (enemyManager != null)
+            {
+                IReadOnlyList<ArkhamEnemy> roster = enemyManager.Enemies;
+                for (int i = 0; i < roster.Count; i++)
+                {
+                    ArkhamEnemy other = roster[i];
+                    if (other == null || other == projectile || !other.IsAlive)
+                        continue;
+                    if (pulledEnemies.Contains(other))
+                        continue;
+
+                    Vector3 delta = other.transform.position - origin;
+                    delta.y = 0f;
+                    float distSqr = delta.sqrMagnitude;
+                    if (distSqr < 0.04f || distSqr > bestDistSqr)
+                        continue;
+
+                    bestDistSqr = distSqr;
+                    bestTarget = other.transform.position;
+                    found = true;
+                }
+            }
+
+            ArenaSystem arena = ResolveArenaSystem();
+            if (arena != null)
+            {
+                Vector3 wallPoint = NearestArenaWallPoint(origin, arena.PlayableBounds);
+                Vector3 delta = wallPoint - origin;
+                delta.y = 0f;
+                float distSqr = delta.sqrMagnitude;
+                if (distSqr > 0.04f && distSqr <= bestDistSqr)
+                {
+                    bestDistSqr = distSqr;
+                    bestTarget = wallPoint;
+                    found = true;
+                }
+            }
+
+            if (!found)
+                return fallback;
+
+            Vector3 dir = bestTarget - origin;
+            dir.y = 0f;
+            return dir.sqrMagnitude > 0.0001f ? dir.normalized : fallback;
+        }
+
+        ArenaSystem ResolveArenaSystem()
+        {
+            if (cachedArena == null)
+                cachedArena = FindFirstObjectByType<ArenaSystem>();
+            return cachedArena;
+        }
+
+        static Vector3 NearestArenaWallPoint(Vector3 position, Bounds bounds)
+        {
+            float dxMin = Mathf.Abs(position.x - bounds.min.x);
+            float dxMax = Mathf.Abs(bounds.max.x - position.x);
+            float dzMin = Mathf.Abs(position.z - bounds.min.z);
+            float dzMax = Mathf.Abs(bounds.max.z - position.z);
+
+            float min = dxMin;
+            Vector3 point = new Vector3(bounds.min.x, position.y, position.z);
+
+            if (dxMax < min)
+            {
+                min = dxMax;
+                point = new Vector3(bounds.max.x, position.y, position.z);
+            }
+            if (dzMin < min)
+            {
+                min = dzMin;
+                point = new Vector3(position.x, position.y, bounds.min.z);
+            }
+            if (dzMax < min)
+            {
+                point = new Vector3(position.x, position.y, bounds.max.z);
+            }
+
+            return point;
         }
 
         void OnDrawGizmosSelected()
