@@ -327,7 +327,7 @@ namespace MagnetPanic.Combat
                 if (animator != null)
                     animator.SetTrigger(trigger);
 
-                Debug.Log("attack trigger " + trigger);
+                Debug.Log($"[Combo] Hit {comboIndex}/{(attackTriggers != null ? attackTriggers.Length : 0)} trigger='{trigger}' target={target?.name} isFinisher={(attackTriggers != null && comboIndex >= attackTriggers.Length)}");
 
                 if (target != null)
                 {
@@ -354,11 +354,15 @@ namespace MagnetPanic.Combat
 
                 yield return new WaitForSeconds(recovery);
 
-                // Open combo window or reset after finisher
                 if (!isFinisher && !counterAttack)
+                {
                     comboWindowEndTime = Time.time + comboWindow;
+                }
                 else
+                {
+                    Debug.Log($"[Combo] Chain COMPLETE (finisher={isFinisher}) — resetting");
                     ResetCombo();
+                }
             }
             finally
             {
@@ -582,7 +586,10 @@ namespace MagnetPanic.Combat
 
             // Reset combo if outside the chain window
             if (Time.time > comboWindowEndTime && comboIndex > 0)
+            {
+                Debug.Log($"[Combo] Window EXPIRED — resetting (was idx {comboIndex})");
                 ResetCombo();
+            }
 
             int idx = Mathf.Clamp(comboIndex, 0, attackTriggers.Length - 1);
             comboIndex = idx + 1;
