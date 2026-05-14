@@ -449,6 +449,79 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8672090624526566230, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
   m_PrefabInstance: {fileID: 1841621515}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &171085443
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 171085444}
+  - component: {fileID: 171085446}
+  - component: {fileID: 171085445}
+  m_Layer: 0
+  m_Name: Missions HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &171085444
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171085443}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 719226213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &171085445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171085443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cddf2cf51de84a5484840b5598606ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.UI.MissionHud
+  missions: {fileID: 1944696923}
+  background: {r: 0.04, g: 0.05, b: 0.07, a: 0.85}
+  accentActive: {r: 1, g: 0.78, b: 0.22, a: 1}
+  accentComplete: {r: 0.27, g: 0.93, b: 0.45, a: 1}
+  accentExpired: {r: 0.92, g: 0.32, b: 0.32, a: 1}
+--- !u!114 &171085446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171085443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: d025d023570b8482b8eb74ffa31684f6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 0}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!1 &335756980
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,6 +655,10 @@ PrefabInstance:
       propertyPath: cameraOverride
       value: 
       objectReference: {fileID: 1583158216}
+    - target: {fileID: 7616598692914717819, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8252025870227308575, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
       propertyPath: enemyManager
       value: 
@@ -597,7 +674,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7616598692914717819, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1669535695}
   m_SourcePrefab: {fileID: 100100000, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
 --- !u!114 &394681427 stripped
 MonoBehaviour:
@@ -860,6 +940,145 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 6.800005, y: 1, z: 8.455666}
   m_Center: {x: 1.6740599, y: 0, z: -3.7278328}
+--- !u!1 &719226212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 719226213}
+  m_Layer: 0
+  m_Name: HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &719226213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719226212}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.93695, y: -5.86479, z: -19.20753}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1336404079}
+  - {fileID: 1665981558}
+  - {fileID: 171085444}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &848282164
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 848282165}
+  - component: {fileID: 848282166}
+  - component: {fileID: 848282167}
+  - component: {fileID: 848282168}
+  m_Layer: 0
+  m_Name: Scoring
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &848282165
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848282164}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.16936, y: 3.53249, z: -11.01043}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &848282166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848282164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73115ca8440c548a4af73d6c488a1a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.ScoringRuntime
+  config: {fileID: 11400000, guid: f5eb0eeadd12749ee98d6322467731d9, type: 2}
+  autoStartRun: 1
+  upgradeBrokerComponent: {fileID: 0}
+  OnXpChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnLevelUp:
+    m_PersistentCalls:
+      m_Calls: []
+  OnComboChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnComboReset:
+    m_PersistentCalls:
+      m_Calls: []
+  OnXpAwarded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnKillReported:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCounterAwarded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnScoreChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRunEnded:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &848282167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848282164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d4749f2dc8864c8bbe50071f6b901ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.KillEventRouter
+  scoring: {fileID: 848282166}
+  waveDirector: {fileID: 576832663}
+  enemyManager: {fileID: 335756981}
+--- !u!114 &848282168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848282164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 540c3bd86338a485580c815c31331e0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.RunEndScoringBridge
+  runController: {fileID: 576832660}
+  scoring: {fileID: 848282166}
 --- !u!1 &935124742 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1224754904950846302, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
@@ -1004,6 +1223,76 @@ MonoBehaviour:
   overrideLayer: 1
   blockingLayerName: ArenaWall
   spawnAvoidanceRadius: 0
+--- !u!1 &1336404075
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1336404079}
+  - component: {fileID: 1336404078}
+  - component: {fileID: 1336404077}
+  m_Layer: 6
+  m_Name: Player Health HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1336404077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336404075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98e380240b2b485f827268789b3b73ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.PlayerHealthHud
+  health: {fileID: 394681427}
+  title: HP
+--- !u!114 &1336404078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336404075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: d025d023570b8482b8eb74ffa31684f6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 0}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &1336404079
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336404075}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.93695, y: 5.86479, z: 19.20753}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 719226213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1356560724 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8181967549168216227, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
@@ -1353,6 +1642,105 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1665981557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1665981558}
+  - component: {fileID: 1665981560}
+  - component: {fileID: 1665981559}
+  m_Layer: 0
+  m_Name: Scoring HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1665981558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665981557}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 719226213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1665981559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665981557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c6018bd97e844578afc42f2bba59a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.UI.XpHud
+  scoring: {fileID: 0}
+  hideComboAtRest: 1
+  barBackground: {r: 0.1, g: 0.11, b: 0.13, a: 0.92}
+  xpFillColor: {r: 0.96, g: 0.78, b: 0.18, a: 1}
+  comboColorLow: {r: 0.95, g: 0.95, b: 0.95, a: 1}
+  comboColorHigh: {r: 1, g: 0.55, b: 0.18, a: 1}
+  comboColorRamp: 10
+--- !u!114 &1665981560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665981557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: d025d023570b8482b8eb74ffa31684f6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 0}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!1 &1669535691 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7616598692914717819, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+  m_PrefabInstance: {fileID: 394681426}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1669535695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669535691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c6018bd97e844578afc42f2bba59a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.UI.XpHud
+  scoring: {fileID: 0}
+  hideComboAtRest: 1
+  barBackground: {r: 0.1, g: 0.11, b: 0.13, a: 0.92}
+  xpFillColor: {r: 0.96, g: 0.78, b: 0.18, a: 1}
+  comboColorLow: {r: 0.95, g: 0.95, b: 0.95, a: 1}
+  comboColorHigh: {r: 1, g: 0.55, b: 0.18, a: 1}
+  comboColorRamp: 10
 --- !u!1001 &1841621515
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1547,6 +1935,144 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 55cf24a50b1414c6e88f5fe80f0941d2, type: 2}
   m_BuildHeightMesh: 0
+--- !u!1 &1944696922
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1944696924}
+  - component: {fileID: 1944696923}
+  - component: {fileID: 1944696929}
+  - component: {fileID: 1944696928}
+  - component: {fileID: 1944696927}
+  - component: {fileID: 1944696926}
+  - component: {fileID: 1944696925}
+  m_Layer: 0
+  m_Name: Missions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1944696923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944696922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 773aee0b2516f4ddcaaad09fe9c12c11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionSystem
+  catalog: {fileID: 11400000, guid: dc3b47a269cf64453883b171ec2470a6, type: 2}
+  cooldownRange: {x: 15, y: 20}
+  completionDisplaySeconds: 0.6
+  firstMissionDelay: 8
+  scoring: {fileID: 0}
+  playerHealth: {fileID: 0}
+  powerupBrokerComponent: {fileID: 0}
+  autoStart: 1
+  pauseWithTimeScale: 1
+  OnMissionStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnMissionProgress:
+    m_PersistentCalls:
+      m_Calls: []
+  OnMissionCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnMissionExpired:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCooldownStarted:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &1944696924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944696922}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.93695, y: -5.86479, z: -19.20753}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1944696925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944696922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402f96d9beac1422180bc9669c4189f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.NoHandsTracker
+  scoring: {fileID: 0}
+--- !u!114 &1944696926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944696922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b0b5116f9e854c54891ad79a61c56e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.WallSlamTracker
+  scoring: {fileID: 0}
+--- !u!114 &1944696927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944696922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab713003c38f849ef8e80e3f685bb7ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.ScrapCollectorTracker
+  magnetism: {fileID: 0}
+--- !u!114 &1944696928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944696922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79f12fbea5ef34ad7a879d6b709046df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.CounterstormTracker
+  scoring: {fileID: 0}
+--- !u!114 &1944696929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944696922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c50ce8cb3964b74969652ebf478136, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.ComboHunterTracker
+  scoring: {fileID: 0}
 --- !u!1 &2067095500 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5332592522296601475, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
@@ -1585,3 +2111,6 @@ SceneRoots:
   - {fileID: 141444838}
   - {fileID: 1657009034}
   - {fileID: 1841621515}
+  - {fileID: 848282165}
+  - {fileID: 719226213}
+  - {fileID: 1944696924}

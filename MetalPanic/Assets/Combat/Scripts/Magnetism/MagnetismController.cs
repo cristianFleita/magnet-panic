@@ -93,6 +93,7 @@ namespace MagnetPanic.Combat
         public float MaxCapacity => maxCapacity;
         public bool IsPulling => pullActive;
         public bool HasOrbitingPayload => orbitingObjects.Count > 0 || pulledEnemies.Count > 0;
+        public int OrbitingCount => orbitingObjects.Count + pulledEnemies.Count;
         public bool PullEnabled => pullEnabled;
         public bool RepelEnabled => repelEnabled;
 

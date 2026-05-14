@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using MagnetPanic.Combat.Scoring;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -108,6 +109,10 @@ namespace MagnetPanic.Combat
         [SerializeField, Tooltip("Reposition tolerance around chargeIdealDistance: bot retreats below distance-tolerance, approaches above distance+tolerance.")]
         float chargeIdealTolerance = 1.2f;
 
+        [Header("Scoring")]
+        [Tooltip("If true, kills against this enemy award the boss XP bonus from ScoringConfig.")]
+        [SerializeField] bool isBoss;
+
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnDamaged = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnDeath = new UnityEvent<ArkhamEnemy>();
@@ -115,6 +120,33 @@ namespace MagnetPanic.Combat
         public UnityEvent<ArkhamEnemy> OnCountered = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnAnchored = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnAnchorReleased = new UnityEvent<ArkhamEnemy>();
+
+        KillMethod lastDamageMethod = KillMethod.Unknown;
+        KillMethod pendingDamageMethod = KillMethod.Unknown;
+        public KillMethod LastDamageMethod => lastDamageMethod;
+        public bool IsBoss => isBoss;
+
+        /// <summary>
+        /// Lets external damage sources tag the next call into one of this
+        /// enemy's damage entry points with a specific kill method (e.g. an
+        /// overload or an enemy-as-projectile collision). The tag is consumed
+        /// by the next damage call and reset afterwards.
+        /// </summary>
+        public void TagNextDamageMethod(KillMethod method)
+        {
+            pendingDamageMethod = method;
+        }
+
+        KillMethod ConsumePendingMethod(KillMethod fallback)
+        {
+            if (pendingDamageMethod != KillMethod.Unknown)
+            {
+                KillMethod method = pendingDamageMethod;
+                pendingDamageMethod = KillMethod.Unknown;
+                return method;
+            }
+            return fallback;
+        }
 
         int magneticMarks;
         bool _isPreparingAttack;
@@ -494,6 +526,7 @@ namespace MagnetPanic.Combat
             StopMoving();
 
             ApplyMark(1);
+            lastDamageMethod = ConsumePendingMethod(KillMethod.Strike);
             combatHealth.ApplyDamage(Mathf.Max(1, damage));
             OnDamaged.Invoke(this);
 
@@ -793,6 +826,7 @@ namespace MagnetPanic.Combat
                 ? markedProjectileDamageMultiplier
                 : 1f;
             int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * multiplier));
+            lastDamageMethod = ConsumePendingMethod(KillMethod.Repel);
             combatHealth.ApplyDamage(finalDamage);
 
             if (clearsMagnetized && markState == MagneticMarkState.Magnetized)
@@ -1340,6 +1374,7 @@ namespace MagnetPanic.Combat
                     Debug.DrawLine(transform.position + Vector3.up * 1f, contactPoint + Vector3.up * 1f, Color.red, 1.5f, false);
                 }
 
+                enemy.TagNextDamageMethod(KillMethod.EnemyRepel);
                 enemy.ReceiveMagneticImpact(impactDamage, transform.position, knockbackDistance * 1.5f, false);
                 ApplyProjectileRecoil(recoilDamage, contactPoint);
 
@@ -1365,6 +1400,7 @@ namespace MagnetPanic.Combat
             if (!IsAlive || combatHealth == null || damage <= 0)
                 return;
 
+            lastDamageMethod = KillMethod.EnemyRepel;
             combatHealth.ApplyDamage(damage);
             OnDamaged.Invoke(this);
 
@@ -1443,6 +1479,7 @@ namespace MagnetPanic.Combat
             if (!IsAlive)
                 return;
 
+            lastDamageMethod = KillMethod.WallSlam;
             combatHealth.ApplyDamage(Mathf.Max(0, damage));
             OnDamaged.Invoke(this);
 
@@ -1529,6 +1566,8 @@ namespace MagnetPanic.Combat
             moveMode = MoveMode.None;
             magneticMarks = 0;
             markState = MagneticMarkState.Normal;
+            lastDamageMethod = KillMethod.Unknown;
+            pendingDamageMethod = KillMethod.Unknown;
 
             navPath.Reset();
             navPath.Randomize();
