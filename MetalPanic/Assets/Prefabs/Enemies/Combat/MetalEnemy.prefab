@@ -168,7 +168,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4278282883254307941}
   - component: {fileID: 7474309889939906814}
-  - component: {fileID: 5479360575904876137}
   - component: {fileID: 302839383051251704}
   - component: {fileID: 7106029408107021932}
   - component: {fileID: 6425317549515159455}
@@ -218,35 +217,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2.5
+  m_Height: 2.9
   m_Radius: 0.84
   m_SlopeLimit: 60
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
---- !u!95 &5479360575904876137
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6465465380206952774}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 29924101c0ee64ad0a8c3e163a665ef8, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_Center: {x: 0, y: 1.22, z: 0}
 --- !u!114 &302839383051251704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,7 +271,7 @@ MonoBehaviour:
   definition: {fileID: 11400000, guid: 719084e9dd2274f2d94d4631e0482799, type: 2}
   manager: {fileID: 0}
   playerCombat: {fileID: 0}
-  animator: {fileID: 5479360575904876137}
+  animator: {fileID: 8671880909498773224}
   characterController: {fileID: 7474309889939906814}
   combatHealth: {fileID: 302839383051251704}
   healthBar: {fileID: 0}
@@ -309,7 +286,7 @@ MonoBehaviour:
   destroyOnDeath: 1
   deathDespawnDelay: 0.8
   autoCreateHealthBar: 1
-  healthBarHeight: 2.35
+  healthBarHeight: 3.35
   markState: 0
   markDecayTime: 6
   magneticMass: 2.2
@@ -322,7 +299,7 @@ MonoBehaviour:
   alwaysPullableByMagnet: 1
   magnetizedIndicator: {fileID: 0}
   autoCreateMagnetizedIndicator: 1
-  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorHeight: 3.2
   magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   debugMagnetProjectileCollisions: 0
   strafeSpeed: 1
@@ -717,10 +694,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8dd931c6be4834de89bc079d8752104d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8671880909498773224}
   m_SourcePrefab: {fileID: 100100000, guid: 8dd931c6be4834de89bc079d8752104d, type: 3}
 --- !u!4 &3720296848701128972 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8dd931c6be4834de89bc079d8752104d, type: 3}
   m_PrefabInstance: {fileID: 3759273379579520743}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4101361892459961270 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 8dd931c6be4834de89bc079d8752104d, type: 3}
+  m_PrefabInstance: {fileID: 3759273379579520743}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &8671880909498773224
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4101361892459961270}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 8dd931c6be4834de89bc079d8752104d, type: 3}
+  m_Controller: {fileID: 9100000, guid: b9ce562b501c840a7be8d101b98b0f2f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

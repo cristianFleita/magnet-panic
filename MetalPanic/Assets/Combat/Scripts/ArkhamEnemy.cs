@@ -1118,15 +1118,7 @@ namespace MagnetPanic.Combat
                     else if (distance < idealDist - idealTol)
                         moveMode = MoveMode.Retreat;
                     else
-                    {
-                        int r = Random.Range(0, 3);
-                        moveMode = r switch
-                        {
-                            0 => MoveMode.None,
-                            1 => MoveMode.StrafeLeft,
-                            _ => MoveMode.StrafeRight
-                        };
-                    }
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                 }
                 else if (useLinearCharge)
                 {
@@ -1136,33 +1128,25 @@ namespace MagnetPanic.Combat
                     else if (distance < chargeIdealDistance - chargeIdealTolerance && distance > attackRange * 0.85f)
                         moveMode = MoveMode.Retreat;
                     else
-                        moveMode = MoveMode.None;
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                 }
                 else if (disableStrafe)
                 {
-                    moveMode = DistanceToPlayer() > attackRange * 1.5f ? MoveMode.Approach : MoveMode.None;
+                    moveMode = MoveMode.Approach;
                 }
                 else
                 {
                     if (DistanceToPlayer() > attackRange * 1.5f)
                     {
                         int random = Random.Range(0, 10);
-                        if (random < 4)
+                        if (random < 6)
                             moveMode = MoveMode.Approach;
-                        else if (random < 7)
-                            moveMode = MoveMode.None;
                         else
                             moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                     }
                     else
                     {
-                        int random = Random.Range(0, 3);
-                        moveMode = random switch
-                        {
-                            0 => MoveMode.None,
-                            1 => MoveMode.StrafeLeft,
-                            _ => MoveMode.StrafeRight
-                        };
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                     }
                 }
 
@@ -1275,6 +1259,13 @@ namespace MagnetPanic.Combat
         {
             if (animator == null)
                 return;
+
+            // Keep the run animation playing by default while the enemy is alive
+            // and not hard-stopped (stun, death, lock). This guarantees the
+            // locomotion blend tree never drops to a static idle pose between
+            // moveMode transitions.
+            if (IsAlive && !isStunned && !isLockedTarget && !isMagneticallyControlled)
+                magnitude = Mathf.Max(magnitude, 0.4f);
 
             animator.SetFloat(InputMagnitudeHash, magnitude, 0.15f, Time.deltaTime);
             animator.SetBool(StrafeHash, strafing);

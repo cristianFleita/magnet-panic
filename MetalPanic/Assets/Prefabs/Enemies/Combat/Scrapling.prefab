@@ -43,7 +43,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5314065503491188098}
   - component: {fileID: 3560191820634988866}
-  - component: {fileID: 1327518511347019575}
   - component: {fileID: 486224392401875494}
   - component: {fileID: 5654940927512223136}
   - component: {fileID: 3452380483837194006}
@@ -99,28 +98,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1.28, z: 0}
---- !u!95 &1327518511347019575
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1136252165750342493}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 29924101c0ee64ad0a8c3e163a665ef8, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &486224392401875494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,7 +145,7 @@ MonoBehaviour:
   definition: {fileID: 11400000, guid: c77fe0e1db8634d8da05bce8e6496315, type: 2}
   manager: {fileID: 0}
   playerCombat: {fileID: 0}
-  animator: {fileID: 1327518511347019575}
+  animator: {fileID: 3503769459205552211}
   characterController: {fileID: 3560191820634988866}
   combatHealth: {fileID: 486224392401875494}
   healthBar: {fileID: 0}
@@ -183,7 +160,7 @@ MonoBehaviour:
   destroyOnDeath: 1
   deathDespawnDelay: 0.8
   autoCreateHealthBar: 1
-  healthBarHeight: 2.35
+  healthBarHeight: 2.5
   markState: 0
   markDecayTime: 6
   magneticMass: 3
@@ -690,10 +667,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 73d0b69fc92774762a43a004ebd6d2d9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3503769459205552211}
   m_SourcePrefab: {fileID: 100100000, guid: 73d0b69fc92774762a43a004ebd6d2d9, type: 3}
 --- !u!4 &1232238697682435883 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 73d0b69fc92774762a43a004ebd6d2d9, type: 3}
   m_PrefabInstance: {fileID: 1626771349527894208}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1896607244643575185 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 73d0b69fc92774762a43a004ebd6d2d9, type: 3}
+  m_PrefabInstance: {fileID: 1626771349527894208}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &3503769459205552211
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896607244643575185}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 73d0b69fc92774762a43a004ebd6d2d9, type: 3}
+  m_Controller: {fileID: 9100000, guid: a449c0fdd777943b8b48e7b3ff76aaf6, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

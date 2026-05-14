@@ -801,3 +801,63 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260514_164054
+### Commits
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Animation/Character.controller
+MetalPanic/Assets/Animation/Character.controller.meta
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_165704
+### Commits
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Animation/Character.controller
+MetalPanic/Assets/Animation/Character.controller.meta
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_170618
+### Commits
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Animation/Character.controller
+MetalPanic/Assets/Animation/Character.controller.meta
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

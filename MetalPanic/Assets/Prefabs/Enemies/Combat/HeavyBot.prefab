@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4168149816220177624}
   - component: {fileID: 2345947713558932407}
-  - component: {fileID: 6377265087594321939}
   - component: {fileID: 5407229261732450520}
   - component: {fileID: 4049785423665177271}
   - component: {fileID: 6723246615580847080}
@@ -66,28 +65,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1.47, z: 0}
---- !u!95 &6377265087594321939
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4391651092749095801}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 29924101c0ee64ad0a8c3e163a665ef8, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &5407229261732450520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,7 +112,7 @@ MonoBehaviour:
   definition: {fileID: 11400000, guid: 09700d1dfa3ca4065a35da07a439e441, type: 2}
   manager: {fileID: 0}
   playerCombat: {fileID: 0}
-  animator: {fileID: 6377265087594321939}
+  animator: {fileID: 9139087741966897726}
   characterController: {fileID: 2345947713558932407}
   combatHealth: {fileID: 5407229261732450520}
   healthBar: {fileID: 0}
@@ -150,7 +127,7 @@ MonoBehaviour:
   destroyOnDeath: 1
   deathDespawnDelay: 0.8
   autoCreateHealthBar: 1
-  healthBarHeight: 2.35
+  healthBarHeight: 3.5
   markState: 0
   markDecayTime: 6
   magneticMass: 5
@@ -163,7 +140,7 @@ MonoBehaviour:
   alwaysPullableByMagnet: 0
   magnetizedIndicator: {fileID: 0}
   autoCreateMagnetizedIndicator: 1
-  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorHeight: 3.4
   magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   debugMagnetProjectileCollisions: 0
   strafeSpeed: 0.8
@@ -540,7 +517,7 @@ Transform:
   m_GameObject: {fileID: 7601450834698106753}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.55, z: 0}
+  m_LocalPosition: {x: 0, y: 3.4, z: 0}
   m_LocalScale: {x: 0.28, y: 0.28, z: 0.28}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -690,8 +667,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 92b8dc49802a64966829bc3862c4a3be, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9139087741966897726}
   m_SourcePrefab: {fileID: 100100000, guid: 92b8dc49802a64966829bc3862c4a3be, type: 3}
+--- !u!1 &3771360933353192910 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 92b8dc49802a64966829bc3862c4a3be, type: 3}
+  m_PrefabInstance: {fileID: 4078001871032172703}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &9139087741966897726
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3771360933353192910}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 92b8dc49802a64966829bc3862c4a3be, type: 3}
+  m_Controller: {fileID: 9100000, guid: a449c0fdd777943b8b48e7b3ff76aaf6, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &4547862001434306420 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 92b8dc49802a64966829bc3862c4a3be, type: 3}
