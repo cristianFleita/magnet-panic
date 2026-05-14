@@ -444,6 +444,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &145120480 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8672090624526566230, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
+  m_PrefabInstance: {fileID: 1841621515}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &335756980
 GameObject:
   m_ObjectHideFlags: 0
@@ -777,6 +782,124 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1134869780 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 454955362092624678, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
+  m_PrefabInstance: {fileID: 1841621515}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &1134869784
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1134869780}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5086
+  m_Height: 1.0172
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.50000006, z: 0}
+--- !u!114 &1134869785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1134869780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bccdabd0ee8024a1ea090ca8b6c548f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MagnetPanic.Combat.Arena::MagnetPanic.Combat.ArenaObstacle
+  shapeMode: 0
+  forceExistingNonTrigger: 1
+  autoShapeInset: 0.05
+  overrideLayer: 1
+  blockingLayerName: ArenaWall
+  spawnAvoidanceRadius: 0
+--- !u!1 &1219148682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1219148683}
+  - component: {fileID: 1219148685}
+  - component: {fileID: 1219148684}
+  m_Layer: 9
+  m_Name: ReactorCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1219148683
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219148682}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -3.18, z: -2.06}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 145120480}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1219148684
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219148682}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 12.324098, y: 6.220169, z: 13.119721}
+  m_Center: {x: 2.860353, y: 2.6100845, z: -0.40284872}
+--- !u!114 &1219148685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1219148682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bccdabd0ee8024a1ea090ca8b6c548f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MagnetPanic.Combat.Arena::MagnetPanic.Combat.ArenaObstacle
+  shapeMode: 3
+  forceExistingNonTrigger: 1
+  autoShapeInset: 0.05
+  overrideLayer: 1
+  blockingLayerName: ArenaWall
+  spawnAvoidanceRadius: 0
 --- !u!1 &1583158214
 GameObject:
   m_ObjectHideFlags: 0
@@ -1103,6 +1226,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 454955362092624678, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 454955362092624678, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1332412953711518068, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1143,18 +1274,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3789036561465189494, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8181967549168216227, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
       propertyPath: m_Name
       value: Arena
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8672090624526566230, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
+      insertIndex: 44
+      addedObject: {fileID: 1219148683}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 454955362092624678, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1134869785}
+    - targetCorrespondingSourceObject: {fileID: 454955362092624678, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1134869784}
   m_SourcePrefab: {fileID: 100100000, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
 --- !u!114 &1841621516 stripped
 MonoBehaviour:
@@ -1171,7 +1307,6 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1841621515}
   - {fileID: 335756982}
   - {fileID: 394681426}
   - {fileID: 1583158218}
@@ -1179,3 +1314,4 @@ SceneRoots:
   - {fileID: 71989090}
   - {fileID: 141444838}
   - {fileID: 1657009034}
+  - {fileID: 1841621515}

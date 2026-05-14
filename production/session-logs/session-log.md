@@ -617,3 +617,19 @@ MetalPanic/Assets/Scenes/Map.unity.meta
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260513_231730
+### Commits
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Prefabs/Arena.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+---
+

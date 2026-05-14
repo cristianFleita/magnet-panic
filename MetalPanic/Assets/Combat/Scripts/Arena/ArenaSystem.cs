@@ -77,6 +77,7 @@ namespace MagnetPanic.Combat
         readonly List<ArenaSpawnPoint> spawnScratch = new List<ArenaSpawnPoint>();
         readonly List<ArenaDoor> doors = new List<ArenaDoor>();
         readonly List<Collider> activeColliders = new List<Collider>();
+        readonly List<ArenaObstacle> obstacles = new List<ArenaObstacle>();
         static readonly IReadOnlyList<Vector3> EmptyEnemyPositions = Array.Empty<Vector3>();
         static readonly Collider[] AutoFindBuffer = new Collider[64];
         const float ContainmentEpsilon = 1e-3f;
@@ -580,6 +581,9 @@ namespace MagnetPanic.Combat
             if (validation.DoorMinDistance > 0f && IsNearDoor(position, validation.DoorMinDistance))
                 return false;
 
+            if (IsInsideObstacle(position, validation.OccupancyRadius))
+                return false;
+
             if (validation.OccupancyRadius > 0f)
             {
                 Collider[] hits = Physics.OverlapSphere(position, validation.OccupancyRadius, validation.BlockingMask.value != 0 ? validation.BlockingMask.value : ~0, QueryTriggerInteraction.Ignore);
@@ -588,6 +592,40 @@ namespace MagnetPanic.Combat
             }
 
             return true;
+        }
+
+        // ----- Obstacles -----
+
+        public void RegisterObstacle(ArenaObstacle obstacle)
+        {
+            if (obstacle == null || obstacles.Contains(obstacle))
+                return;
+            obstacles.Add(obstacle);
+        }
+
+        public void UnregisterObstacle(ArenaObstacle obstacle)
+        {
+            if (obstacle == null)
+                return;
+            obstacles.Remove(obstacle);
+        }
+
+        public bool IsInsideObstacle(Vector3 position, float padding = 0f)
+        {
+            for (int i = 0; i < obstacles.Count; i++)
+            {
+                ArenaObstacle obstacle = obstacles[i];
+                if (obstacle == null)
+                    continue;
+
+                Vector3 delta = obstacle.FootprintCenter - position;
+                delta.y = 0f;
+                float radius = obstacle.SpawnAvoidanceRadius + Mathf.Max(0f, padding);
+                if (delta.sqrMagnitude <= radius * radius)
+                    return true;
+            }
+
+            return false;
         }
 
         // ----- Scrap sampling -----
@@ -624,6 +662,9 @@ namespace MagnetPanic.Combat
                     continue;
 
                 if (enemyMinSqr > 0f && IsTooCloseToAny(candidate, enemies, enemyMinSqr))
+                    continue;
+
+                if (IsInsideObstacle(candidate, wallInset))
                     continue;
 
                 position = candidate;
