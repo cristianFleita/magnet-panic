@@ -207,7 +207,7 @@ MonoBehaviour:
   scrapBurstPerRefill: 3
   scrapSamplingAttempts: 16
   healingPickupPrefab: {fileID: 3659959118954070853, guid: cfaa533c44bac417ebc7ec6c8391dce5, type: 3}
-  healingSpawnCooldown: 1
-  healingHpThreshold: 1
-  healingMaxActive: 4
+  healingSpawnCooldown: 20
+  healingHpThreshold: 0.75
+  healingMaxActive: 2
   healingFirstSpawnDelay: 0

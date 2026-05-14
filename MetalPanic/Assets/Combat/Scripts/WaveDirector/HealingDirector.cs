@@ -47,10 +47,14 @@ namespace MagnetPanic.Combat
                 return;
 
             if (!ShouldSpawnNow())
+            {
                 return;
+            }
 
             if (!arena.TryGetPickupSpawn(player != null ? player.position : Vector3.zero, out ArenaSpawnPoint pad))
+            {
                 return;
+            }
 
             GameObject instance = Pool.Spawn(config.healingPickupPrefab, pad.Position, Quaternion.identity);
             if (instance != null)
