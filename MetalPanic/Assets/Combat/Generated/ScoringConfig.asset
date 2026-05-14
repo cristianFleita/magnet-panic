@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b71b304fbbe74f6cb2aacb2e7f506c3, type: 3}
+  m_Name: ScoringConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.ScoringConfig
+  baseKillXp: 10
+  repelKillMultiplier: 1.5
+  wallSlamMultiplier: 2
+  overloadMultiplier: 2
+  enemyRepelMultiplier: 2.5
+  counterXp: 15
+  bossKillXp: 100
+  wavesClearedBaseXp: 5
+  multiKillBonusXp: 5
+  multiKillWindowSeconds: 1
+  comboWindowSeconds: 3
+  comboScalingPerStep: 0.1
+  maxComboMultiplier: 3
+  baseXpPerLevel: 50
+  xpGrowthPerLevel: 15
+  survivalScorePerSecond: 2
+  styleScorePerComboPoint: 10
+  pauseOnLevelUp: 0
+  defaultUntaggedKillsToStrike: 1

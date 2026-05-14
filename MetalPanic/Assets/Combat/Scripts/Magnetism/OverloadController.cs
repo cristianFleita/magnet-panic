@@ -1,3 +1,4 @@
+using MagnetPanic.Combat.Scoring;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -295,6 +296,7 @@ namespace MagnetPanic.Combat
                 float distanceFactor = Mathf.Clamp01(1f - distance / overloadRadius);
                 float knockback = overloadKnockbackDistance * distanceFactor;
 
+                enemy.TagNextDamageMethod(KillMethod.Overload);
                 enemy.ReceiveMagneticImpact(damage, origin, knockback, true);
                 hits++;
             }
