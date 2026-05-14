@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4915310124000972915}
-  - component: {fileID: 910100100100100101}
-  - component: {fileID: 910100100100100102}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -50,47 +48,6 @@ Transform:
   - {fileID: 8230885614700978154}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &910100100100100101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2605740755634077484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b05ac35584b7440f9f9db78e47b34d4b, type: 3}
-  m_Name: ""
-  m_EditorClassIdentifier: MagnetPanic.Combat.Arena::MagnetPanic.Combat.ArenaSystem
-  localPlayableCenter: {x: -26.5, y: 4.4, z: 2.5}
-  localPlayableSize: {x: 30, y: 8, z: 58}
-  minSpawnDistanceFromPlayer: 8
-  spawnPointOverlapRadius: 1
-  offscreenBonus: 1.5
-  spawnWeightCamera: {fileID: 0}
-  createDefaultMapSpawnsWhenEmpty: 1
-  baseSlamDamage: 2
-  speedDamageRatio: 5
-  onWallSlam:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &910100100100100102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2605740755634077484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58ce949924934caab3487d0bbf042a21, type: 3}
-  m_Name: ""
-  m_EditorClassIdentifier: MagnetPanic.Combat.Arena::MagnetPanic.Combat.ArenaMapColliderBuilder
-  buildOnAwake: 1
-  addMeshColliders: 1
-  addGroundProxies: 1
-  groundProxyHeight: 0.12
-  groundInset: 0.2
 --- !u!1001 &2440377893694990921
 PrefabInstance:
   m_ObjectHideFlags: 0
