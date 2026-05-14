@@ -671,3 +671,58 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260514_022820
+### Commits
+1904bd6 chore: adjust speed + optional controllers
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Map/Gate/gate-door-window.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/structure-window-wide.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-detail-a.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_023507
+### Commits
+1904bd6 chore: adjust speed + optional controllers
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate-door-window.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/structure-window-wide.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-detail-a.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

@@ -293,6 +293,11 @@ MonoBehaviour:
   retreatSpeed: 2
   retreatDistance: 4.25
   disableStrafe: 0
+  useNavMeshPathing: 1
+  pathRecomputeInterval: 0.18
+  pathTargetMoveThreshold: 1.25
+  pathArrivalThreshold: 0.55
+  drawPathGizmo: 1
   prepareAttackTime: 0.4
   attackRange: 1.8
   attackHitDelay: 0.22
@@ -421,12 +426,7 @@ MonoBehaviour:
   enemy: {fileID: 7106029408107021932}
   playerCombat: {fileID: 0}
   grappleRange: 2.6
-  mashesRequired: 1
-  maxHoldTime: 3.5
-  grappleDamagePerTick: 1
-  grappleDamageInterval: 1.2
-  escapeStunDuration: 0.8
-  escapeKnockback: 2
+  throwDamage: 2
   grappleCooldown: 3
   grappleChance: 0.8
   lungeSpeed: 8
@@ -434,10 +434,7 @@ MonoBehaviour:
   OnGrappleStart:
     m_PersistentCalls:
       m_Calls: []
-  OnGrappleEscape:
-    m_PersistentCalls:
-      m_Calls: []
-  OnGrappleTimeout:
+  OnThrowComplete:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &7190573592289827246

@@ -203,6 +203,11 @@ MonoBehaviour:
   retreatSpeed: 2.25
   retreatDistance: 4.25
   disableStrafe: 0
+  useNavMeshPathing: 1
+  pathRecomputeInterval: 0.18
+  pathTargetMoveThreshold: 1.25
+  pathArrivalThreshold: 0.55
+  drawPathGizmo: 1
   prepareAttackTime: 0.35
   attackRange: 1.8
   attackHitDelay: 0.2

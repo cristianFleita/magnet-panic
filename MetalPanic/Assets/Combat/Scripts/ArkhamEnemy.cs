@@ -77,6 +77,17 @@ namespace MagnetPanic.Combat
         [SerializeField] float retreatDistance = 4.25f;
         [SerializeField] bool disableStrafe;
 
+        [Header("Pathfinding")]
+        [Tooltip("Route Approach movement around static arena obstacles using NavMesh.CalculatePath. Falls back to straight-line steering if no NavMesh is baked or no path is found.")]
+        [SerializeField] bool useNavMeshPathing = true;
+        [Tooltip("Seconds between path recomputations. Lower = more reactive, higher = cheaper. ~6 Hz is plenty for a 1v1 chase.")]
+        [SerializeField, Min(0.05f)] float pathRecomputeInterval = 0.18f;
+        [Tooltip("How far the player must move from the last sample to force an early recompute.")]
+        [SerializeField, Min(0.1f)] float pathTargetMoveThreshold = 1.25f;
+        [Tooltip("Distance to the current corner that counts as arrival; the follower then advances to the next corner.")]
+        [SerializeField, Min(0.1f)] float pathArrivalThreshold = 0.55f;
+        [SerializeField] bool drawPathGizmo;
+
         [Header("Attack")]
         [SerializeField] float prepareAttackTime = 0.35f;
         [SerializeField] float attackRange = 1.8f;
@@ -135,6 +146,8 @@ namespace MagnetPanic.Combat
         // Behavior add-ons (detected at runtime)
         SpitterDroneBehavior spitterDrone;
         GrapplerBehavior grappler;
+
+        readonly EnemyNavPath navPath = new EnemyNavPath();
 
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsStunned => isStunned;
@@ -309,7 +322,22 @@ namespace MagnetPanic.Combat
         {
             DecayMagneticMark();
             FacePlayer();
+            TickNavPath();
             Move();
+        }
+
+        void TickNavPath()
+        {
+            if (!useNavMeshPathing || playerCombat == null || !IsAlive || isMagneticallyControlled || isStunned || isLockedTarget)
+                return;
+
+            navPath.recomputeInterval = pathRecomputeInterval;
+            navPath.targetMovedThreshold = pathTargetMoveThreshold;
+            navPath.arrivalThreshold = pathArrivalThreshold;
+            navPath.Tick(transform.position, playerCombat.transform.position, Time.deltaTime);
+
+            if (drawPathGizmo)
+                navPath.DrawDebug(Color.yellow);
         }
 
         public void Configure(
@@ -1159,7 +1187,9 @@ namespace MagnetPanic.Combat
                     strafeDirection = 1f;
                     break;
                 case MoveMode.Approach:
-                    direction = playerDirection;
+                    direction = useNavMeshPathing && navPath.HasValidPath
+                        ? navPath.GetSteerDirection(transform.position, playerDirection)
+                        : playerDirection;
                     speed = approachSpeed;
                     break;
                 case MoveMode.Retreat:
@@ -1499,6 +1529,9 @@ namespace MagnetPanic.Combat
             moveMode = MoveMode.None;
             magneticMarks = 0;
             markState = MagneticMarkState.Normal;
+
+            navPath.Reset();
+            navPath.Randomize();
 
             combatHealth.Configure(maxHealth, true);
 
