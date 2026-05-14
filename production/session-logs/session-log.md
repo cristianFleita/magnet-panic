@@ -576,3 +576,44 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260513_214538
+### Commits
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+30f3dc9 chore: adjust enemies
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/Map.unity
+---
+
+## Session End: 20260513_225924
+### Commits
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+30f3dc9 chore: adjust enemies
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticObject.cs
+MetalPanic/Assets/Prefabs/Arena.prefab
+MetalPanic/Assets/Prefabs/Attractables/Heavy_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/LightScrap_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Mine_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Plate_Attractable.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/GameScene.unity.meta
+MetalPanic/Assets/Scenes/Map.unity.meta
+production/session-logs/session-log.md
+---
+

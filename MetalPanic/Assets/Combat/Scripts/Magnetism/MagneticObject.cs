@@ -504,6 +504,12 @@ namespace MagnetPanic.Combat
             if (state != MagneticObjectState.Projectile)
                 return;
 
+            // Arena uses trigger colliders on the Ground/ArenaWall layers to define the
+            // playable area for spawning and containment. They are not real obstacles, so
+            // the projectile must fly through them instead of being consumed on contact.
+            if (ShouldIgnoreProjectileTrigger(other))
+                return;
+
             if (other.GetComponentInParent<ArkhamEnemy>() == null)
             {
                 Consume();
@@ -511,6 +517,25 @@ namespace MagnetPanic.Combat
             }
 
             CheckProjectileHits();
+        }
+
+        static bool ShouldIgnoreProjectileTrigger(Collider other)
+        {
+            if (other == null)
+                return true;
+
+            if (!other.isTrigger)
+                return false;
+
+            int layer = other.gameObject.layer;
+            int groundLayer = LayerMask.NameToLayer("Ground");
+            int wallLayer = LayerMask.NameToLayer("ArenaWall");
+            if ((groundLayer >= 0 && layer == groundLayer) || (wallLayer >= 0 && layer == wallLayer))
+                return true;
+
+            // Spawn markers, doors and other gameplay volumes live on the arena hierarchy
+            // as triggers — they should never destroy a repelled projectile either.
+            return other.GetComponentInParent<ArenaSystem>() != null;
         }
 
         void OnDrawGizmosSelected()

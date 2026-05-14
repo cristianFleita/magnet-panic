@@ -5255,7 +5255,7 @@ MonoBehaviour:
   explosionRadius: 2.5
   hitLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 128
   modelRoot: {fileID: 8561514781422058868}
   trail: {fileID: 7434730437307136460}
   orbitParticle: {fileID: 1695778965613896361}
