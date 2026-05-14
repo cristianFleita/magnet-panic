@@ -160,7 +160,7 @@ MonoBehaviour:
   destroyOnDeath: 1
   deathDespawnDelay: 0.8
   autoCreateHealthBar: 1
-  healthBarHeight: 2.5
+  healthBarHeight: 3
   markState: 0
   markDecayTime: 6
   magneticMass: 3
@@ -173,7 +173,7 @@ MonoBehaviour:
   alwaysPullableByMagnet: 0
   magnetizedIndicator: {fileID: 0}
   autoCreateMagnetizedIndicator: 1
-  magnetizedIndicatorHeight: 2.15
+  magnetizedIndicatorHeight: 2.8
   magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   debugMagnetProjectileCollisions: 0
   strafeSpeed: 1.25
@@ -486,7 +486,7 @@ Transform:
   m_GameObject: {fileID: 5904994352360188538}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.55, z: 0}
+  m_LocalPosition: {x: 0, y: 2.6, z: 0}
   m_LocalScale: {x: 0.28, y: 0.28, z: 0.28}
   m_ConstrainProportionsScale: 0
   m_Children: []
