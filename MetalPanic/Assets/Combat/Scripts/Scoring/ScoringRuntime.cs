@@ -35,6 +35,8 @@ namespace MagnetPanic.Combat.Scoring
         public UnityEvent<int, float> OnComboChanged = new UnityEvent<int, float>();    // count, timeRemaining
         public UnityEvent OnComboReset = new UnityEvent();
         public UnityEvent<XpAwardEvent> OnXpAwarded = new UnityEvent<XpAwardEvent>();   // for popups
+        public UnityEvent<KillContext> OnKillReported = new UnityEvent<KillContext>(); // for missions / achievements
+        public UnityEvent<ArkhamEnemy> OnCounterAwarded = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<long> OnScoreChanged = new UnityEvent<long>();
         public UnityEvent<RunStats> OnRunEnded = new UnityEvent<RunStats>();
 
@@ -204,6 +206,7 @@ namespace MagnetPanic.Combat.Scoring
             ApplyXp(finalXp);
 
             OnXpAwarded.Invoke(new XpAwardEvent(method, rawXp, finalXp, comboCount, styleMultiplier, comboMultiplier, context.Position));
+            OnKillReported.Invoke(context);
         }
 
         /// <summary>Convenience wrapper for the most common path.</summary>
@@ -230,6 +233,7 @@ namespace MagnetPanic.Combat.Scoring
 
             Vector3 position = enemy != null ? enemy.transform.position : transform.position;
             OnXpAwarded.Invoke(new XpAwardEvent(KillMethod.Strike, xp, xp, comboCount, 1f, GetComboMultiplier(comboCount), position));
+            OnCounterAwarded.Invoke(enemy);
         }
 
         /// <summary>
