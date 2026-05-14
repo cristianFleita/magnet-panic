@@ -18,9 +18,9 @@ MonoBehaviour:
   alwaysPullableByMagnet: 1
   magneticMarksToMagnetize: 2
   magneticMass: 2.2
-  approachSpeed: 4
-  strafeSpeed: 1
-  retreatSpeed: 2
+  approachSpeed: 6
+  strafeSpeed: 1.6
+  retreatSpeed: 3
   retreatDistance: 4.25
   disableStrafe: 0
   prepareAttackTime: 0.4

@@ -13,8 +13,8 @@ namespace MagnetPanic.Combat
         [SerializeField] GameInputProvider inputProvider;
 
         [Header("Movement")]
-        [SerializeField] float movementSpeed = 5f;
-        [SerializeField] float sprintMultiplier = 1.25f;
+        [SerializeField] float movementSpeed = 8f;
+        [SerializeField] float sprintMultiplier = 1.4f;
         [SerializeField] float rotationSharpness = 14f;
         [SerializeField] float accelerationFloor = 0.25f;
         [SerializeField] float gravity = -25f;

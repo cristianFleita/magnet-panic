@@ -18,9 +18,9 @@ MonoBehaviour:
   alwaysPullableByMagnet: 0
   magneticMarksToMagnetize: 2
   magneticMass: 4
-  approachSpeed: 7
+  approachSpeed: 10
   strafeSpeed: 0
-  retreatSpeed: 3
+  retreatSpeed: 4.5
   retreatDistance: 5.5
   disableStrafe: 1
   prepareAttackTime: 0.65
@@ -30,7 +30,7 @@ MonoBehaviour:
   knockbackDistance: 0.7
   knockbackDuration: 0.18
   useLinearCharge: 1
-  chargeSpeed: 12
+  chargeSpeed: 16
   chargeDuration: 0.55
   chargeHitRadius: 1.2
   chargeDamage: 2

@@ -141,8 +141,8 @@ MonoBehaviour:
   animator: {fileID: 5724546336832868324}
   cameraOverride: {fileID: 0}
   inputProvider: {fileID: 4891748938443140591}
-  movementSpeed: 5
-  sprintMultiplier: 1.25
+  movementSpeed: 8
+  sprintMultiplier: 1.4
   rotationSharpness: 14
   accelerationFloor: 0.25
   gravity: -25
