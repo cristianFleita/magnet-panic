@@ -15,7 +15,7 @@ public class WebGLBuildScript
         {
             scenes = new[]
             {
-                "Assets/Scenes/SampleScene.unity"
+                "Assets/Scenes/GameScene.unity"
             },
             locationPathName = outputPath,
             target = BuildTarget.WebGL,

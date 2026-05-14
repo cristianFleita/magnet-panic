@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7994ad0ac90bb43c0a89660f6def8540, type: 3}
+  m_Name: RunnerBot
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.EnemyDefinition
+  archetype: 2
+  displayName: Runner Bot
+  maxHealth: 4
+  alwaysPullableByMagnet: 0
+  magneticMarksToMagnetize: 2
+  magneticMass: 4
+  approachSpeed: 7
+  strafeSpeed: 0
+  retreatSpeed: 3
+  retreatDistance: 5.5
+  disableStrafe: 1
+  prepareAttackTime: 0.65
+  attackRange: 6
+  attackHitDelay: 0
+  attackRecovery: 0.5
+  knockbackDistance: 0.7
+  knockbackDuration: 0.18
+  useLinearCharge: 1
+  chargeSpeed: 12
+  chargeDuration: 0.55
+  chargeHitRadius: 1.2
+  chargeDamage: 2
+  chargeCausesKnockdown: 1
+  chargeIdealDistance: 5
+  chargeIdealTolerance: 1.2
+  useRangedAttack: 0
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 10
+  projectileDamage: 1
+  burstCount: 1
+  burstInterval: 0.25
+  aimInaccuracy: 5
+  rangedIdealDistance: 7
+  rangedIdealTolerance: 1.5
+  canGrapple: 0
+  grappleChance: 0.35
+  grappleMashesRequired: 6
+  grappleMaxHoldTime: 3.5
+  grappleDamagePerTick: 1
+  grappleDamageInterval: 1.2
+  grappleEscapeStunDuration: 0.8

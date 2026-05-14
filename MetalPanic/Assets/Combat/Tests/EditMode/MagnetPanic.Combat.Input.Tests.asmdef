@@ -1,0 +1,23 @@
+{
+    "name": "MagnetPanic.Combat.Input.Tests",
+    "rootNamespace": "MagnetPanic.Combat.Tests",
+    "references": [
+        "MagnetPanic.Combat.Input",
+        "MagnetPanic.Combat.Arena",
+        "MagnetPanic.Combat.Pooling"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

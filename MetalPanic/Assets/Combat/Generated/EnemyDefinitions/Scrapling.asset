@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7994ad0ac90bb43c0a89660f6def8540, type: 3}
+  m_Name: Scrapling
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.EnemyDefinition
+  archetype: 0
+  displayName: Scrapling
+  maxHealth: 3
+  alwaysPullableByMagnet: 0
+  magneticMarksToMagnetize: 2
+  magneticMass: 3
+  approachSpeed: 5
+  strafeSpeed: 1.25
+  retreatSpeed: 2.25
+  retreatDistance: 4.25
+  disableStrafe: 0
+  prepareAttackTime: 0.35
+  attackRange: 1.8
+  attackHitDelay: 0.2
+  attackRecovery: 0.55
+  knockbackDistance: 0.55
+  knockbackDuration: 0.16
+  useLinearCharge: 0
+  chargeSpeed: 11
+  chargeDuration: 0.55
+  chargeHitRadius: 1.1
+  chargeDamage: 2
+  chargeCausesKnockdown: 1
+  chargeIdealDistance: 5
+  chargeIdealTolerance: 1.2
+  useRangedAttack: 0
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 10
+  projectileDamage: 1
+  burstCount: 1
+  burstInterval: 0.25
+  aimInaccuracy: 5
+  rangedIdealDistance: 7
+  rangedIdealTolerance: 1.5
+  canGrapple: 0
+  grappleChance: 0.35
+  grappleMashesRequired: 6
+  grappleMaxHoldTime: 3.5
+  grappleDamagePerTick: 1
+  grappleDamageInterval: 1.2
+  grappleEscapeStunDuration: 0.8

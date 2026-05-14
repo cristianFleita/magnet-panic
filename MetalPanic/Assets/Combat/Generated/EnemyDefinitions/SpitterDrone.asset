@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7994ad0ac90bb43c0a89660f6def8540, type: 3}
+  m_Name: SpitterDrone
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.EnemyDefinition
+  archetype: 4
+  displayName: Spitter Drone
+  maxHealth: 4
+  alwaysPullableByMagnet: 0
+  magneticMarksToMagnetize: 2
+  magneticMass: 2.5
+  approachSpeed: 3.5
+  strafeSpeed: 1.4
+  retreatSpeed: 3
+  retreatDistance: 6
+  disableStrafe: 0
+  prepareAttackTime: 0.2
+  attackRange: 20
+  attackHitDelay: 0
+  attackRecovery: 0.65
+  knockbackDistance: 0.55
+  knockbackDuration: 0.16
+  useLinearCharge: 0
+  chargeSpeed: 11
+  chargeDuration: 0.55
+  chargeHitRadius: 1.1
+  chargeDamage: 2
+  chargeCausesKnockdown: 1
+  chargeIdealDistance: 5
+  chargeIdealTolerance: 1.2
+  useRangedAttack: 1
+  projectilePrefab: {fileID: 5879022150181931213, guid: 0215f699159f8456c84599932f576f61, type: 3}
+  projectileSpeed: 20
+  projectileDamage: 1
+  burstCount: 2
+  burstInterval: 0.3
+  aimInaccuracy: 8
+  rangedIdealDistance: 15
+  rangedIdealTolerance: 1.5
+  canGrapple: 0
+  grappleChance: 0.35
+  grappleMashesRequired: 6
+  grappleMaxHoldTime: 3.5
+  grappleDamagePerTick: 1
+  grappleDamageInterval: 1.2
+  grappleEscapeStunDuration: 0.8

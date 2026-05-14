@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Vercel
+.vercel
+
+# pnpm
+.pnpm-store
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
