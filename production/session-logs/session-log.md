@@ -786,3 +786,18 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260514_132645
+### Commits
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
