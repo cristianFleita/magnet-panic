@@ -1075,3 +1075,60 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260515_065826
+### Commits
+88a245c chore: power ups wip
+c102bdc chore: add vfx to smash and slide
+5b892ea chore: add vfx to smash and slide
+41b1c26 chore: fix missions UI
+937f5a8 chore: upgrades WIP
+ce56a3c Merge pull request #3 from cristianFleita/feat-enviroment
+81f7961 chore: vfxs
+aa2ac1f chore: fist trail
+9112ad3 chore: hit vfx
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamPlayerMotor.cs
+MetalPanic/Assets/Combat/Scripts/Missions/MissionRuntimeState.cs
+MetalPanic/Assets/Combat/Scripts/Missions/MissionSystem.cs
+MetalPanic/Assets/Combat/Scripts/Missions/UI/MissionHud.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/IPowerupBroker.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineBehaviour.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineEffect.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/PowerupController.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/SlowTimeEffect.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260515_072757
+### Commits
+88a245c chore: power ups wip
+c102bdc chore: add vfx to smash and slide
+5b892ea chore: add vfx to smash and slide
+41b1c26 chore: fix missions UI
+937f5a8 chore: upgrades WIP
+ce56a3c Merge pull request #3 from cristianFleita/feat-enviroment
+81f7961 chore: vfxs
+aa2ac1f chore: fist trail
+9112ad3 chore: hit vfx
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Missions/MissionRuntimeState.cs
+MetalPanic/Assets/Combat/Scripts/Missions/MissionSystem.cs
+MetalPanic/Assets/Combat/Scripts/Missions/UI/MissionHud.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/IPowerupBroker.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineBehaviour.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineEffect.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/OverloadPulseEffect.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/PowerupController.cs
+MetalPanic/Assets/Combat/Scripts/Powerups/SlowTimeEffect.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

@@ -388,7 +388,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 71989084}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.19911464, y: 0.010331557, z: -0.0020993196, w: 0.9799195}
+  m_LocalRotation: {x: 0.19911683, y: 0.009255642, z: -0.0018806991, w: 0.9799303}
   m_LocalPosition: {x: 0, y: 6.28, z: -8.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -655,6 +655,10 @@ PrefabInstance:
       propertyPath: cameraOverride
       value: 
       objectReference: {fileID: 1583158216}
+    - target: {fileID: 5111111111111111120, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      propertyPath: mineVfxPrefab
+      value: 
+      objectReference: {fileID: 222570921269316701, guid: 63ecfc159e5a34d6c870fd90f8bbbebe, type: 3}
     - target: {fileID: 6466946989276540057, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
       propertyPath: cameraOverride
       value: 
@@ -1436,7 +1440,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1583158214}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.19911462, y: 0.010331555, z: -0.0020993194, w: 0.9799195}
+  m_LocalRotation: {x: 0.19911683, y: 0.009255642, z: -0.0018806992, w: 0.9799303}
   m_LocalPosition: {x: 0, y: 6.28, z: -8.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1987,6 +1991,11 @@ MonoBehaviour:
   scoring: {fileID: 0}
   playerHealth: {fileID: 0}
   powerupBrokerComponent: {fileID: 0}
+  waveDirector: {fileID: 0}
+  enemyManager: {fileID: 0}
+  overload: {fileID: 0}
+  act2UnlockSeconds: 90
+  act3UnlockSeconds: 210
   autoStart: 1
   pauseWithTimeScale: 1
   OnMissionStarted:
@@ -2081,7 +2090,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8c50ce8cb3964b74969652ebf478136, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.ComboHunterTracker
   scoring: {fileID: 0}
 --- !u!114 &1944696930
@@ -2094,7 +2103,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e0304000b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.IronRainTracker
   scoring: {fileID: 0}
 --- !u!114 &1944696931
@@ -2107,7 +2116,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e0304000c, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.MagnetMaestroTracker
   enemyManager: {fileID: 0}
 --- !u!114 &1944696932
@@ -2120,7 +2129,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e0304000d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.ChainReactionTracker
   scoring: {fileID: 0}
   windowSeconds: 0.6
@@ -2134,7 +2143,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e0304000e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.OverloadArtistTracker
   overload: {fileID: 0}
 --- !u!114 &1944696934
@@ -2147,7 +2156,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e0304000f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.WreckingBallTracker
   scoring: {fileID: 0}
   magnetism: {fileID: 0}
@@ -2162,7 +2171,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e03040010, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.BulletCatcherTracker
   magnetism: {fileID: 0}
 --- !u!114 &1944696936
@@ -2175,7 +2184,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e03040011, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.LivingAmmoTracker
   scoring: {fileID: 0}
 --- !u!1 &2067095500 stripped

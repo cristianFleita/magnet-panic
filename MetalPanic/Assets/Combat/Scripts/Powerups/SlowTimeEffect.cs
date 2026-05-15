@@ -1,25 +1,24 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MagnetPanic.Combat.Powerups
 {
     /// <summary>
-    /// Drops <c>Time.timeScale</c> to <see cref="PowerupController.SlowTimeScale"/>
-    /// and boosts the player's <see cref="ArkhamPlayerMotor.ExternalSpeedMultiplier"/>
-    /// by the reciprocal — net effect is "everyone except the player is slow."
-    ///
-    /// E1: the upgrade screen sets timeScale=0; this effect re-applies the slow
-    /// value as soon as the screen closes (its timer also pauses while
-    /// unscaledDelta keeps ticking the controller's own update — handled in the
-    /// controller, see <c>Time.unscaledDeltaTime</c> wiring).
+    /// "Slow Time" without touching <c>Time.timeScale</c> — instead halves the
+    /// <see cref="ArkhamEnemy.ExternalSpeedMultiplier"/> on every live enemy
+    /// for the effect's duration. Player, magnetic forces, animation and
+    /// physics all keep running at full speed; only enemy locomotion gets
+    /// gated. Newly-spawned enemies during the window are picked up on the
+    /// next Tick.
     /// </summary>
     public sealed class SlowTimeEffect : IPowerupEffect
     {
+        const float SlowMultiplier = 0.5f;
+
         PowerupController controller;
-        ArkhamPlayerMotor motor;
-        float restoredTimeScale = 1f;
-        float restoredFixedDelta;
-        float configuredFixedDelta;
-        bool applied;
+        ArkhamEnemyManager enemyManager;
+        readonly HashSet<ArkhamEnemy> affected = new HashSet<ArkhamEnemy>();
+        bool active;
 
         public PowerupId Id => PowerupId.SlowTime;
         public float Duration => controller != null ? controller.SlowTimeDuration : 8f;
@@ -28,54 +27,56 @@ namespace MagnetPanic.Combat.Powerups
         public void Activate(PowerupContext ctx)
         {
             controller = ctx.Controller;
-            motor = ctx.Motor;
+            enemyManager = ctx.EnemyManager;
+            affected.Clear();
+            active = true;
 
-            restoredTimeScale = Time.timeScale;
-            restoredFixedDelta = Time.fixedDeltaTime;
-            float scale = Mathf.Clamp(controller.SlowTimeScale, 0.1f, 1f);
-
-            Time.timeScale = scale;
-            // Keep physics step density similar so collisions / overlap checks
-            // don't go chunky while we're slow-mo.
-            configuredFixedDelta = restoredFixedDelta * scale;
-            Time.fixedDeltaTime = configuredFixedDelta;
-
-            if (motor != null)
-                motor.ExternalSpeedMultiplier = 1f / Mathf.Max(0.01f, scale);
-
-            applied = true;
+            ApplySlowToCurrentEnemies();
         }
 
         public void Tick(float unscaledDelta)
         {
-            // E1: an external system (e.g. upgrade screen) may set timeScale=0.
-            // While paused do nothing — when it returns to a non-zero value but
-            // not our slow value, snap it back so slow-mo resumes cleanly.
-            if (!applied)
+            // Wave director may spawn new enemies during the slow window. Sweep
+            // the live list every tick so they snap to half-speed too.
+            if (!active)
                 return;
 
-            float current = Time.timeScale;
-            if (current <= 0f)
-                return;
-
-            float scale = Mathf.Clamp(controller.SlowTimeScale, 0.1f, 1f);
-            if (!Mathf.Approximately(current, scale))
-            {
-                Time.timeScale = scale;
-                Time.fixedDeltaTime = configuredFixedDelta;
-            }
+            ApplySlowToCurrentEnemies();
         }
 
         public void Deactivate(PowerupContext ctx, bool runEnded)
         {
-            if (!applied)
+            if (!active)
                 return;
-            applied = false;
+            active = false;
 
-            Time.timeScale = runEnded ? 1f : restoredTimeScale;
-            Time.fixedDeltaTime = restoredFixedDelta;
-            if (motor != null)
-                motor.ExternalSpeedMultiplier = 1f;
+            foreach (ArkhamEnemy enemy in affected)
+            {
+                if (enemy == null)
+                    continue;
+                // Restore to 1 unconditionally — only this effect writes to
+                // ExternalSpeedMultiplier today, so there's no stack to unwind.
+                enemy.ExternalSpeedMultiplier = 1f;
+            }
+            affected.Clear();
+            controller = null;
+            enemyManager = null;
+        }
+
+        void ApplySlowToCurrentEnemies()
+        {
+            if (enemyManager == null)
+                return;
+
+            IReadOnlyList<ArkhamEnemy> enemies = enemyManager.Enemies;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ArkhamEnemy enemy = enemies[i];
+                if (enemy == null || !enemy.IsAlive)
+                    continue;
+                if (affected.Add(enemy))
+                    enemy.ExternalSpeedMultiplier = SlowMultiplier;
+            }
         }
     }
 }

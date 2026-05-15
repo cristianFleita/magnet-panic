@@ -1,3 +1,4 @@
+using MagnetPanic.Combat.Powerups;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -26,6 +27,7 @@ namespace MagnetPanic.Combat.Missions.UI
         Label nameLabel;
         Label objectiveLabel;
         Label progressLabel;
+        Label rewardLabel;
         VisualElement timerFill;
         Label bannerLabel;
         float bannerTimer;
@@ -141,9 +143,18 @@ namespace MagnetPanic.Combat.Missions.UI
             objectiveLabel.style.color = new Color(0.82f, 0.86f, 0.92f, 1f);
             objectiveLabel.style.fontSize = 11;
             objectiveLabel.style.marginTop = 2;
-            objectiveLabel.style.marginBottom = 6;
+            objectiveLabel.style.marginBottom = 4;
             objectiveLabel.style.whiteSpace = WhiteSpace.Normal;
             card.Add(objectiveLabel);
+
+            rewardLabel = new Label("");
+            rewardLabel.style.color = new Color(1f, 0.85f, 0.4f, 1f);
+            rewardLabel.style.fontSize = 11;
+            rewardLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            rewardLabel.style.marginBottom = 6;
+            rewardLabel.style.whiteSpace = WhiteSpace.Normal;
+            rewardLabel.style.display = DisplayStyle.None;
+            card.Add(rewardLabel);
 
             VisualElement timerTrack = new VisualElement { name = "timer-track" };
             timerTrack.style.height = 4;
@@ -190,13 +201,39 @@ namespace MagnetPanic.Combat.Missions.UI
                 card.style.display = DisplayStyle.None;
             if (bannerLabel != null)
                 bannerLabel.style.display = DisplayStyle.None;
+            if (rewardLabel != null)
+                rewardLabel.style.display = DisplayStyle.None;
         }
 
         void HandleStarted(MissionDefinition def)
         {
             ShowCard(def, accentActive);
+            UpdateReward(missions != null ? missions.Current : null, def);
             HandleProgress(missions != null ? missions.Current : null);
         }
+
+        void UpdateReward(MissionRuntimeState state, MissionDefinition def)
+        {
+            if (rewardLabel == null)
+                return;
+
+            if (def == null || !def.grantsPowerup || state == null || state.RewardPowerup == PowerupId.None)
+            {
+                rewardLabel.style.display = DisplayStyle.None;
+                return;
+            }
+
+            rewardLabel.text = "REWARD: " + FormatPowerupName(state.RewardPowerup);
+            rewardLabel.style.display = DisplayStyle.Flex;
+        }
+
+        static string FormatPowerupName(PowerupId id) => id switch
+        {
+            PowerupId.SlowTime => "Slow Time",
+            PowerupId.OverloadPulse => "Overload Pulse",
+            PowerupId.MagneticMine => "Magnetic Mine",
+            _ => id.ToString(),
+        };
 
         void HandleProgress(MissionRuntimeState state)
         {

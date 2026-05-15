@@ -181,6 +181,15 @@ namespace MagnetPanic.Combat
 
         readonly EnemyNavPath navPath = new EnemyNavPath();
 
+        /// <summary>
+        /// Multiplier applied to the enemy's own locomotion (approach + linear
+        /// charge). Player-driven motion (magnetic pull / repel / knockback)
+        /// is intentionally not scaled — those are external forces, not the
+        /// enemy's volition. Used by <see cref="Powerups.SlowTimeEffect"/> to
+        /// "slow the world" without touching Time.timeScale.
+        /// </summary>
+        public float ExternalSpeedMultiplier { get; set; } = 1f;
+
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsStunned => isStunned;
         public bool IsAttackable => IsAlive && !isLockedTarget;
@@ -932,7 +941,7 @@ namespace MagnetPanic.Combat
             while (dashTimer < chargeDuration && IsAlive)
             {
                 dashTimer += Time.deltaTime;
-                CollisionFlags flags = MoveBy(chargeDirection * chargeSpeed * Time.deltaTime);
+                CollisionFlags flags = MoveBy(chargeDirection * chargeSpeed * ExternalSpeedMultiplier * Time.deltaTime);
 
                 if (!attackHitApplied && playerCombat != null)
                 {
@@ -1249,10 +1258,10 @@ namespace MagnetPanic.Combat
                     }
                 }
 
-                MoveBy(direction * speed * Time.deltaTime);
+                MoveBy(direction * speed * ExternalSpeedMultiplier * Time.deltaTime);
             }
 
-            AnimateMove(speed / approachSpeed, strafing, strafeDirection);
+            AnimateMove((speed * ExternalSpeedMultiplier) / approachSpeed, strafing, strafeDirection);
         }
 
         void AnimateMove(float magnitude, bool strafing, float strafeDirection)

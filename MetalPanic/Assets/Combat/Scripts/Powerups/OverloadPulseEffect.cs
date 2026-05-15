@@ -59,6 +59,7 @@ namespace MagnetPanic.Combat.Powerups
                 return;
 
             Vector3 origin = player.position;
+            SpawnPulseVfx(origin);
             float radiusSqr = controller.PulseRadius * controller.PulseRadius;
             int damage = Mathf.Max(0, controller.PulseDamage);
             float knockback = controller.PulseKnockbackDistance;
@@ -82,6 +83,31 @@ namespace MagnetPanic.Combat.Powerups
             }
 
             DebugDrawRing(origin, controller.PulseRadius);
+        }
+
+        void SpawnPulseVfx(Vector3 origin)
+        {
+            GameObject prefab = controller != null ? controller.PulseVfxPrefab : null;
+            if (prefab == null)
+                return;
+
+            // World-space one-shot: don't parent to the player, otherwise the
+            // VFX follows the player as they move during its lifetime. The
+            // particle systems' own stop action handles cleanup.
+            GameObject instance = Object.Instantiate(prefab, origin, Quaternion.identity);
+
+            ParticleSystem[] systems = instance.GetComponentsInChildren<ParticleSystem>(true);
+            float lifetime = 1.5f;
+            for (int i = 0; i < systems.Length; i++)
+            {
+                ParticleSystem ps = systems[i];
+                if (ps == null)
+                    continue;
+                ps.Play(true);
+                lifetime = Mathf.Max(lifetime, ps.main.duration + ps.main.startLifetime.constantMax);
+            }
+
+            Object.Destroy(instance, lifetime);
         }
 
         static void DebugDrawRing(Vector3 origin, float radius)

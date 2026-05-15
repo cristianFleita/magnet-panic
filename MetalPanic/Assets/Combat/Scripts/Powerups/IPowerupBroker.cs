@@ -12,5 +12,10 @@ namespace MagnetPanic.Combat.Powerups
 
         /// <summary>Roll a powerup using uniform weights — fallback used by old mission tooling.</summary>
         void GrantRandomPowerup();
+
+        /// <summary>Activate a pre-rolled powerup. Used when the mission system
+        /// rolls at mission start (so the HUD can show what's at stake) and
+        /// only fires the grant on completion.</summary>
+        void GrantSpecificPowerup(PowerupId id);
     }
 }

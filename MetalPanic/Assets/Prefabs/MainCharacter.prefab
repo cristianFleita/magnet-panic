@@ -637,7 +637,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e03040006, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Powerups.PowerupController
   motor: {fileID: 680580263455245825}
   enemyManager: {fileID: 0}
@@ -649,13 +649,13 @@ MonoBehaviour:
   pulseDamage: 1
   pulseKnockbackDistance: 1.6
   pulseDuration: 10
-  mineAoERadius: 10
+  pulseVfxPrefab: {fileID: 2784899524707402873, guid: cb3d9b836574d4d6a84adaa766b0e64c, type: 3}
+  mineEntityPrefab: {fileID: 4413143886216275161, guid: 53ce61b06bd8c4fd2857f625d7e25a31, type: 3}
   mineDamage: 4
   mineMagnetizeMarks: 2
-  mineTriggerRadius: 0.6
   mineArmTime: 0.5
   mineTimeout: 30
-  mineColor: {r: 0.18039216, g: 0.85882354, b: 1, a: 1}
+  mineVfxPrefab: {fileID: 222570921269316701, guid: 63ecfc159e5a34d6c870fd90f8bbbebe, type: 3}
   OnPowerupActivated:
     m_PersistentCalls:
       m_Calls: []

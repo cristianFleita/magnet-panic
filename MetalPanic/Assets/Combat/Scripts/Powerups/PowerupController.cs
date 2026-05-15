@@ -32,15 +32,18 @@ namespace MagnetPanic.Combat.Powerups
         [SerializeField, Min(0)] int pulseDamage = 1;
         [SerializeField, Min(0.1f)] float pulseKnockbackDistance = 1.6f;
         [SerializeField, Min(1f)] float pulseDuration = 10f;
+        [Tooltip("Optional one-shot VFX spawned at the player each pulse beat.")]
+        [SerializeField] GameObject pulseVfxPrefab;
 
         [Header("Magnetic Mine")]
-        [SerializeField, Min(1f)] float mineAoERadius = 10f;
+        [Tooltip("Prefab spawned at the player's position. Must carry a SphereCollider (its radius doubles as both the trigger range and the AoE damage radius) and a MagneticMineBehaviour component.")]
+        [SerializeField] GameObject mineEntityPrefab;
         [SerializeField, Min(0)] int mineDamage = 4;
         [SerializeField, Min(1)] int mineMagnetizeMarks = 2;
-        [SerializeField, Min(0.1f)] float mineTriggerRadius = 0.6f;
         [SerializeField, Min(0.1f)] float mineArmTime = 0.5f;
         [SerializeField, Min(1f)] float mineTimeout = 30f;
-        [SerializeField] Color mineColor = new Color(0.18f, 0.85f, 1f, 1f);
+        [Tooltip("One-shot VFX prefab spawned at the mine's position the moment it detonates.")]
+        [SerializeField] GameObject mineVfxPrefab;
 
         [Header("Events")]
         public UnityEvent<PowerupId> OnPowerupActivated = new UnityEvent<PowerupId>();
@@ -62,13 +65,13 @@ namespace MagnetPanic.Combat.Powerups
         public int PulseDamage => pulseDamage;
         public float PulseKnockbackDistance => pulseKnockbackDistance;
         public float PulseDuration => pulseDuration;
-        public float MineAoERadius => mineAoERadius;
+        public GameObject PulseVfxPrefab => pulseVfxPrefab;
+        public GameObject MineEntityPrefab => mineEntityPrefab;
         public int MineDamage => mineDamage;
         public int MineMagnetizeMarks => mineMagnetizeMarks;
-        public float MineTriggerRadius => mineTriggerRadius;
         public float MineArmTime => mineArmTime;
         public float MineTimeout => mineTimeout;
-        public Color MineColor => mineColor;
+        public GameObject MineVfxPrefab => mineVfxPrefab;
 
         void Awake()
         {
@@ -119,6 +122,11 @@ namespace MagnetPanic.Combat.Powerups
         public void GrantRandomPowerup()
         {
             Activate(PowerupWeights.Uniform.Roll());
+        }
+
+        public void GrantSpecificPowerup(PowerupId id)
+        {
+            Activate(id);
         }
 
         // ---------- Public API ----------

@@ -34,15 +34,14 @@ namespace MagnetPanic.Combat.Powerups
             }
 
             activeMine = MagneticMineBehaviour.Spawn(
+                controller.MineEntityPrefab,
                 ctx.ActivationPosition,
                 ctx.EnemyManager,
-                controller.MineAoERadius,
                 controller.MineDamage,
                 controller.MineMagnetizeMarks,
-                controller.MineTriggerRadius,
                 controller.MineArmTime,
                 controller.MineTimeout,
-                controller.MineColor);
+                controller.MineVfxPrefab);
         }
 
         public void Tick(float unscaledDelta)

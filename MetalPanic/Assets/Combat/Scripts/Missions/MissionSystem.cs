@@ -247,6 +247,7 @@ namespace MagnetPanic.Combat.Missions
             current.Progress = 0;
             current.TimeRemaining = next.durationSeconds;
             current.State = MissionState.Active;
+            current.RewardPowerup = RollMissionReward(next);
 
             if (trackers.TryGetValue(next.id, out MissionTrackerBase tracker) && tracker != null)
             {
@@ -274,7 +275,35 @@ namespace MagnetPanic.Combat.Missions
                 playerHealth.Heal(def.healReward);
 
             if (def.grantsPowerup && powerupBroker != null)
-                powerupBroker.GrantPowerup(def.powerupWeights);
+            {
+                PowerupId reward = current.RewardPowerup != PowerupId.None
+                    ? current.RewardPowerup
+                    : def.powerupWeights.Roll();
+                powerupBroker.GrantSpecificPowerup(reward);
+            }
+        }
+
+        PowerupId RollMissionReward(MissionDefinition def)
+        {
+            if (def == null || !def.grantsPowerup)
+                return PowerupId.None;
+
+            PowerupId rolled = def.powerupWeights.Total > 0f
+                ? def.powerupWeights.Roll()
+                : PowerupWeights.Uniform.Roll();
+
+            // Diagnostic log — user reported never seeing OverloadPulse despite
+            // most missions weighting it 0.2–0.5. Log every roll for missions
+            // that *could* yield OverloadPulse so we can confirm the
+            // distribution at runtime.
+            if (def.powerupWeights.overloadPulse > 0f)
+            {
+                Debug.Log(
+                    $"[MissionSystem] '{def.displayName}' rolled reward = {rolled} | weights: slow={def.powerupWeights.slowTime}, pulse={def.powerupWeights.overloadPulse}, mine={def.powerupWeights.magneticMine}",
+                    this);
+            }
+
+            return rolled;
         }
 
         int ResolveCurrentAct()
