@@ -73,10 +73,13 @@ namespace MagnetPanic.Combat
         [SerializeField] float wallSlamBounceDistance = 0.18f;
         [SerializeField] float counterPulseDistance = 1.1f;
         [SerializeField] bool alwaysPullableByMagnet;
-        [SerializeField] GameObject magnetizedIndicator;
-        [SerializeField] bool autoCreateMagnetizedIndicator = true;
-        [SerializeField] float magnetizedIndicatorHeight = 2.15f;
-        [SerializeField] Color magnetizedIndicatorColor = new Color(1f, 0.82f, 0.16f, 0.85f);
+        [SerializeField, Tooltip("VFX spawned at the center of the body when this enemy becomes a magnet pull target. Assign the Kenney 'Electricity' particle prefab (or similar) to match the game's style.")]
+        GameObject magnetizedIndicatorPrefab;
+        [SerializeField, Tooltip("Local Y offset for the magnetized VFX. ~1.0 keeps the effect around the body center for a CharacterController-sized enemy.")]
+        float magnetizedIndicatorHeight = 1f;
+        [SerializeField, Tooltip("Local uniform scale applied to the magnetized VFX prefab so it reads at body size without re-authoring the prefab.")]
+        float magnetizedIndicatorScale = 0.6f;
+        GameObject magnetizedIndicator;
 
         [Header("Debug")]
         [SerializeField, Tooltip("Print Console messages and draw debug lines for magnet-repel projectile collisions against other enemies.")]
@@ -1776,24 +1779,24 @@ namespace MagnetPanic.Combat
 
         void EnsureMagnetizedIndicator()
         {
-            if (!autoCreateMagnetizedIndicator || magnetizedIndicator != null)
+            if (magnetizedIndicator != null || magnetizedIndicatorPrefab == null)
                 return;
 
-            GameObject cue = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            cue.name = "Magnetized Cue";
-            cue.transform.SetParent(transform, false);
-            cue.transform.localPosition = new Vector3(0f, magnetizedIndicatorHeight, 0f);
-            cue.transform.localScale = new Vector3(0.72f, 0.018f, 0.72f);
+            GameObject vfx = Instantiate(magnetizedIndicatorPrefab, transform);
+            vfx.name = magnetizedIndicatorPrefab.name + " (Magnetized VFX)";
+            vfx.transform.localPosition = new Vector3(0f, magnetizedIndicatorHeight, 0f);
+            vfx.transform.localRotation = Quaternion.identity;
+            float scale = Mathf.Max(0.01f, magnetizedIndicatorScale);
+            vfx.transform.localScale = new Vector3(scale, scale, scale);
 
-            Collider cueCollider = cue.GetComponent<Collider>();
-            if (cueCollider != null)
-                DestroyLocalObject(cueCollider);
+            // Strip colliders the source prefab might ship with so the VFX
+            // never participates in physics queries or blocks the player's
+            // strikes.
+            Collider[] colliders = vfx.GetComponentsInChildren<Collider>(true);
+            for (int i = 0; i < colliders.Length; i++)
+                DestroyLocalObject(colliders[i]);
 
-            Renderer renderer = cue.GetComponent<Renderer>();
-            if (renderer != null)
-                renderer.sharedMaterial = CreateCueMaterial(magnetizedIndicatorColor);
-
-            magnetizedIndicator = cue;
+            magnetizedIndicator = vfx;
             magnetizedIndicator.SetActive(false);
         }
 
@@ -1812,20 +1815,6 @@ namespace MagnetPanic.Combat
         {
             if (magnetizedIndicator != null)
                 magnetizedIndicator.SetActive(IsAlive && IsMagneticPullTarget);
-        }
-
-        static Material CreateCueMaterial(Color color)
-        {
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-            if (shader == null)
-                shader = Shader.Find("Standard");
-
-            return new Material(shader)
-            {
-                color = color
-            };
         }
 
         static void DestroyLocalObject(Object target)

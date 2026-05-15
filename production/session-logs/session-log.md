@@ -1309,3 +1309,30 @@ MetalPanic/Assets/Combat/Scripts/StrikeTargetIndicator.cs
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260515_202426
+### Commits
+f69d764 chore: adjust camera
+d0e5b6b chore: adjust enemy targets indicator
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+---
+
+## Session End: 20260515_203100
+### Commits
+f69d764 chore: adjust camera
+d0e5b6b chore: adjust enemy targets indicator
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+production/session-logs/session-log.md
+---
+

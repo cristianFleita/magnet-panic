@@ -395,10 +395,9 @@ MonoBehaviour:
   wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
-  magnetizedIndicator: {fileID: 0}
-  autoCreateMagnetizedIndicator: 1
-  magnetizedIndicatorHeight: 3.2
-  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
+  magnetizedIndicatorPrefab: {fileID: 1058325498707994, guid: 8333d50130027574ca8b4e0268fdd047, type: 3}
+  magnetizedIndicatorHeight: 1
+  magnetizedIndicatorScale: 1
   debugMagnetProjectileCollisions: 0
   strafeSpeed: 1.4
   approachSpeed: 3.5
@@ -485,6 +484,7 @@ MonoBehaviour:
   enemy: {fileID: 4057190588866879809}
   cuePrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
   cueHeight: 2.45
+  cueLifetime: 1
 --- !u!114 &3136504856111527258
 MonoBehaviour:
   m_ObjectHideFlags: 0
