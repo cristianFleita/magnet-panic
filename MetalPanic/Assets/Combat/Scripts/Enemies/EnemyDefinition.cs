@@ -43,6 +43,16 @@ namespace MagnetPanic.Combat
         public float knockbackDistance = 0.55f;
         public float knockbackDuration = 0.16f;
 
+        [Header("Counter Profile")]
+        [Tooltip("When false, the player's counter cannot interrupt this enemy's attacks (e.g. Heavy archetypes).")]
+        public bool canBeCountered = true;
+        [Tooltip("Stun applied to this enemy when the player lands a counter on its telegraph.")]
+        public float counterStunDuration = 1f;
+        [Tooltip("Threat-token cost spent by this enemy when claiming an attack slot from the Attack Director.")]
+        [Range(1, 3)] public int attackTokenCost = 1;
+        [Tooltip("Seconds after spawn before this enemy is eligible to be chosen as an attacker by the director.")]
+        public float spawnAttackGracePeriod = 1.2f;
+
         [Header("Linear charge (Runner Bot)")]
         [Tooltip("When true, the attack routine locks direction at prep end and dashes in a straight line.")]
         public bool useLinearCharge;

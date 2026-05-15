@@ -11,15 +11,26 @@ namespace MagnetPanic.Combat
         [Header("Attack Director")]
         [SerializeField] bool startAttackDirectorOnPlay = true;
         [SerializeField] Vector2 attackDelayRange = new Vector2(0.65f, 1.5f);
-        [SerializeField, Tooltip("When alive enemies >= this threshold, the director may send a second simultaneous attacker.")]
-        int simultaneousAttackThreshold = 5;
+        [SerializeField, Tooltip("Hard cap on simultaneous attackers, Spider-Man style threat-token pool. 3 is the sweet spot for arena-scale combat.")]
+        int maxSimultaneousAttackers = 3;
+        [SerializeField, Tooltip("Alive enemies required before a second attacker is sent.")]
+        int secondAttackerThreshold = 3;
+        [SerializeField, Tooltip("Alive enemies required before a third attacker is sent.")]
+        int thirdAttackerThreshold = 6;
+        [SerializeField, Tooltip("Stagger window between consecutive attackers so their telegraphs don't overlap. (min, max) seconds.")]
+        Vector2 attackerStaggerRange = new Vector2(0.18f, 0.45f);
         [SerializeField, Tooltip("Delay reduction per director cycle tick, for ramping pressure over time.")]
         float delayReductionPerMinute = 0.06f;
         [SerializeField, Tooltip("Minimum delay floor to avoid overwhelming the player.")]
         float minDelay = 0.35f;
+        [SerializeField, Tooltip("Extra delay applied when the player is mid-combo or low HP (Spider-Man fairness rules).")]
+        float fairnessExtraDelay = 0.25f;
+        [SerializeField, Tooltip("Player HP fraction below which the director eases off.")]
+        [Range(0f, 1f)] float lowHpFairnessThreshold = 0.25f;
 
         Coroutine attackDirectorCoroutine;
         float directorStartTime;
+        ArkhamCombatController cachedPlayer;
 
         public IReadOnlyList<ArkhamEnemy> Enemies => enemies;
 
@@ -97,6 +108,27 @@ namespace MagnetPanic.Combat
             return false;
         }
 
+        /// <summary>
+        /// True when any enemy that is BOTH telegraphing an attack AND counterable
+        /// (excludes HeavyBot) is inside the radius. Used by the player's
+        /// CounterSenseIndicator to drive the "magnetic sense" cue.
+        /// </summary>
+        public bool HasCounterTargetInRadius(Vector3 position, float radius)
+        {
+            float radiusSqr = radius * radius;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ArkhamEnemy enemy = enemies[i];
+                if (enemy == null || !enemy.IsCounterTarget)
+                    continue;
+
+                if ((enemy.transform.position - position).sqrMagnitude <= radiusSqr)
+                    return true;
+            }
+
+            return false;
+        }
+
         public ArkhamEnemy ClosestCounterableEnemy(Vector3 position, float maxDistance = float.PositiveInfinity)
         {
             ArkhamEnemy closest = null;
@@ -106,7 +138,8 @@ namespace MagnetPanic.Combat
             for (int i = 0; i < enemies.Count; i++)
             {
                 ArkhamEnemy enemy = enemies[i];
-                if (enemy == null || !enemy.IsCounterable)
+                // Honor canBeCountered: HeavyBot windups must be dodged, not parried.
+                if (enemy == null || !enemy.IsCounterTarget)
                     continue;
 
                 float distance = Vector3.SqrMagnitude(enemy.transform.position - position);
@@ -189,7 +222,42 @@ namespace MagnetPanic.Combat
             float minutesElapsed = elapsed / 60f;
             float baseDelay = Random.Range(attackDelayRange.x, attackDelayRange.y);
             float reduction = minutesElapsed * delayReductionPerMinute;
-            return Mathf.Max(minDelay, baseDelay - reduction);
+            float delay = Mathf.Max(minDelay, baseDelay - reduction);
+
+            // Spider-Man fairness: ease off while the player is comboing or low HP.
+            ArkhamCombatController player = ResolvePlayer();
+            if (player != null && player.IsAlive)
+            {
+                if (player.isAttackingEnemy || player.isCountering)
+                    delay += fairnessExtraDelay;
+                else if (player.Health != null && player.Health.MaxHealth > 0)
+                {
+                    float hpFrac = (float)player.Health.CurrentHealth / player.Health.MaxHealth;
+                    if (hpFrac <= lowHpFairnessThreshold)
+                        delay += fairnessExtraDelay * 0.5f;
+                }
+            }
+
+            return delay;
+        }
+
+        int TargetSimultaneousAttackers(int aliveCount)
+        {
+            int target = 1;
+            if (aliveCount >= secondAttackerThreshold)
+                target = 2;
+            if (aliveCount >= thirdAttackerThreshold)
+                target = 3;
+            return Mathf.Clamp(target, 1, Mathf.Max(1, maxSimultaneousAttackers));
+        }
+
+        ArkhamCombatController ResolvePlayer()
+        {
+            if (cachedPlayer != null)
+                return cachedPlayer;
+
+            cachedPlayer = FindFirstObjectByType<ArkhamCombatController>();
+            return cachedPlayer;
         }
 
         IEnumerator AttackDirector()
@@ -210,35 +278,36 @@ namespace MagnetPanic.Combat
 
                 activeAttackers.Clear();
 
-                // Primary attacker
-                ArkhamEnemy attackingEnemy = RandomAvailableEnemy(previousEnemy);
-                if (attackingEnemy == null)
-                    attackingEnemy = RandomAvailableEnemy(null);
+                int aliveCount = AliveEnemyCount();
+                int targetAttackers = TargetSimultaneousAttackers(aliveCount);
 
-                if (attackingEnemy == null)
+                // Primary attacker (biased away from the most recent one for variety)
+                ArkhamEnemy primary = RandomAvailableEnemy(previousEnemy);
+                if (primary == null)
+                    primary = RandomAvailableEnemy(null);
+                if (primary == null)
                     continue;
 
-                attackingEnemy.BeginAttack();
-                activeAttackers.Add(attackingEnemy);
+                primary.BeginAttack();
+                activeAttackers.Add(primary);
 
-                        // Simultaneous second attacker at higher enemy counts (normal pressure)
-                int aliveCount = AliveEnemyCount();
-                if (aliveCount >= simultaneousAttackThreshold)
+                // Fill up to N simultaneous attackers, with a stagger between each so
+                // their windups land at slightly different beats. Spider-Man avoids the
+                // "wall of enemies" feeling by spacing telegraphs ~0.2-0.5s apart.
+                for (int slot = activeAttackers.Count; slot < targetAttackers; slot++)
                 {
-                    ArkhamEnemy secondAttacker = RandomAvailableEnemyExcluding(activeAttackers);
-                    if (secondAttacker != null)
-                    {
-                        // Small stagger so both attacks don't land simultaneously
-                        yield return new WaitForSeconds(Random.Range(0.2f, 0.45f));
-                        if (secondAttacker.CanDirectorSelect)
-                        {
-                            secondAttacker.BeginAttack();
-                            activeAttackers.Add(secondAttacker);
-                        }
-                    }
+                    float stagger = Random.Range(attackerStaggerRange.x, attackerStaggerRange.y);
+                    yield return new WaitForSeconds(stagger);
+
+                    ArkhamEnemy next = RandomAvailableEnemyExcluding(activeAttackers);
+                    if (next == null || !next.CanDirectorSelect)
+                        continue;
+
+                    next.BeginAttack();
+                    activeAttackers.Add(next);
                 }
 
-                // Wait for all active attackers to finish
+                // Wait for all active attackers to finish their attack window.
                 yield return new WaitUntil(() =>
                 {
                     for (int i = activeAttackers.Count - 1; i >= 0; i--)
@@ -255,7 +324,7 @@ namespace MagnetPanic.Combat
                     return true;
                 });
 
-                // Retreat surviving attackers
+                // Retreat surviving attackers so they reset to idle orbit
                 for (int i = 0; i < activeAttackers.Count; i++)
                 {
                     ArkhamEnemy a = activeAttackers[i];
@@ -263,7 +332,7 @@ namespace MagnetPanic.Combat
                         a.BeginRetreat();
                 }
 
-                previousEnemy = attackingEnemy;
+                previousEnemy = primary;
             }
         }
     }

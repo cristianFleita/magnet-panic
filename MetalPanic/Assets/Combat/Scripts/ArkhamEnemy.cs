@@ -35,16 +35,27 @@ namespace MagnetPanic.Combat
         [SerializeField] CharacterController characterController;
         [SerializeField] CombatHealth combatHealth;
         [SerializeField] WorldSpaceHealthBar healthBar;
-        [SerializeField] GameObject counterIndicator;
-        [SerializeField] ParticleSystem counterParticle = null;
         [SerializeField] GameObject chargeTelegraph;
+        [Tooltip("Spawned over this enemy's head when the player lands a counter against it. The player carries the pre-counter 'magnetic sense' cue instead.")]
+        [SerializeField] GameObject counterStunVfxPrefab;
+        [SerializeField] float counterStunVfxHeight = 2.15f;
+        [SerializeField] float counterStunVfxLifetime = 1.05f;
 
         [Header("Stats")]
         [SerializeField] int maxHealth = 3;
         [SerializeField] int magneticMarksToMagnetize = 2;
         [SerializeField] float stunDuration = 0.45f;
+        [SerializeField, Tooltip("Stun duration applied when this enemy gets countered by the player. Spider-Man style: a beat of helplessness.")]
+        float counterStunDuration = 1f;
         [SerializeField] float knockbackDistance = 0.55f;
         [SerializeField] float knockbackDuration = 0.16f;
+        [Header("Counter Profile")]
+        [SerializeField, Tooltip("When false, the player's counter cannot interrupt this enemy's telegraph. Heavy archetypes use this to force dodges.")]
+        bool canBeCountered = true;
+        [SerializeField, Tooltip("Threat-token cost the Attack Director spends to send this enemy to attack. Heavy/elite enemies cost 2.")]
+        [Range(1, 3)] int attackTokenCost = 1;
+        [SerializeField, Tooltip("Seconds after spawn before this enemy is eligible to be chosen by the Attack Director (Spider-Man new-enemy grace).")]
+        float spawnAttackGracePeriod = 1.2f;
         [SerializeField] bool destroyOnDeath = true;
         [SerializeField] float deathDespawnDelay = 0.8f;
         [SerializeField] bool autoCreateHealthBar = true;
@@ -166,6 +177,7 @@ namespace MagnetPanic.Combat
         bool isAnchorHeld;
         bool attackHitApplied;
         float lastMarkTime = -999f;
+        float spawnTime = -999f;
         MoveMode moveMode;
         Coroutine behaviorCoroutine;
         Coroutine movementCoroutine;
@@ -193,7 +205,18 @@ namespace MagnetPanic.Combat
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsStunned => isStunned;
         public bool IsAttackable => IsAlive && !isLockedTarget;
+        /// <summary>
+        /// True while this enemy is mid-attack — used by the Attack Director to know
+        /// when an attack slot is still occupied. Includes uncounterable enemies.
+        /// </summary>
         public bool IsCounterable => IsAlive && (isPreparingAttack || isAttacking);
+        /// <summary>
+        /// True only when the player's counter can legitimately punish this enemy's
+        /// telegraph. Heavy archetypes return false even while attacking.
+        /// </summary>
+        public bool IsCounterTarget => IsCounterable && canBeCountered;
+        public bool CanBeCountered => canBeCountered;
+        public int AttackTokenCost => Mathf.Max(1, attackTokenCost);
         public bool IsAttacking => isAttacking;
         public CombatHealth Health => combatHealth;
         public int CurrentHealth => combatHealth != null ? combatHealth.CurrentHealth : 0;
@@ -214,7 +237,8 @@ namespace MagnetPanic.Combat
             !isMagneticallyControlled &&
             !isPreparingAttack &&
             !isAttacking &&
-            !isRetreating;
+            !isRetreating &&
+            Time.time >= spawnTime + spawnAttackGracePeriod;
 
         void Awake()
         {
@@ -288,6 +312,10 @@ namespace MagnetPanic.Combat
             chargeCausesKnockdown = def.chargeCausesKnockdown;
             chargeIdealDistance = Mathf.Max(0f, def.chargeIdealDistance);
             chargeIdealTolerance = Mathf.Max(0.1f, def.chargeIdealTolerance);
+            canBeCountered = def.canBeCountered;
+            counterStunDuration = Mathf.Max(0.1f, def.counterStunDuration);
+            attackTokenCost = Mathf.Clamp(def.attackTokenCost, 1, 3);
+            spawnAttackGracePeriod = Mathf.Max(0f, def.spawnAttackGracePeriod);
         }
 
         public void ConfigureMagneticProfile(bool alwaysPullable, float mass)
@@ -393,8 +421,10 @@ namespace MagnetPanic.Combat
             playerCombat = player;
             if (targetAnimator != null)
                 animator = targetAnimator;
-            if (indicator != null)
-                counterIndicator = indicator;
+            // 'indicator' is intentionally ignored — the counter cue moved to the player
+            // (CounterSenseIndicator on ArkhamCombatController). The parameter is kept
+            // for back-compat with existing call sites.
+            _ = indicator;
             if (combatHealth == null)
                 combatHealth = GetComponent<CombatHealth>();
             EnsureHealthBar();
@@ -466,6 +496,11 @@ namespace MagnetPanic.Combat
             if (!IsAlive)
                 return;
 
+            // Heavy archetypes shouldn't be counterable — guard at the entry point
+            // so external callers can't bypass the rule via direct CounteredBy().
+            if (!canBeCountered)
+                return;
+
             playerCombat = attacker;
             OnCountered.Invoke(this);
             StopBehaviorCoroutine();
@@ -479,13 +514,26 @@ namespace MagnetPanic.Combat
             isMagneticallyControlled = false;
             SetMarkState(MagneticMarkState.Magnetized);
             StopMoving();
+            SpawnCounterStunVfx();
 
             Vector3 direction = transform.position - attacker.transform.position;
             direction.y = 0f;
             if (direction.sqrMagnitude < 0.01f)
                 direction = transform.forward;
 
-            behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, counterPulseDistance, 0.12f, stunDuration));
+            behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, counterPulseDistance, 0.12f, counterStunDuration));
+        }
+
+        void SpawnCounterStunVfx()
+        {
+            if (counterStunVfxPrefab == null)
+                return;
+
+            Vector3 worldPos = transform.position + Vector3.up * counterStunVfxHeight;
+            GameObject instance = Instantiate(counterStunVfxPrefab, worldPos, Quaternion.identity, transform);
+            instance.name = counterStunVfxPrefab.name + " (CounterStun)";
+            float life = counterStunVfxLifetime > 0f ? counterStunVfxLifetime : counterStunDuration;
+            Destroy(instance, life);
         }
 
         /// <summary>
@@ -1563,6 +1611,7 @@ namespace MagnetPanic.Combat
             attackHitApplied = false;
             lastArenaWallHitNormal = Vector3.zero;
             lastMarkTime = -999f;
+            spawnTime = Time.time;
             moveMode = MoveMode.None;
             magneticMarks = 0;
             markState = MagneticMarkState.Normal;
@@ -1600,26 +1649,19 @@ namespace MagnetPanic.Combat
             return delta.magnitude;
         }
 
+        /// <summary>
+        /// Deprecated — the pre-counter cue moved to the player's head
+        /// (CounterSenseIndicator). Kept as a no-op so legacy callers
+        /// (e.g. GrapplerBehavior) continue to compile and run. The
+        /// player-side indicator already picks up isPreparingAttack.
+        /// </summary>
         public void ShowCounterCue()
         {
-            if (counterIndicator != null)
-                counterIndicator.SetActive(true);
-
-            if (counterParticle != null)
-                counterParticle.Play(true);
+            // Intentionally empty: counter telegraph now lives on the player.
         }
 
         public void HideCounterCue()
         {
-            if (counterIndicator != null)
-                counterIndicator.SetActive(false);
-
-            if (counterParticle != null)
-            {
-                counterParticle.Clear(true);
-                counterParticle.Stop(true);
-            }
-
             HideChargeTelegraph();
         }
 

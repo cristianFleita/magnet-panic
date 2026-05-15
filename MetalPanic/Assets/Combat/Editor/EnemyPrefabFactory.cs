@@ -379,7 +379,10 @@ namespace MagnetPanic.Combat.Editor
             SetObject(so, "animator", animator);
             SetObject(so, "characterController", controller);
             SetObject(so, "combatHealth", health);
-            SetObject(so, "counterIndicator", counterCue);
+            // counterIndicator is intentionally not assigned — the counter cue moved
+            // to the player's head (CounterSenseIndicator). The cue GameObject is still
+            // created so existing prefab graphs keep their hierarchy stable.
+            _ = counterCue;
             SetObject(so, "chargeTelegraph", chargeTelegraph);
 
             // Mirror definition values into the serialized fields so the prefab

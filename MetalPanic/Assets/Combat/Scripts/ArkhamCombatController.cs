@@ -133,6 +133,7 @@ namespace MagnetPanic.Combat
             characterController = GetComponent<CharacterController>();
 
             StrikeTargetIndicator.EnsureOn(gameObject, this);
+            CounterSenseIndicator.EnsureOn(gameObject, this);
         }
 
         void OnValidate()

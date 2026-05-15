@@ -128,10 +128,15 @@ eventos de combate consumidos por scoring/mission/HUD/presentation.
    - **Pulso radial omnidireccional** de radio `counterRadius` (4 m)
      centrado en el jugador.
 4. Durante la ventana, para cada enemigo dentro de `counterRadius`:
-   - Si `enemy.attackingState == Windup`: counter inmediato (resuelto en
-     ese frame), antes de que el daño se aplique.
+   - **Filtro de elegibilidad:** el enemigo debe tener
+     `EnemyDefinition.canBeCountered = true`. Heavy Bot y futuros
+     archetypes "pesados" devuelven `false` aquí — sus ataques
+     **no pueden ser parrieados** y deben esquivarse con dodge.
+   - Si `enemy.attackingState == Windup` y es elegible: counter
+     inmediato (resuelto en ese frame), antes de que el daño se aplique.
    - Si un ataque enemigo llega al jugador (proyectil o melee
-     contact-hit): el daño se niega y el atacante es counterado.
+     contact-hit) y la fuente es elegible: el daño se niega y el
+     atacante es counterado.
 5. **Por cada atacante counterado**:
    - El daño que iba a recibir el jugador se anula (no llama `Damage`).
    - Knockback radial fuerte: `counterKnockbackForce` (10 m/s) en
@@ -139,6 +144,13 @@ eventos de combate consumidos por scoring/mission/HUD/presentation.
    - `IMarkable.SetMarkState(Magnetizado)` — bypass de stacks. Combat
      es el único caller de este API; magnetism lo expone explícitamente
      para Counter.
+   - **Stun de counter:** el enemigo entra en `isStunned = true` durante
+     `counterStunDuration` (default 1 s, configurable por
+     `EnemyDefinition`). Durante ese segundo no puede moverse ni atacar.
+   - **VFX de stun en cabeza del enemigo:** se spawnea
+     `counterStunVfxPrefab` parented al transform del enemigo a
+     `counterStunVfxHeight` (default 2.15 m), con lifetime
+     `counterStunVfxLifetime` (default 1.05 s).
    - Publica `OnCounterSuccess(attacker, position)`.
 6. Si la ventana cierra sin atrapar a nadie:
    - Cooldown completo aplicado (player learns timing — sin "free reset").
@@ -149,6 +161,35 @@ eventos de combate consumidos por scoring/mission/HUD/presentation.
    - `OnCounterFired(succeeded: bool)` — cada press
    - `OnCounterSuccess(attacker, position)` — por atacante counterado
    - `OnCounterFailed()` — alias semántico de `OnCounterFired(false)`
+
+#### Counter Sense (telegraph en el jugador)
+
+Inspirado en el "spider sense" de Marvel's Spider-Man: la advertencia
+visual del counter **vive en la cabeza del jugador**, no en el enemigo.
+
+1. El componente `CounterSenseIndicator` se auto-attachea al jugador
+   junto al `ArkhamCombatController` (similar a `StrikeTargetIndicator`).
+2. Cada frame consulta
+   `ArkhamEnemyManager.HasCounterTargetInRadius(playerPos, counterRadius)`:
+   true cuando **al menos un enemigo elegible para counter** está
+   en windup/attack dentro del radio.
+3. Cuando true → activa un VFX sobre la cabeza del jugador
+   (`senseVfxPrefab` parented al jugador a `vfxHeight = 2.1 m`).
+   Si el prefab no está asignado, crea un fallback (esfera coloreada)
+   para que el cue siga legible durante prototipado.
+4. Cuando false → desactiva el VFX. La transición es instantánea (set
+   active on/off) para que el cue siga la cadencia del telegraph.
+5. **Filtros importantes:**
+   - HeavyBot **nunca** dispara el sense — sus ataques no son
+     counterables, mostrar el cue sería mentir al jugador.
+   - Mientras el jugador está mid-strike o mid-counter
+     (`hideWhileBusy = true`), el cue se oculta para no pelear con la
+     animación de combate.
+6. **Consecuencia de diseño:** un único cue agregado limpia la lectura
+   visual cuando hay 2-3 atacantes simultáneos. En lugar de tres
+   triángulos amarillos sobre tres cabezas, el jugador ve "estoy bajo
+   amenaza counterable, ahora" — el targeting lo hace `Counter` mismo
+   (siempre toma el más cercano).
 
 #### Combo (delegado)
 
@@ -389,6 +430,12 @@ escalar daño con el tiempo.
 - Counter contra enemigo que NO está en Windup → ese enemigo no es
   counterado; otros en radio sí. Si ningún enemigo en Windup, ventana
   cierra vacía aunque haya enemigos cerca.
+- Counter contra **HeavyBot** (o cualquier definition con
+  `canBeCountered=false`) → ese enemigo se ignora silenciosamente
+  (no consume el counter, no rompe la animación). `CounteredBy()`
+  hace early-return si `!canBeCountered`. El cue de counter sense
+  tampoco se activa por su windup, así que el jugador aprende a
+  diferenciarlo visualmente.
 
 ### Race conditions / simultáneos
 
@@ -531,16 +578,36 @@ OnCounterFailed()
 
 ## Visual/Audio Requirements
 
-[To be designed]
+- **Counter Sense VFX (player head):** halo/spark pulsante sobre la cabeza
+  del jugador a 2.1 m, color cálido contrastante (default naranja
+  `#FF6B29`). On/off instantáneo siguiendo `HasCounterTargetInRadius`.
+- **Counter Stun VFX (enemy head):** estrellas/chispas sobre el enemigo
+  counterado por ≈ 1 s, parented al transform del enemigo.
+- **Heavy "uncounterable" tell:** color de telegraph distinto (default
+  rojo en charge windup vs amarillo en archetypes counterables) —
+  refuerza al jugador que "esto no se contraataca, esquivá".
 
 ## UI Requirements
 
-[To be designed]
+- No HUD nuevo: counter sense y stun viven en worldspace.
+- Mantener el cue de Strike target inalterado.
 
 ## Acceptance Criteria
 
-[To be designed]
+- [ ] Un Scrapling preparando ataque dentro de `counterRadius` enciende
+      el counter sense sobre la cabeza del jugador.
+- [ ] Un HeavyBot preparando ataque **no** enciende el counter sense.
+- [ ] `Counter` mientras el HeavyBot está en windup no lo afecta;
+      `Counter` mientras un Scrapling está en windup lo aturde por 1 s
+      y spawna stun VFX sobre su cabeza.
+- [ ] El Attack Director envía hasta 3 atacantes simultáneos con
+      stagger ≥ 0.18 s entre cada uno (verificable con Debug.Log).
+- [ ] Enemigos recién spawneados no son seleccionados por el director
+      antes de su `spawnAttackGracePeriod`.
 
 ## Open Questions
 
-[To be designed]
+- ¿El counter sense debería tener un timing-window indicator (anillo que
+  se cierra) o queda como on/off binario? Pendiente de playtest.
+- ¿Heavy debería tener un counter "tardío" (perfect-parry frame) o
+  permanece 100% inmune? MVP: 100% inmune.

@@ -275,14 +275,19 @@ MonoBehaviour:
   characterController: {fileID: 7474309889939906814}
   combatHealth: {fileID: 302839383051251704}
   healthBar: {fileID: 0}
-  counterIndicator: {fileID: 7190573592289827246}
-  counterParticle: {fileID: 0}
   chargeTelegraph: {fileID: 0}
+  counterStunVfxPrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
+  counterStunVfxHeight: 2.15
+  counterStunVfxLifetime: 1.05
   maxHealth: 5
   magneticMarksToMagnetize: 2
   stunDuration: 0.45
+  counterStunDuration: 1
   knockbackDistance: 0.55
   knockbackDuration: 0.16
+  canBeCountered: 1
+  attackTokenCost: 1
+  spawnAttackGracePeriod: 1.2
   destroyOnDeath: 1
   deathDespawnDelay: 0.8
   autoCreateHealthBar: 1

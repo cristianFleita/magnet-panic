@@ -1132,3 +1132,39 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260515_154105
+### Commits
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+7ffc043 chore: adjust power ups + add vfx activation
+### Uncommitted Changes
+MetalPanic/Assets/Scenes/GameScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260515_160625
+### Commits
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Editor/EnemyPrefabFactory.cs
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/HeavyBot.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/MetalEnemy.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/RunnerBot.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/Scrapling.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/SpitterDrone.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/Enemies/EnemyDefinition.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+design/gdd/combat-system.md
+design/gdd/enemy-system.md
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

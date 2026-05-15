@@ -29,6 +29,10 @@ MonoBehaviour:
   attackRecovery: 0.6
   knockbackDistance: 0.55
   knockbackDuration: 0.16
+  canBeCountered: 1
+  counterStunDuration: 1
+  attackTokenCost: 1
+  spawnAttackGracePeriod: 1.2
   useLinearCharge: 0
   chargeSpeed: 11
   chargeDuration: 0.55

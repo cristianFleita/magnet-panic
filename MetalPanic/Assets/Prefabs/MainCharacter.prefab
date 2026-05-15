@@ -26,6 +26,7 @@ GameObject:
   - component: {fileID: 5111111111111111101}
   - component: {fileID: 5111111111111111102}
   - component: {fileID: 5111111111111111120}
+  - component: {fileID: 1629325032200880163}
   m_Layer: 6
   m_Name: MainCharacter
   m_TagString: Untagged
@@ -665,6 +666,24 @@ MonoBehaviour:
   OnPowerupTimerChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1629325032200880163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21bdddf3da90a4d5aa7c59492da04704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CounterSenseIndicator
+  combat: {fileID: 2420222518677489139}
+  senseVfxPrefab: {fileID: 1234567890123456784, guid: 05bae6eaacb9f4e758389df6575322d8, type: 3}
+  vfxHeight: 2.1
+  fallbackColor: {r: 1, g: 0.42, b: 0.16, a: 0.85}
+  senseRadiusOverride: 0
+  hideWhileBusy: 1
 --- !u!1 &1197205948732289119
 GameObject:
   m_ObjectHideFlags: 0
