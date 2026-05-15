@@ -22,6 +22,7 @@ namespace MagnetPanic.Combat.Upgrades
         [SerializeField] ArkhamEnemyManager enemyManager;
         [SerializeField] Camera cameraOverride;
         [SerializeField] ArkhamSimpleCameraFollow cameraRig;
+        [SerializeField] Animator animator;
 
         [Header("Slide")]
         [SerializeField] float slideDistance = 6f;
@@ -46,6 +47,14 @@ namespace MagnetPanic.Combat.Upgrades
         [SerializeField] float slamCooldown = 6f;
         [SerializeField] float slamJumpHeight = 2.2f;
 
+        [Header("VFX")]
+        [SerializeField, Tooltip("Spawned at the player's feet during slide.")]
+        GameObject slideVfxPrefab;
+        [SerializeField] float slideVfxLifetime = 1.5f;
+        [SerializeField, Tooltip("Spawned at the player's feet on slam takeoff and landing.")]
+        GameObject slamVfxPrefab;
+        [SerializeField] float slamVfxLifetime = 1.5f;
+
         [Header("Events")]
         public UnityEvent OnSlideTriggered = new UnityEvent();
         public UnityEvent OnSlamTriggered = new UnityEvent();
@@ -63,6 +72,8 @@ namespace MagnetPanic.Combat.Upgrades
         CharacterController controller;
 
         static readonly Collider[] OverlapBuffer = new Collider[32];
+        static readonly int SlideHash = Animator.StringToHash("Slide");
+        static readonly int SlamHash = Animator.StringToHash("Slam");
 
         public bool SlideUnlocked => slideUnlocked;
         public bool SlamUnlocked => slamUnlocked;
@@ -82,6 +93,7 @@ namespace MagnetPanic.Combat.Upgrades
             if (enemyManager == null) enemyManager = FindFirstObjectByType<ArkhamEnemyManager>();
             if (cameraOverride == null) cameraOverride = Camera.main;
             if (cameraRig == null) cameraRig = FindFirstObjectByType<ArkhamSimpleCameraFollow>();
+            if (animator == null) animator = GetComponentInChildren<Animator>();
             controller = GetComponent<CharacterController>();
         }
 
@@ -188,6 +200,9 @@ namespace MagnetPanic.Combat.Upgrades
 
             transform.rotation = Quaternion.LookRotation(worldDir, Vector3.up);
 
+            if (animator != null) animator.SetTrigger(SlideHash);
+            SpawnVfx(slideVfxPrefab, slideVfxLifetime);
+
             float elapsed = 0f;
             float iframeEnd = Time.time + slideIFrameDuration;
             System.Collections.Generic.HashSet<ArkhamEnemy> alreadyHit = new System.Collections.Generic.HashSet<ArkhamEnemy>();
@@ -214,6 +229,7 @@ namespace MagnetPanic.Combat.Upgrades
             }
 
             if (combat != null) combat.ExternalInvulnerability = false;
+            SpawnVfx(slideVfxPrefab, slideVfxLifetime);
             if (motor != null && combat != null && combat.IsAlive) motor.SetMovementLocked(false);
             isSliding = false;
         }
@@ -254,6 +270,8 @@ namespace MagnetPanic.Combat.Upgrades
             if (combat != null) combat.ExternalInvulnerability = true;
             OnSlamTriggered.Invoke();
 
+            if (animator != null) animator.SetTrigger(SlamHash);
+
             ArkhamEnemy target = FindNearestEnemy(transform.position, slamSearchRadius);
             Vector3 landing = target != null ? target.transform.position : transform.position;
             Vector3 start = transform.position;
@@ -277,8 +295,17 @@ namespace MagnetPanic.Combat.Upgrades
                 yield return null;
             }
 
+            // Snap to exact landing position at ground height so VFX spawns on the floor
+            Vector3 groundedLanding = new Vector3(landing.x, start.y, landing.z);
+            Vector3 snapDelta = groundedLanding - transform.position;
+            if (controller != null && controller.enabled)
+                controller.Move(snapDelta);
+            else
+                transform.position = groundedLanding;
+
             ApplySlamImpact(transform.position);
             cameraRig?.Shake(0.34f, 0.28f);
+            SpawnVfx(slamVfxPrefab, slamVfxLifetime);
             OnSlamLanded.Invoke();
 
             if (combat != null) combat.ExternalInvulnerability = false;
@@ -328,6 +355,16 @@ namespace MagnetPanic.Combat.Upgrades
         static float SmoothStep(float t)
         {
             return t * t * (3f - 2f * t);
+        }
+
+        void SpawnVfx(GameObject prefab, float lifetime)
+        {
+            if (prefab == null) return;
+            Vector3 pos = new Vector3(transform.position.x, 0.4f, transform.position.z);
+            Quaternion rot = transform.rotation;
+            GameObject instance = Instantiate(prefab, pos, rot);
+            instance.name = prefab.name + " (Runtime)";
+            if (lifetime > 0f) Destroy(instance, lifetime);
         }
     }
 }

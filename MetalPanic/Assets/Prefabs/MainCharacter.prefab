@@ -541,6 +541,91 @@ MonoBehaviour:
   trailEndWidth: 0
   trailMinVertexDistance: 0.04
   emissionDuration: 0.34
+--- !u!114 &5111111111111111101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e60005000000000000aaaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Upgrades.UpgradeSystem
+  catalog: {fileID: 11400000, guid: f1a2b3c4d5e60008000000000000aaaa, type: 2}
+  magnetism: {fileID: 8252025870227308575}
+  combat: {fileID: 2420222518677489139}
+  motor: {fileID: 680580263455245825}
+  movementAbility: {fileID: 5111111111111111102}
+  waveDirector: {fileID: 0}
+  enemyManager: {fileID: 0}
+  inputProvider: {fileID: 4891748938443140591}
+  choiceHud: {fileID: 5111111111111111106}
+  scoringRuntime: {fileID: 0}
+  registerOnStart: 1
+  chainRadius: 3
+  OnUpgradeApplied:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUpgradeOfferShown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUpgradeOfferHidden:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5111111111111111102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e60007000000000000aaaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Upgrades.MovementAbilityController
+  motor: {fileID: 680580263455245825}
+  combat: {fileID: 2420222518677489139}
+  enemyManager: {fileID: 0}
+  cameraOverride: {fileID: 0}
+  cameraRig: {fileID: 0}
+  animator: {fileID: 0}
+  slideDistance: 6
+  slideDuration: 0.22
+  slideIFrameDuration: 0.2
+  slideContactDamage: 2
+  slideKnockbackDistance: 1.2
+  slideContactRadius: 1.2
+  doubleTapWindow: 0.25
+  baseSlideCooldown: 4
+  wallRaycastInset: 0.4
+  wallLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  slamKey: 21
+  slamSearchRadius: 5
+  slamAirTime: 0.4
+  slamAoeRadius: 4
+  slamDamage: 5
+  slamKnockdownDuration: 1.5
+  slamKnockbackDistance: 1.6
+  slamCooldown: 6
+  slamJumpHeight: 2.2
+  slideVfxPrefab: {fileID: 1613383665425959110, guid: aed8a4ae366164ac2b84d2e8a4a18a47, type: 3}
+  slideVfxLifetime: 1.5
+  slamVfxPrefab: {fileID: 2784899524707402873, guid: ab2a2e6228af443a9b9c6e90429f7572, type: 3}
+  slamVfxLifetime: 1.5
+  OnSlideTriggered:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSlamTriggered:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSlamLanded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1197205948732289119
 GameObject:
   m_ObjectHideFlags: 0
@@ -804,6 +889,80 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &5111111111111111103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5111111111111111104}
+  - component: {fileID: 5111111111111111105}
+  - component: {fileID: 5111111111111111106}
+  m_Layer: 5
+  m_Name: Upgrade Choice HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5111111111111111104
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111111111111111103}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4094992919086183482}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5111111111111111105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111111111111111103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: d025d023570b8482b8eb74ffa31684f6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 0}
+  m_SortingOrder: 50
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &5111111111111111106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111111111111111103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e60006000000000000aaaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Upgrades.UpgradeChoiceHud
+  upgradeSystem: {fileID: 5111111111111111101}
+  panelBackground: {r: 0.02, g: 0.04, b: 0.07, a: 0.82}
+  cardBackground: {r: 0.08, g: 0.1, b: 0.14, a: 0.95}
+  cardSelectedBackground: {r: 0.14, g: 0.18, b: 0.24, a: 1}
+  titleColor: {r: 0.95, g: 0.97, b: 1, a: 1}
+  bodyColor: {r: 0.78, g: 0.86, b: 0.94, a: 1}
 --- !u!1 &7616598692914717819
 GameObject:
   m_ObjectHideFlags: 0
@@ -1194,157 +1353,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5272044284066797556, guid: b6849df7c8782401cae0c9f00def32cc, type: 3}
   m_PrefabInstance: {fileID: 342856103759280728}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5111111111111111101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 303172768677247653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e60005000000000000aaaa, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Upgrades.UpgradeSystem
-  catalog: {fileID: 11400000, guid: f1a2b3c4d5e60008000000000000aaaa, type: 2}
-  magnetism: {fileID: 8252025870227308575}
-  combat: {fileID: 2420222518677489139}
-  motor: {fileID: 680580263455245825}
-  movementAbility: {fileID: 5111111111111111102}
-  waveDirector: {fileID: 0}
-  enemyManager: {fileID: 0}
-  inputProvider: {fileID: 4891748938443140591}
-  choiceHud: {fileID: 5111111111111111106}
-  scoringRuntime: {fileID: 0}
-  registerOnStart: 1
-  chainRadius: 3
-  OnUpgradeApplied:
-    m_PersistentCalls:
-      m_Calls: []
-  OnUpgradeOfferShown:
-    m_PersistentCalls:
-      m_Calls: []
-  OnUpgradeOfferHidden:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &5111111111111111102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 303172768677247653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e60007000000000000aaaa, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Upgrades.MovementAbilityController
-  motor: {fileID: 680580263455245825}
-  combat: {fileID: 2420222518677489139}
-  enemyManager: {fileID: 0}
-  cameraOverride: {fileID: 0}
-  cameraRig: {fileID: 0}
-  slideDistance: 6
-  slideDuration: 0.22
-  slideIFrameDuration: 0.2
-  slideContactDamage: 2
-  slideKnockbackDistance: 1.2
-  slideContactRadius: 1.2
-  doubleTapWindow: 0.25
-  baseSlideCooldown: 4
-  wallRaycastInset: 0.4
-  wallLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  slamKey: 21
-  slamSearchRadius: 5
-  slamAirTime: 0.4
-  slamAoeRadius: 4
-  slamDamage: 5
-  slamKnockdownDuration: 1.5
-  slamKnockbackDistance: 1.6
-  slamCooldown: 6
-  slamJumpHeight: 2.2
-  OnSlideTriggered:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSlamTriggered:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSlamLanded:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!1 &5111111111111111103
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5111111111111111104}
-  - component: {fileID: 5111111111111111105}
-  - component: {fileID: 5111111111111111106}
-  m_Layer: 5
-  m_Name: Upgrade Choice HUD
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5111111111111111104
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5111111111111111103}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4094992919086183482}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5111111111111111105
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5111111111111111103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name:
-  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: d025d023570b8482b8eb74ffa31684f6, type: 2}
-  m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 0}
-  m_SortingOrder: 50
-  m_Position: 0
-  m_WorldSpaceSizeMode: 1
-  m_WorldSpaceWidth: 1920
-  m_WorldSpaceHeight: 1080
-  m_PivotReferenceSize: 0
-  m_Pivot: 0
-  m_WorldSpaceCollider: {fileID: 0}
---- !u!114 &5111111111111111106
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5111111111111111103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e60006000000000000aaaa, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Upgrades.UpgradeChoiceHud
-  upgradeSystem: {fileID: 5111111111111111101}
-  panelBackground: {r: 0.02, g: 0.04, b: 0.07, a: 0.82}
-  cardBackground: {r: 0.08, g: 0.1, b: 0.14, a: 0.95}
-  cardHoverBackground: {r: 0.14, g: 0.18, b: 0.24, a: 1}
-  titleColor: {r: 0.95, g: 0.97, b: 1, a: 1}
-  bodyColor: {r: 0.78, g: 0.86, b: 0.94, a: 1}

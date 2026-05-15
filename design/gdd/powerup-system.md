@@ -50,14 +50,14 @@ Si se activa un nuevo powerup mientras otro está activo:
 #### Regla 3 — Activación: solo por mission complete
 - **No hay pickups en arena**.
 - **No hay drops de boss en MVP**.
-- Cada powerup activado es **random uniforme** del pool de 3.
-- Se activa **inmediatamente** al recibir `OnMissionComplete`, sin UI de elección.
+- Cada powerup activado es **random con pesos temáticos** definidos por la misión completada (ver `mission-system.md` Regla 4).
+- Se activa **inmediatamente** al recibir `OnMissionComplete(weights)`, sin UI de elección.
 - Banner breve en pantalla: `"MISSION! → ¡SLOW TIME!"` por 1s.
 - **Magnetic Mine** captura la **posición del player en el momento exacto** de `OnMissionComplete` y planta ahí. El feedback visual lo conecta a la jugada que disparó la misión (la mina aparece donde "ganaste").
 
 | Fuente | Activación |
 |---|---|
-| Mission complete | Inmediata, random uniforme del pool |
+| Mission complete | Inmediata, weighted random según misión completada |
 
 #### Regla 4 — Implementación
 ```csharp
@@ -130,7 +130,7 @@ Inactive ──[OnMissionComplete + RNG]──▶ Active ──[timer expires]�
 
 | Sistema | Dirección | Datos | Interfaz |
 |---|---|---|---|
-| `mission-system` | upstream (Hard) | `OnMissionComplete` event | `ActivateRandomPowerup()` |
+| `mission-system` | upstream (Hard) | `OnMissionComplete` event + powerup weights | `ActivateWeightedPowerup(PowerupWeights)` |
 | `meta-flow-system` | downstream (Hard, Slow Time) | `Time.timeScale` override | direct write con restore |
 | `player-movement` | downstream (Hard, Slow Time) | deltaTime compensation | flag `isInSlowTime` |
 | `combat-system` | downstream (Hard, Pulse) | aplicar repel + damage radial | `ApplyAreaRepel(pos, radius, force, damage)` |
@@ -264,6 +264,7 @@ Sin problema — la marca expira con el enemigo. Otros enemigos magnetizados por
 9. **AC-9**: Al expirar/cancelar, todos los modifiers se revierten correctamente (timeScale, etc).
 10. **AC-10**: Activación inmediata sin UI de selección — el powerup se elige random uniforme del pool de 3 y se aplica al recibir `OnMissionComplete`.
 11. **AC-11**: El catálogo total son 3 powerups (Slow Time, Overload Pulse, Magnetic Mine). Magnet Fever **no existe** como powerup (sus stats están en upgrades vía Magnetic Reach + Quick Coil).
+12. **AC-12**: La selección de powerup usa pesos temáticos provistos por la misión completada (no uniforme). Verificable con log de 100 activaciones.
 
 ## Open Questions
 
