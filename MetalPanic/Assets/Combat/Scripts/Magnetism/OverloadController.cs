@@ -47,7 +47,9 @@ namespace MagnetPanic.Combat
         [Header("Debug")]
         [SerializeField] bool debugLogs = true;
         [SerializeField] bool showRuntimeRing = true;
-        [SerializeField] Color ringColor = new Color(1f, 0.25f, 0.1f, 0.9f);
+        [SerializeField] Color ringColor = new Color(0.18039216f, 0.85882354f, 1f, 0.9f);
+        [SerializeField, Tooltip("Optional ring material. When assigned, the spawned LineRenderer uses this material (e.g. cyan attract ring) instead of a plain unlit color.")]
+        Material ringMaterial;
         [SerializeField] float ringDuration = 0.45f;
         [SerializeField] int ringSegments = 48;
         [SerializeField] float ringHeight = 0.08f;
@@ -334,13 +336,20 @@ namespace MagnetPanic.Combat
             ring.widthMultiplier = ringWidth;
             ring.positionCount = Mathf.Max(8, ringSegments);
 
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-            if (shader == null)
-                shader = Shader.Find("Standard");
+            if (ringMaterial != null)
+            {
+                ring.material = ringMaterial;
+            }
+            else
+            {
+                Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+                if (shader == null)
+                    shader = Shader.Find("Sprites/Default");
+                if (shader == null)
+                    shader = Shader.Find("Standard");
 
-            ring.material = new Material(shader) { color = ringColor };
+                ring.material = new Material(shader) { color = ringColor };
+            }
             ring.startColor = ringColor;
             ring.endColor = ringColor;
             ring.enabled = false;

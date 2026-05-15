@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 6466946989276540057}
   - component: {fileID: 2282970419234717997}
   - component: {fileID: 3517284091625834712}
+  - component: {fileID: 7384921056438192740}
   m_Layer: 6
   m_Name: MainCharacter
   m_TagString: Untagged
@@ -375,7 +376,8 @@ MonoBehaviour:
   overloadShakeDuration: 0.3
   debugLogs: 1
   showRuntimeRing: 1
-  ringColor: {r: 1, g: 0.25, b: 0.1, a: 0.9}
+  ringColor: {r: 0.18039216, g: 0.85882354, b: 1, a: 0.9}
+  ringMaterial: {fileID: 2100000, guid: 2c59a5ebf385e4632ad42078e6a8d6a7, type: 2}
   ringDuration: 0.45
   ringSegments: 48
   ringHeight: 0.08
@@ -499,7 +501,7 @@ MonoBehaviour:
   dashInWorldSpace: 1
   dashFaceTarget: 1
   dashLifetime: 1.5
-  meleeVfxPrefab: {fileID: 7412905836421078935, guid: 8d3f7e2a5c1b48f9a6d4e7b2c9f1a3e6, type: 3}
+  meleeVfxPrefab: {fileID: 0}
   meleeAttachBone: {fileID: 0}
   meleeSpawnAtTarget: 1
   meleeLocalOffset: {x: 0, y: 1.3, z: 0.4}
@@ -511,6 +513,31 @@ MonoBehaviour:
   impactInWorldSpace: 1
   impactFaceAttacker: 1
   impactLifetime: 0.9
+--- !u!114 &7384921056438192740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f7c1b9a6d3e4b82a1c5e9d8b7f6a2c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.FistTrailController
+  combat: {fileID: 2420222518677489139}
+  animator: {fileID: 5724546336832868324}
+  leftBone: 17
+  rightBone: 18
+  leftHandOverride: {fileID: 4092240708630195823}
+  rightHandOverride: {fileID: 1023257756731856315}
+  trailMaterial: {fileID: 2100000, guid: 6c2f9a4d3e8b41a7b0e5f6c8d2a1b9c4, type: 2}
+  trailColor: {r: 0.18039216, g: 0.85882354, b: 1, a: 1}
+  trailTime: 0.18
+  trailStartWidth: 0.18
+  trailEndWidth: 0
+  trailMinVertexDistance: 0.04
+  emissionDuration: 0.34
 --- !u!1 &1197205948732289119
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,6 +1176,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b6849df7c8782401cae0c9f00def32cc, type: 3}
+--- !u!4 &1023257756731856315 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 788488707602591715, guid: b6849df7c8782401cae0c9f00def32cc, type: 3}
+  m_PrefabInstance: {fileID: 342856103759280728}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4092240708630195823 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4325882202109695031, guid: b6849df7c8782401cae0c9f00def32cc, type: 3}
+  m_PrefabInstance: {fileID: 342856103759280728}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5613738685016796588 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5272044284066797556, guid: b6849df7c8782401cae0c9f00def32cc, type: 3}
