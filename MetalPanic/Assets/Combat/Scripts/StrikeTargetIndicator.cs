@@ -115,28 +115,34 @@ namespace MagnetPanic.Combat
                 }
             }
 
-            // Sticky target ring stays visible even mid-attack for combo feedback
-            ArkhamEnemy sticky = combat.LastHitEnemy;
-            if (sticky != null && sticky.IsAlive)
+            // Mid-attack: lock the ring on the active target so the combo reads coherent.
+            if (combat.isAttackingEnemy || combat.isCountering)
             {
-                state = StrikeTargetState.Normal;
-                return sticky;
+                ArkhamEnemy active = combat.LockedTarget;
+                if (active == null || !active.IsAlive)
+                    active = combat.LastHitEnemy;
+
+                if (active != null && active.IsAlive)
+                {
+                    state = StrikeTargetState.Normal;
+                    return active;
+                }
+
+                if (hideWhileAttacking)
+                    return null;
             }
 
-            // No lock — hide while attacking/dodging
-            if (hideWhileAttacking && (combat.isAttackingEnemy || combat.isCountering || combat.isDodging))
+            if (hideWhileAttacking && combat.isDodging)
                 return null;
 
-            ArkhamTargetScanner scanner = combat.TargetScanner;
-            if (scanner == null)
-                return null;
-
-            ArkhamEnemy strike = scanner.FindTarget(manager, transform.position, combat.PreferredStrikeDirection);
-            if (strike == null || !strike.IsAlive)
+            // Mirror the controller's cascade so the ring marks exactly the enemy
+            // the next strike would land on (forward → camera → 360° fallback).
+            ArkhamEnemy next = combat.NextStrikeTarget;
+            if (next == null || !next.IsAlive)
                 return null;
 
             state = StrikeTargetState.Normal;
-            return strike;
+            return next;
         }
     }
 }

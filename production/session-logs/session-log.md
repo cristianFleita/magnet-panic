@@ -1287,3 +1287,25 @@ MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260515_193108
+### Commits
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+---
+
+## Session End: 20260515_194307
+### Commits
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+MetalPanic/Assets/Combat/Scripts/StrikeTargetIndicator.cs
+production/session-logs/session-log.md
+---
+
