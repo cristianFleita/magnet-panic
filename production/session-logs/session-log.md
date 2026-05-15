@@ -861,3 +861,16 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260514_204457
+### Commits
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+### Uncommitted Changes
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

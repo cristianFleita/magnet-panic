@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 3800332805574638461}
   - component: {fileID: 1197719874258635975}
   - component: {fileID: 6466946989276540057}
+  - component: {fileID: 2282970419234717997}
   m_Layer: 6
   m_Name: MainCharacter
   m_TagString: Untagged
@@ -457,6 +458,27 @@ MonoBehaviour:
     criticalSuffix: '!'
     criticalScaleMultiplier: 1.35
     criticalFontMultiplier: 1.15
+--- !u!114 &2282970419234717997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4ec00a8777e4ea1b9c0c1f5413cdf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.MagnetismVfxBinder
+  magnetism: {fileID: 8252025870227308575}
+  attachPoint: {fileID: 0}
+  attractVfxPrefab: {fileID: 2784899524707402873, guid: 927351e98fe2f44a8823dfb5fa89cb8d, type: 3}
+  attractLocalOffset: {x: 0, y: 1, z: 0}
+  repelVfxPrefab: {fileID: 222570921269316701, guid: 88ccbb086669f4916bad5e7451bf76dd, type: 3}
+  repelLocalOffset: {x: 0, y: 1, z: 0}
+  repelInWorldSpace: 1
+  repelLifetime: 2.5
+  repelOnlyWhenLoaded: 0
 --- !u!1 &1197205948732289119
 GameObject:
   m_ObjectHideFlags: 0
