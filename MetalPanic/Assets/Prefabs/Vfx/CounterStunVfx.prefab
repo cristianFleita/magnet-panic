@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1234567890123456782
 Transform:
   m_ObjectHideFlags: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b2f8a1c6e4d7b9f0a5c2d1b8e4f6a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CounterStunVfx
-  starMaterial: {fileID: 2100000, guid: 7348a57ab64064fc690b0123344ca102, type: 2}
+  starMaterial: {fileID: 2100000, guid: 4fc04c7833485412e9879ece175cba11, type: 2}
   starColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   starCount: 3
   starSize: 0.8

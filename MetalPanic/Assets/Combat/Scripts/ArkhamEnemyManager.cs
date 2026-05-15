@@ -214,6 +214,32 @@ namespace MagnetPanic.Combat
             return false;
         }
 
+        /// <summary>
+        /// Sense-cue gate. A shooter actively firing triggers at any distance
+        /// (its projectile is already in flight). Every other counter target
+        /// must be within <paramref name="strikeRadius"/> — i.e. close enough
+        /// for the player to actually punish — so the cue doesn't lie when a
+        /// charger or distant melee enemy enters its windup far away.
+        /// </summary>
+        public bool HasImminentSenseThreat(Vector3 position, float strikeRadius)
+        {
+            float strikeRadiusSqr = strikeRadius * strikeRadius;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ArkhamEnemy enemy = enemies[i];
+                if (enemy == null || !enemy.IsCounterTarget)
+                    continue;
+
+                if (enemy.IsShooterFiring)
+                    return true;
+
+                if ((enemy.transform.position - position).sqrMagnitude <= strikeRadiusSqr)
+                    return true;
+            }
+
+            return false;
+        }
+
         public ArkhamEnemy ClosestCounterableEnemy(Vector3 position, float maxDistance = float.PositiveInfinity)
         {
             ArkhamEnemy closest = null;

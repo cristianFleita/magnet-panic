@@ -26,8 +26,8 @@ namespace MagnetPanic.Combat
         [SerializeField] Color fallbackColor = new Color(1f, 0.42f, 0.16f, 0.85f);
 
         [Header("Tuning")]
-        [Tooltip("Override the controller's counter radius for the sense (set <=0 to inherit from ArkhamCombatController).")]
-        [SerializeField] float senseRadiusOverride = 0f;
+        [Tooltip("Maximum distance for non-shooter enemies to trigger the sense. Set to the player's strike reach so the cue only fires when a counter would actually land. Shooters firing always trigger regardless of this radius.")]
+        [SerializeField] float strikeRadius = 2f;
         [Tooltip("Hide the cue briefly while the player is mid-attack or mid-counter so it doesn't fight the combat animation.")]
         [SerializeField] bool hideWhileBusy = true;
 
@@ -71,8 +71,7 @@ namespace MagnetPanic.Combat
                 return;
             }
 
-            float radius = senseRadiusOverride > 0f ? senseRadiusOverride : combat.CounterRadius;
-            bool any = manager.HasCounterTargetInRadius(combat.transform.position, radius);
+            bool any = manager.HasImminentSenseThreat(combat.transform.position, strikeRadius);
             SetCue(any);
         }
 

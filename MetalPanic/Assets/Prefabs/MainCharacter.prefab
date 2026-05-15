@@ -276,6 +276,8 @@ MonoBehaviour:
   magnetizedRepelAutoAimRadius: 5
   heldEnemyDistance: 1.9
   enemyAnchorLockDistance: 0.4
+  magnetizedHoldTimeout: 3
+  magnetizedMaxDistance: 8
   autoCreateAimIndicator: 1
   aimLine: {fileID: 417033637546984419}
   aimTip: {fileID: 1176439106275208016}
@@ -682,7 +684,7 @@ MonoBehaviour:
   senseVfxPrefab: {fileID: 1234567890123456784, guid: 05bae6eaacb9f4e758389df6575322d8, type: 3}
   vfxHeight: 2.1
   fallbackColor: {r: 1, g: 0.42, b: 0.16, a: 0.85}
-  senseRadiusOverride: 0
+  strikeRadius: 2
   hideWhileBusy: 1
 --- !u!1 &1197205948732289119
 GameObject:

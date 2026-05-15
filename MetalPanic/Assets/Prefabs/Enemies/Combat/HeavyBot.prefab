@@ -267,11 +267,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.MagneticStunCue
   enemy: {fileID: 4049785423665177271}
-  cueOverride: {fileID: 0}
-  autoCreateCue: 1
+  cuePrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
   cueHeight: 2.45
-  cueScale: {x: 0.42, y: 0.42, z: 0.42}
-  cueColor: {r: 1, g: 0.18, b: 0.18, a: 0.9}
 --- !u!1 &4845661093956995192
 GameObject:
   m_ObjectHideFlags: 0

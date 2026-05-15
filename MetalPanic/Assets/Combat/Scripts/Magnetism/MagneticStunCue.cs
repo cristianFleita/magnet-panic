@@ -8,12 +8,11 @@ namespace MagnetPanic.Combat
         [SerializeField] ArkhamEnemy enemy;
 
         [Header("Cue")]
-        [SerializeField, Tooltip("Optional pre-authored cue (mesh, particle, etc). If null, a red sphere primitive is generated at runtime.")]
-        GameObject cueOverride;
-        [SerializeField] bool autoCreateCue = true;
+        [Tooltip("VFX prefab spawned over this enemy's head while the magnetic anchor is held. Mirrors the counter-stun stars used by ArkhamEnemy.")]
+        [SerializeField] GameObject cuePrefab;
         [SerializeField] float cueHeight = 2.45f;
-        [SerializeField] Vector3 cueScale = new Vector3(0.42f, 0.42f, 0.42f);
-        [SerializeField] Color cueColor = new Color(1f, 0.18f, 0.18f, 0.9f);
+        [Tooltip("Seconds the VFX stays alive after spawning. Matches the anchor stun length. Use 0 or less to keep it alive until the anchor is released.")]
+        [SerializeField] float cueLifetime = 1f;
 
         GameObject cueInstance;
 
@@ -21,9 +20,6 @@ namespace MagnetPanic.Combat
         {
             if (enemy == null)
                 enemy = GetComponent<ArkhamEnemy>();
-
-            EnsureCue();
-            HideCue();
         }
 
         void OnEnable()
@@ -37,84 +33,46 @@ namespace MagnetPanic.Combat
 
         void OnDisable()
         {
-            if (enemy == null)
-                return;
+            if (enemy != null)
+            {
+                enemy.OnAnchored.RemoveListener(HandleAnchored);
+                enemy.OnAnchorReleased.RemoveListener(HandleAnchorReleased);
+            }
 
-            enemy.OnAnchored.RemoveListener(HandleAnchored);
-            enemy.OnAnchorReleased.RemoveListener(HandleAnchorReleased);
-            HideCue();
+            DespawnCue();
         }
 
         void HandleAnchored(ArkhamEnemy _)
         {
-            ShowCue();
+            SpawnCue();
         }
 
         void HandleAnchorReleased(ArkhamEnemy _)
         {
-            HideCue();
+            DespawnCue();
         }
 
-        void EnsureCue()
+        void SpawnCue()
         {
-            if (cueInstance != null)
+            if (cuePrefab == null || cueInstance != null)
                 return;
 
-            if (cueOverride != null)
-            {
-                cueInstance = cueOverride;
-                return;
-            }
+            Vector3 worldPos = transform.position + Vector3.up * cueHeight;
+            cueInstance = Instantiate(cuePrefab, worldPos, Quaternion.identity, transform);
+            cueInstance.name = cuePrefab.name + " (AnchorCue)";
+            cueInstance.SetActive(true);
 
-            if (!autoCreateCue)
-                return;
-
-            GameObject cue = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            cue.name = "Stun Cue";
-            cue.transform.SetParent(transform, false);
-            cue.transform.localPosition = new Vector3(0f, cueHeight, 0f);
-            cue.transform.localScale = cueScale;
-
-            Collider cueCollider = cue.GetComponent<Collider>();
-            if (cueCollider != null)
-            {
-                if (Application.isPlaying)
-                    Destroy(cueCollider);
-                else
-                    DestroyImmediate(cueCollider);
-            }
-
-            Renderer renderer = cue.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-                if (shader == null)
-                    shader = Shader.Find("Sprites/Default");
-                if (shader == null)
-                    shader = Shader.Find("Standard");
-
-                renderer.sharedMaterial = new Material(shader)
-                {
-                    color = cueColor
-                };
-            }
-
-            cueInstance = cue;
+            if (cueLifetime > 0f)
+                Destroy(cueInstance, cueLifetime);
         }
 
-        void ShowCue()
+        void DespawnCue()
         {
             if (cueInstance == null)
-                EnsureCue();
+                return;
 
-            if (cueInstance != null)
-                cueInstance.SetActive(true);
-        }
-
-        void HideCue()
-        {
-            if (cueInstance != null)
-                cueInstance.SetActive(false);
+            Destroy(cueInstance);
+            cueInstance = null;
         }
     }
 }

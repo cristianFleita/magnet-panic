@@ -261,6 +261,9 @@ namespace MagnetPanic.Combat
 
         public bool IsImminentCounterThreat => IsImminentThreat && canBeCountered;
 
+        public bool IsShooter => spitterDrone != null;
+        public bool IsShooterFiring => spitterDrone != null && spitterDrone.IsFiring;
+
         /// <summary>
         /// Called by <see cref="ArkhamEnemyManager"/> to mark this enemy as a
         /// reserve — too many bots are already in the player's close-combat

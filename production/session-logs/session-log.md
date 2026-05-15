@@ -1193,3 +1193,97 @@ design/gdd/enemy-system.md
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260515_181341
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+---
+
+## Session End: 20260515_183125
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_184221
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_184440
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_185122
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+

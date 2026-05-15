@@ -48,6 +48,10 @@ namespace MagnetPanic.Combat
         [SerializeField] float heldEnemyDistance = 1.9f;
         [SerializeField, Tooltip("Once a magnetized enemy gets within this distance of the hold point, it locks in place and stops following the player. Enables the Pull → Strike → Repel combo.")]
         float enemyAnchorLockDistance = 0.4f;
+        [SerializeField, Tooltip("Seconds the player has to fire Repel after starting a pull. If no repel fires within this window the enemy demagnetizes and walks off.")]
+        float magnetizedHoldTimeout = 3f;
+        [SerializeField, Tooltip("Maximum distance a pulled magnetized enemy may be from the player. If the player runs away (or the enemy is dragged past this radius) it demagnetizes and is released.")]
+        float magnetizedMaxDistance = 5f;
 
         [Header("Aim Assist")]
         [SerializeField] bool autoCreateAimIndicator = true;
@@ -78,6 +82,7 @@ namespace MagnetPanic.Combat
             public Vector3 ApproachDirection;
             public Vector3 AnchorPosition;
             public bool IsAnchored;
+            public float PullStartTime;
         }
 
         float currentCharge;
@@ -375,6 +380,7 @@ namespace MagnetPanic.Combat
                     ApproachDirection = CaptureEnemyAnchor(enemy),
                     AnchorPosition = Vector3.zero,
                     IsAnchored = false,
+                    PullStartTime = Time.time,
                 });
                 OnEnemyPulled.Invoke(enemy);
                 OnEnemyOrbited.Invoke(enemy);
@@ -445,6 +451,12 @@ namespace MagnetPanic.Combat
 
                 PulledEnemyHold hold = pulledEnemyHolds[i];
 
+                if (ShouldDemagnetizePulledEnemy(enemy, hold))
+                {
+                    DemagnetizeAndRelease(enemy, i);
+                    continue;
+                }
+
                 if (hold.IsAnchored)
                     continue;
 
@@ -468,6 +480,29 @@ namespace MagnetPanic.Combat
             pulledEnemies.RemoveAt(index);
             if (index < pulledEnemyHolds.Count)
                 pulledEnemyHolds.RemoveAt(index);
+        }
+
+        bool ShouldDemagnetizePulledEnemy(ArkhamEnemy enemy, PulledEnemyHold hold)
+        {
+            if (magnetizedHoldTimeout > 0f && Time.time - hold.PullStartTime >= magnetizedHoldTimeout)
+                return true;
+
+            if (magnetizedMaxDistance > 0f)
+            {
+                Vector3 delta = enemy.transform.position - transform.position;
+                delta.y = 0f;
+                if (delta.sqrMagnitude > magnetizedMaxDistance * magnetizedMaxDistance)
+                    return true;
+            }
+
+            return false;
+        }
+
+        void DemagnetizeAndRelease(ArkhamEnemy enemy, int index)
+        {
+            enemy.SetMarkState(MagneticMarkState.Normal);
+            enemy.CancelMagneticPull();
+            RemovePulledEnemyAt(index);
         }
 
         void TickOrbit()
