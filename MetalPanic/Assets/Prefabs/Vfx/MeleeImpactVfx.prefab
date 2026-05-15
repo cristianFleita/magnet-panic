@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4582107935826410732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6195308724619350714}
+  - component: {fileID: 8730461953726810394}
+  m_Layer: 0
+  m_Name: MeleeImpactVfx
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6195308724619350714
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4582107935826410732}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8730461953726810394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4582107935826410732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a4f9c1b2d3e4f5a6b7c8d9e0f1a2b3c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.MeleeImpactVfx
+  ringMaterial: {fileID: 2100000, guid: 3b7e9f1a8c2d4a5e6f0b1c2d3e4a5b6c, type: 2}
+  sparkMaterial: {fileID: 2100000, guid: 3b7e9f1a8c2d4a5e6f0b1c2d3e4a5b6c, type: 2}
+  ringColor: {r: 0.18039216, g: 0.85882354, b: 1, a: 1}
+  sparkColor: {r: 1, g: 1, b: 1, a: 1}
+  useSpawnRotation: 0
+  ringStartScale: 0.4
+  ringEndScale: 2.2
+  ringDuration: 0.32
+  ringFadeStart: 0.4
+  sparkCount: 6
+  sparkSize: 0.22
+  sparkRadiusFactor: 0.46
+  sparkSpinDegrees: 35
+  sparkAngleOffset: 0
+  selfDestructAfter: 0.6
