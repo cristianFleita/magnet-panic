@@ -307,9 +307,9 @@ MonoBehaviour:
   magnetizedIndicatorHeight: 3.2
   magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
   debugMagnetProjectileCollisions: 0
-  strafeSpeed: 1
-  approachSpeed: 4
-  retreatSpeed: 2
+  strafeSpeed: 1.6
+  approachSpeed: 6.5
+  retreatSpeed: 3
   retreatDistance: 4.25
   disableStrafe: 0
   useNavMeshPathing: 1
@@ -317,10 +317,10 @@ MonoBehaviour:
   pathTargetMoveThreshold: 1.25
   pathArrivalThreshold: 0.55
   drawPathGizmo: 1
-  prepareAttackTime: 0.4
-  attackRange: 1.8
-  attackHitDelay: 0.22
-  attackRecovery: 0.6
+  prepareAttackTime: 0.28
+  attackRange: 2
+  attackHitDelay: 0.14
+  attackRecovery: 0.42
   hitRangeTolerance: 1.25
   useLinearCharge: 0
   chargeSpeed: 11

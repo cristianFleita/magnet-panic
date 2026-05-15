@@ -75,16 +75,15 @@ Any ──[Counter]──▶ Stunned → decay → Normal
 
 Las marcas decaen después de `markDecayTime = 6s`. Si no se aplica segundo hit a tiempo, la marca se pierde.
 
-#### Regla 3 — AI de combate: Attack Director (Spider-Man threat-token style)
+#### Regla 3 — AI de combate: Attack Director (queue + late-game double-team)
 
-El `ArkhamEnemyManager` corre un Attack Director inspirado en el threat-token pool de Marvel's Spider-Man: hasta **3 enemigos atacando simultáneamente**, con stagger entre telegraphs y reglas de fairness.
+El `ArkhamEnemyManager` corre un Attack Director estilo Arkham/Spider-Man simplificado: **cola estricta de 1 a la vez** durante el opening, abre un segundo slot **solo cuando ya pasó tiempo de combate** para que el jugador tenga espacio para aprender los patrones.
 
 1. Espera `attackDelayRange` (0.65–1.5s) con **reducción progresiva** por tiempo de run.
-2. Calcula `targetAttackers` según enemigos vivos:
-   - 1 attacker mientras alive < 3
-   - 2 attackers cuando alive ≥ 3 (`secondAttackerThreshold`)
-   - 3 attackers cuando alive ≥ 6 (`thirdAttackerThreshold`)
-   - Cap absoluto: `maxSimultaneousAttackers = 3`
+2. Calcula `targetAttackers` con dos puertas:
+   - **Default: 1 attacker** (queue). El director sólo elige al siguiente cuando el actual terminó (hit, counter o muerte).
+   - **Segunda slot:** se abre cuando `minutesElapsed ≥ secondAttackerAfterMinutes` (default 1.5min) **y** `aliveCount ≥ secondAttackerMinAlive` (default 4).
+   - Cap absoluto: `maxSimultaneousAttackers = 2`.
 3. Selecciona el primer enemigo disponible (`CanDirectorSelect`, ya respeta `spawnAttackGracePeriod`), evitando repetir el anterior.
 4. **Scrap Thief check:** si el enemigo tiene `ScrapThiefBehavior`, primero intenta grab+throw.
 5. **Spitter Drone check:** si el enemigo tiene `SpitterDroneBehavior`, ejecuta `RangedAttackRoutine`.
@@ -103,6 +102,36 @@ El `ArkhamEnemyManager` corre un Attack Director inspirado en el threat-token po
 - Heavy Bot ataques **no son counterables** — el player debe esquivarlos con dodge, no parar-los. Esto rompe el "auto-pilot" del counter y obliga a usar todo el toolkit.
 
 **Delay scaling:** `baseDelay - (minutesElapsed × 0.06)`, floor = 0.35s. Esto crea la curva de dificultad natural sin necesitar un sistema de dificultad separado.
+
+#### Regla 3b — Engagement Slots (anillo de combate cercano)
+
+Inspirado en el slot system de Spider-Man y en el "circle of combat" de
+Arkham. Cap duro de enemigos que pueden estar **pegados al jugador** al
+mismo tiempo, para que no se conviertan en un muro impenetrable.
+
+1. `ArkhamEnemyManager` reevalúa slots cada `engagementUpdateInterval`
+   (default 0.2s).
+2. Lista de vivos ordenados por distancia al jugador.
+3. Los primeros `closeEngagementSlots` (default **3**, configurable) o
+   los que estén comprometidos en `isPreparingAttack`/`isAttacking`
+   conservan su slot — `forcedKeepDistance = false`.
+4. El resto entra como **reservas**: `SetForcedKeepDistance(true, reserveOrbitDistance)`
+   con default `reserveOrbitDistance = 6.5m`.
+5. Una reserva orbita: retreat si está a <ring−0.6m, approach si está a
+   >ring+1.5m, strafe en la banda. Esto pinta el efecto de "rondita".
+6. Apenas un slot se libera (kill, retreat, knockback fuera del anillo),
+   la próxima tick promueve a la reserva más cercana.
+
+**Dispersión:** el vector de separación en `Move()` ahora usa radio
+2.6m (antes 1.8m) y suma un componente tangencial (45%) para que dos
+bots se "deslicen" alrededor en vez de quedarse cara a cara empujándose.
+El signo del tangencial es estable por par (hash de instance ID) — sin
+oscilación.
+
+**Tuning rápido:**
+- `closeEngagementSlots = 3` para arenas chicas, 4-5 para arenas grandes.
+- `closeEngagementRadius = 4.5m` se siente bien con `attackRange` 1.8-2m.
+- `reserveOrbitDistance` debe ser > `closeEngagementRadius + 1.5m`.
 
 #### Regla 4 — AI de movimiento: Strafe + Approach
 
@@ -316,10 +345,10 @@ delayBetweenAttacks = Max(0.35, Random(0.65, 1.5) - minutesElapsed * 0.06)
 |---|---|---|---|---|
 | `maxHealth` | 3–8 | 1–15 | Mueren muy fácil, sin tensión | Esponjas de daño, frustración |
 | `attackDelayRange` | 0.65–1.5s | 0.3–3.0s | Ataques muy frecuentes, overwhelm | Ataques raros, jugador aburrido |
-| `maxSimultaneousAttackers` | 3 | 1–4 | Combat se siente solitario, fácil | Caos ilegible, injusto |
-| `secondAttackerThreshold` | 3 | 2–6 | Segundo attacker entra muy pronto | Casi nunca hay 2 attackers |
-| `thirdAttackerThreshold` | 6 | 4–10 | 3 attackers en peleas chicas, abruma | 3 attackers casi nunca aparecen |
-| `attackerStaggerRange` | 0.18–0.45s | 0.05–1.0s | Telegraphs colapsan en mismo frame | Attackers se sienten desconectados |
+| `maxSimultaneousAttackers` | 2 | 1–3 | Combate solitario, predecible | Player abrumado, ilegible |
+| `secondAttackerAfterMinutes` | 1.5min | 0–5min | Double-team muy temprano, opening duro | Double-team casi nunca, run plano |
+| `secondAttackerMinAlive` | 4 | 2–8 | Double-team con pocos enemigos en arena | Double-team casi nunca, run plano |
+| `attackerStaggerRange` | 0.25–0.55s | 0.05–1.0s | Telegraphs colapsan en mismo frame | Attackers se sienten desconectados |
 | `spawnAttackGracePeriod` | 1.2s (Heavy 1.4, Spitter 1.5) | 0–3s | "El bot apareció y me pegó" | Spawns demasiado pasivos |
 | `fairnessExtraDelay` | 0.25s | 0–1s | El combo del player se interrumpe | Enemigos demasiado pasivos durante combo |
 | `lowHpFairnessThreshold` | 0.25 | 0–0.5 | Sin compasión en HP bajo | Demasiada compasión en HP bajo |
@@ -327,6 +356,9 @@ delayBetweenAttacks = Max(0.35, Random(0.65, 1.5) - minutesElapsed * 0.06)
 | `canBeCountered` (per def) | true (Heavy=false) | bool | Todos los enemigos parrieables, counter trivializa | Nadie counterable, counter es inútil |
 | `counterStunDuration` | 1s | 0.5–2s | Counter casi no recompensa | Counter trivializa enemigos |
 | `attackTokenCost` | 1 (Heavy=2) | 1–3 | Heavies se acumulan en pantalla | Heavies casi nunca atacan |
+| `closeEngagementSlots` | 3 | 1–6 | Combate solitario | Player rodeado de carne |
+| `closeEngagementRadius` | 4.5m | 3–8m | Ring muy chico, reserves casi adentro | Ring inmenso, todos engaged |
+| `reserveOrbitDistance` | 6.5m | 5–10m | Reservas pegadas, sensación de pared | Reservas inalcanzables, sin presión |
 | `magneticMarksToMagnetize` | 2–3 | 1–5 | Magnetiza con 1 hit, demasiado fácil | Nunca magnetiza, loop roto |
 | `markDecayTime` | 6s | 3–10s | Marcas decaen rápido, difícil magnetizar | Marcas persisten mucho, trivializa |
 | `approachSpeed` | 3–7 | 2–10 | Enemigos nunca llegan, sin presión | Enemigos encima instantáneamente |

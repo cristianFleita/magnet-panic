@@ -178,6 +178,8 @@ namespace MagnetPanic.Combat
         bool attackHitApplied;
         float lastMarkTime = -999f;
         float spawnTime = -999f;
+        bool forcedKeepDistance;
+        float forcedKeepDistanceTarget = 6.5f;
         MoveMode moveMode;
         Coroutine behaviorCoroutine;
         Coroutine movementCoroutine;
@@ -216,6 +218,64 @@ namespace MagnetPanic.Combat
         /// </summary>
         public bool IsCounterTarget => IsCounterable && canBeCountered;
         public bool CanBeCountered => canBeCountered;
+
+        /// <summary>
+        /// True when this enemy's attack is geometrically close enough to land
+        /// THIS beat (melee in range, runner mid-dash, spitter firing). Used by
+        /// the player's CounterSenseIndicator so the cue only blinks when the
+        /// player actually needs to react — not for every distant windup.
+        /// </summary>
+        public bool IsImminentThreat
+        {
+            get
+            {
+                if (!IsAlive)
+                    return false;
+
+                // Shooter actively firing — the projectile is leaving the barrel.
+                if (spitterDrone != null && spitterDrone.IsFiring)
+                    return true;
+
+                // Mid-attack (already past windup): the hit is one frame away.
+                if (isAttacking)
+                    return true;
+
+                // Windup: only flag as imminent when the enemy is geometrically
+                // close enough to actually connect. Use generous tolerance so
+                // the cue flips on a beat before the strike, not after.
+                if (isPreparingAttack && playerCombat != null)
+                {
+                    float dist = DistanceToPlayer();
+                    float threshold;
+                    if (useLinearCharge)
+                        threshold = chargeIdealDistance + chargeIdealTolerance + 1.5f;
+                    else
+                        threshold = attackRange * hitRangeTolerance + 0.5f;
+
+                    return dist <= threshold;
+                }
+
+                return false;
+            }
+        }
+
+        public bool IsImminentCounterThreat => IsImminentThreat && canBeCountered;
+
+        /// <summary>
+        /// Called by <see cref="ArkhamEnemyManager"/> to mark this enemy as a
+        /// reserve — too many bots are already in the player's close-combat
+        /// ring, so this one should orbit at <paramref name="targetDistance"/>
+        /// instead of crowding in. Mid-attack or pre-attack enemies are not
+        /// forced (the manager skips them).
+        /// </summary>
+        public void SetForcedKeepDistance(bool keep, float targetDistance)
+        {
+            forcedKeepDistance = keep;
+            if (keep)
+                forcedKeepDistanceTarget = Mathf.Max(retreatDistance, targetDistance);
+        }
+
+        public bool IsForcedReserve => forcedKeepDistance;
         public int AttackTokenCost => Mathf.Max(1, attackTokenCost);
         public bool IsAttacking => isAttacking;
         public CombatHealth Health => combatHealth;
@@ -919,8 +979,13 @@ namespace MagnetPanic.Combat
             attackHitApplied = false;
             moveMode = MoveMode.Approach;
 
+            // Short safety window: if the player slipped out during the windup,
+            // close the gap for up to ~1.2s and then commit the swing. Anything
+            // longer makes the attack feel sluggish (e.g. the MetalEnemy "thinks
+            // about it" forever bug).
             float approachTimer = 0f;
-            while (IsAlive && playerCombat != null && DistanceToPlayer() > attackRange && approachTimer < 2.2f)
+            const float maxAttackCloseTime = 1.2f;
+            while (IsAlive && playerCombat != null && DistanceToPlayer() > attackRange && approachTimer < maxAttackCloseTime)
             {
                 approachTimer += Time.deltaTime;
                 yield return null;
@@ -1164,6 +1229,23 @@ namespace MagnetPanic.Combat
         {
             while (IsAlive && !isLockedTarget && !isStunned && !isPreparingAttack && !isAttacking && !isRetreating)
             {
+                // Reserve enemies (over capacity in the player's close-combat ring)
+                // orbit at forcedKeepDistanceTarget until a slot opens up. This is
+                // what stops 8 Scraplings from glomming onto the player at once.
+                if (forcedKeepDistance)
+                {
+                    float reserveDist = DistanceToPlayer();
+                    if (reserveDist < forcedKeepDistanceTarget - 0.6f)
+                        moveMode = MoveMode.Retreat;
+                    else if (reserveDist > forcedKeepDistanceTarget + 1.5f)
+                        moveMode = MoveMode.Approach;
+                    else
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
+
+                    yield return new WaitForSeconds(Random.Range(0.25f, 0.55f));
+                    continue;
+                }
+
                 // Ranged enemy: maintain ideal distance like a linear charger
                 if (spitterDrone != null)
                 {
@@ -1277,31 +1359,43 @@ namespace MagnetPanic.Combat
             {
                 if (manager != null)
                 {
+                    // Wider separation + a tangential nudge: instead of pushing
+                    // straight away from a neighbor (which causes head-on jams
+                    // when two enemies want the same slot), we mix in a sideways
+                    // component so they ring around each other and form an arc.
                     Vector3 separation = Vector3.zero;
                     int neighbors = 0;
-                    float separationRadius = 1.8f;
-                    float sqrRadius = separationRadius * separationRadius;
-                    
+                    const float separationRadius = 2.6f;
+                    const float sqrRadius = separationRadius * separationRadius;
+
                     for (int i = 0; i < manager.Enemies.Count; i++)
                     {
                         var other = manager.Enemies[i];
                         if (other == null || !other.IsAlive || other == this)
                             continue;
-                            
+
                         Vector3 diff = transform.position - other.transform.position;
                         diff.y = 0f;
                         float sqrDist = diff.sqrMagnitude;
-                        
+
                         if (sqrDist > 0.01f && sqrDist < sqrRadius)
                         {
-                            separation += diff.normalized * (1f - (Mathf.Sqrt(sqrDist) / separationRadius));
+                            float dist = Mathf.Sqrt(sqrDist);
+                            float falloff = 1f - (dist / separationRadius);
+                            Vector3 radial = diff / dist;
+                            // Tangential component perpendicular to the radial — sign
+                            // is stable per pair (hash-based) so two enemies don't
+                            // oscillate trying to pass each other.
+                            int sign = (other.GetInstanceID() < GetInstanceID()) ? 1 : -1;
+                            Vector3 tangent = new Vector3(-radial.z, 0f, radial.x) * sign;
+                            separation += (radial + tangent * 0.45f) * falloff;
                             neighbors++;
                         }
                     }
-                    
+
                     if (neighbors > 0)
                     {
-                        direction += (separation / neighbors) * 1.5f;
+                        direction += (separation / neighbors) * 1.8f;
                         direction.Normalize();
                     }
                 }

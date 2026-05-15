@@ -11,14 +11,14 @@ namespace MagnetPanic.Combat
         [Header("Attack Director")]
         [SerializeField] bool startAttackDirectorOnPlay = true;
         [SerializeField] Vector2 attackDelayRange = new Vector2(0.65f, 1.5f);
-        [SerializeField, Tooltip("Hard cap on simultaneous attackers, Spider-Man style threat-token pool. 3 is the sweet spot for arena-scale combat.")]
-        int maxSimultaneousAttackers = 3;
-        [SerializeField, Tooltip("Alive enemies required before a second attacker is sent.")]
-        int secondAttackerThreshold = 3;
-        [SerializeField, Tooltip("Alive enemies required before a third attacker is sent.")]
-        int thirdAttackerThreshold = 6;
+        [SerializeField, Tooltip("Hard cap on simultaneous attackers. 1 = strict queue (one-at-a-time), 2 = late-game double-team. Keep low for arena combat.")]
+        int maxSimultaneousAttackers = 2;
+        [SerializeField, Tooltip("Minutes of combat before the second attacker slot opens. Until then the director enforces a strict 1-at-a-time queue so the player can learn the patterns.")]
+        float secondAttackerAfterMinutes = 1.5f;
+        [SerializeField, Tooltip("Alive enemies required before the director even considers a second attacker (defends against double-teaming a near-empty arena).")]
+        int secondAttackerMinAlive = 4;
         [SerializeField, Tooltip("Stagger window between consecutive attackers so their telegraphs don't overlap. (min, max) seconds.")]
-        Vector2 attackerStaggerRange = new Vector2(0.18f, 0.45f);
+        Vector2 attackerStaggerRange = new Vector2(0.25f, 0.55f);
         [SerializeField, Tooltip("Delay reduction per director cycle tick, for ramping pressure over time.")]
         float delayReductionPerMinute = 0.06f;
         [SerializeField, Tooltip("Minimum delay floor to avoid overwhelming the player.")]
@@ -28,9 +28,25 @@ namespace MagnetPanic.Combat
         [SerializeField, Tooltip("Player HP fraction below which the director eases off.")]
         [Range(0f, 1f)] float lowHpFairnessThreshold = 0.25f;
 
+        [Header("Engagement Slots")]
+        [SerializeField, Tooltip("Maximum enemies allowed inside the close-combat ring around the player. Extras orbit as reserves until one drops out.")]
+        int closeEngagementSlots = 3;
+        [SerializeField, Tooltip("Radius of the close-combat ring. Enemies within this distance of the player count as 'engaged'.")]
+        float closeEngagementRadius = 4.5f;
+        [SerializeField, Tooltip("Distance reserve enemies orbit at while waiting for a slot. Should be > closeEngagementRadius.")]
+        float reserveOrbitDistance = 6.5f;
+        [SerializeField, Tooltip("How often (seconds) to re-rank engaged vs reserve enemies. Cheap, no need to run every frame.")]
+        float engagementUpdateInterval = 0.2f;
+
         Coroutine attackDirectorCoroutine;
         float directorStartTime;
         ArkhamCombatController cachedPlayer;
+        readonly List<ArkhamEnemy> engagementBuffer = new List<ArkhamEnemy>(16);
+        float nextEngagementUpdate;
+
+        public int CloseEngagementSlots => closeEngagementSlots;
+        public float CloseEngagementRadius => closeEngagementRadius;
+        public float ReserveOrbitDistance => reserveOrbitDistance;
 
         public IReadOnlyList<ArkhamEnemy> Enemies => enemies;
 
@@ -53,6 +69,72 @@ namespace MagnetPanic.Combat
                 StopCoroutine(attackDirectorCoroutine);
 
             attackDirectorCoroutine = null;
+        }
+
+        void Update()
+        {
+            if (Time.time < nextEngagementUpdate)
+                return;
+
+            nextEngagementUpdate = Time.time + Mathf.Max(0.05f, engagementUpdateInterval);
+            UpdateEngagementSlots();
+        }
+
+        /// <summary>
+        /// Spider-Man "circle of combat": rank alive enemies by distance to the
+        /// player and only let the closest N stay engaged in melee. The rest are
+        /// flagged as reserves and pushed out to <see cref="reserveOrbitDistance"/>
+        /// so they orbit instead of stacking on top of the engaged trio. As soon
+        /// as one engaged enemy dies, retreats, or is knocked away, the next
+        /// closest reserve takes its slot on the next tick.
+        ///
+        /// Attacking / pre-attacking enemies keep their slot regardless of
+        /// distance — interrupting an in-flight charge would feel buggy.
+        /// </summary>
+        void UpdateEngagementSlots()
+        {
+            ArkhamCombatController player = ResolvePlayer();
+            if (player == null)
+                return;
+
+            Vector3 playerPos = player.transform.position;
+
+            engagementBuffer.Clear();
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ArkhamEnemy e = enemies[i];
+                if (e == null || !e.IsAlive)
+                    continue;
+                engagementBuffer.Add(e);
+            }
+
+            engagementBuffer.Sort((a, b) =>
+            {
+                float da = (a.transform.position - playerPos).sqrMagnitude;
+                float db = (b.transform.position - playerPos).sqrMagnitude;
+                return da.CompareTo(db);
+            });
+
+            int slotsTaken = 0;
+            for (int i = 0; i < engagementBuffer.Count; i++)
+            {
+                ArkhamEnemy e = engagementBuffer[i];
+
+                // Attackers keep their slot (mid-attack reservation).
+                bool isCommitted = e.IsAttacking || e.isPreparingAttack;
+                bool wantsSlot = isCommitted || slotsTaken < closeEngagementSlots;
+
+                if (wantsSlot)
+                {
+                    e.SetForcedKeepDistance(false, 0f);
+                    if (!isCommitted)
+                        slotsTaken++;
+                }
+                else
+                {
+                    e.SetForcedKeepDistance(true, reserveOrbitDistance);
+                }
+            }
         }
 
         public void Register(ArkhamEnemy enemy)
@@ -109,9 +191,12 @@ namespace MagnetPanic.Combat
         }
 
         /// <summary>
-        /// True when any enemy that is BOTH telegraphing an attack AND counterable
-        /// (excludes HeavyBot) is inside the radius. Used by the player's
-        /// CounterSenseIndicator to drive the "magnetic sense" cue.
+        /// True when any enemy that is BOTH counterable AND posing an IMMINENT
+        /// threat (in melee range mid-windup, runner mid-dash, shooter firing)
+        /// is inside the radius. Used by the player's CounterSenseIndicator so
+        /// the magnetic sense only fires when the player actually needs to react.
+        /// HeavyBot is excluded by canBeCountered, ranged shooters trigger it
+        /// when their projectile is leaving the barrel.
         /// </summary>
         public bool HasCounterTargetInRadius(Vector3 position, float radius)
         {
@@ -119,7 +204,7 @@ namespace MagnetPanic.Combat
             for (int i = 0; i < enemies.Count; i++)
             {
                 ArkhamEnemy enemy = enemies[i];
-                if (enemy == null || !enemy.IsCounterTarget)
+                if (enemy == null || !enemy.IsImminentCounterThreat)
                     continue;
 
                 if ((enemy.transform.position - position).sqrMagnitude <= radiusSqr)
@@ -243,11 +328,22 @@ namespace MagnetPanic.Combat
 
         int TargetSimultaneousAttackers(int aliveCount)
         {
+            if (aliveCount <= 0)
+                return 0;
+
+            // Default: strict 1-at-a-time queue. The player learns patterns
+            // first; only after enough time in the run do we open the second
+            // slot. This makes the opening minute readable instead of a brawl.
             int target = 1;
-            if (aliveCount >= secondAttackerThreshold)
+
+            float minutesElapsed = (Time.time - directorStartTime) / 60f;
+            bool secondSlotUnlocked =
+                minutesElapsed >= secondAttackerAfterMinutes
+                && aliveCount >= secondAttackerMinAlive;
+
+            if (secondSlotUnlocked)
                 target = 2;
-            if (aliveCount >= thirdAttackerThreshold)
-                target = 3;
+
             return Mathf.Clamp(target, 1, Mathf.Max(1, maxSimultaneousAttackers));
         }
 

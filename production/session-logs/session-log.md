@@ -1168,3 +1168,28 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260515_174306
+### Commits
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/MetalEnemy.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+design/gdd/enemy-system.md
+---
+
+## Session End: 20260515_180127
+### Commits
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/MetalEnemy.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+design/gdd/enemy-system.md
+production/session-logs/session-log.md
+---
+
