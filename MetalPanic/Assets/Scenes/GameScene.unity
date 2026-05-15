@@ -215,7 +215,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
-        Gain: 0.2
+        Gain: 0.12
         CancelDeltaTime: 0
       InputValue: 0
       Driver:
@@ -226,7 +226,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
-        Gain: 0.003
+        Gain: 0.002
         CancelDeltaTime: 0
       InputValue: 0
       Driver:
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
   Composition:
-    ScreenPosition: {x: 0.008167982, y: 0.14580816}
+    ScreenPosition: {x: 0, y: -0.18}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
@@ -267,8 +267,8 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0.5, y: 0.5}
+  TargetOffset: {x: 0, y: 1.15, z: 0}
+  Damping: {x: 0.35, y: 0.45}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -286,26 +286,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5d7c088409d9a40b7b09aa707777f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineOrbitalFollow
-  TargetOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0.85, z: 0}
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 0.35, y: 0.45, z: 0.35}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
   OrbitStyle: 1
-  Radius: 10
+  Radius: 10.5
   Orbits:
     Top:
-      Radius: 9
-      Height: 7
+      Radius: 10.5
+      Height: 6.4
     Center:
-      Radius: 13.3
-      Height: 6.56
+      Radius: 10.75
+      Height: 4.6
     Bottom:
-      Radius: 9
-      Height: 1.4
-    SplineCurvature: 0.2
+      Radius: 8.75
+      Height: 2.2
+    SplineCurvature: 0.28
   RecenteringTarget: 2
   HorizontalAxis:
     Value: 0
@@ -314,18 +314,18 @@ MonoBehaviour:
     Wrap: 1
     Recentering:
       Enabled: 0
-      Wait: 1
-      Time: 2
+      Wait: 0.8
+      Time: 1.35
     Restrictions: 0
   VerticalAxis:
-    Value: 0.5
-    Center: 0.5
-    Range: {x: 0, y: 1}
+    Value: 0.46
+    Center: 0.46
+    Range: {x: 0.34, y: 0.62}
     Wrap: 0
     Recentering:
       Enabled: 0
-      Wait: 1
-      Time: 2
+      Wait: 0.35
+      Time: 0.6
     Restrictions: 0
   RadialAxis:
     Value: 1
@@ -358,10 +358,10 @@ MonoBehaviour:
   m_LegacyPriority: 0
   Target:
     TrackingTarget: {fileID: 394681428}
-    LookAtTarget: {fileID: 0}
-    CustomLookAtTarget: 0
+    LookAtTarget: {fileID: 394681428}
+    CustomLookAtTarget: 1
   Lens:
-    FieldOfView: 40
+    FieldOfView: 55
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -388,8 +388,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 71989084}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.17532434, y: -0.005332503, z: 0.0009496411, w: 0.9844959}
-  m_LocalPosition: {x: 0, y: 6.56, z: -13.3}
+  m_LocalRotation: {x: 0.14780942, y: 0, z: 0, w: 0.9890159}
+  m_LocalPosition: {x: 0, y: 5.45, z: -10.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1406,7 +1406,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 40
+  field of view: 55
   orthographic: 0
   orthographic size: 10
   m_Depth: 0
@@ -1440,13 +1440,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1583158214}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.17532435, y: -0.0053325035, z: 0.000949641, w: 0.9844958}
-  m_LocalPosition: {x: 0, y: 6.56, z: -13.3}
+  m_LocalRotation: {x: 0.14780942, y: 0, z: 0, w: 0.9890159}
+  m_LocalPosition: {x: 0, y: 5.45, z: -10.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 16.143, y: -4.394, z: 0}
+  m_LocalEulerAnglesHint: {x: 17, y: 0, z: 0}
 --- !u!114 &1583158219
 MonoBehaviour:
   m_ObjectHideFlags: 0
