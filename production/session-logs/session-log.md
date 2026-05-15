@@ -1024,3 +1024,38 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260515_022301
+### Commits
+ce56a3c Merge pull request #3 from cristianFleita/feat-enviroment
+81f7961 chore: vfxs
+aa2ac1f chore: fist trail
+9112ad3 chore: hit vfx
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+### Uncommitted Changes
+design/gdd/powerup-system.md
+design/gdd/upgrade-system.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260515_024554
+### Commits
+ce56a3c Merge pull request #3 from cristianFleita/feat-enviroment
+81f7961 chore: vfxs
+aa2ac1f chore: fist trail
+9112ad3 chore: hit vfx
+3f3b720 chore: integrate pull/repel vfx on player
+### Uncommitted Changes
+design/gdd/powerup-system.md
+design/gdd/upgrade-system.md
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

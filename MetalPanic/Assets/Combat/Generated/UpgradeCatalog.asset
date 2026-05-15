@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a2b3c4d5e60004000000000000aaaa, type: 3}
+  m_Name: UpgradeCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Upgrades.UpgradeCatalog
+  upgrades:
+  - id: 1
+    branch: 0
+    displayName: Magnetic Reach
+    description: 'Pull range +1.5m. Acerca chatarra y enemigos desde más lejos.'
+    maxStacks: 3
+    prerequisite: 0
+    accentColor: {r: 0.18, g: 0.85, b: 1, a: 1}
+  - id: 2
+    branch: 0
+    displayName: Quick Coil
+    description: 'Pull speed +30%. La órbita se llena más rápido.'
+    maxStacks: 2
+    prerequisite: 0
+    accentColor: {r: 0.18, g: 0.85, b: 1, a: 1}
+  - id: 3
+    branch: 0
+    displayName: Magnetic Chain
+    description: 'Strike sobre enemigo magnetizado: chance de marcar a otro enemigo cercano. 30% / 50% / 70%.'
+    maxStacks: 3
+    prerequisite: 0
+    accentColor: {r: 0.65, g: 0.35, b: 1, a: 1}
+  - id: 4
+    branch: 1
+    displayName: Scrap Cannon
+    description: 'Repel damage +1. Cada proyectil duele más.'
+    maxStacks: 3
+    prerequisite: 0
+    accentColor: {r: 1, g: 0.55, b: 0.2, a: 1}
+  - id: 5
+    branch: 1
+    displayName: Railgun
+    description: 'Repel speed +30% y piercing +1. Atraviesa más enemigos.'
+    maxStacks: 2
+    prerequisite: 0
+    accentColor: {r: 1, g: 0.55, b: 0.2, a: 1}
+  - id: 6
+    branch: 2
+    displayName: Deep Pockets
+    description: 'Max capacity +3. Más chatarra cargada antes del repel.'
+    maxStacks: 3
+    prerequisite: 0
+    accentColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  - id: 7
+    branch: 2
+    displayName: Heavy Lifter
+    description: 'Desbloquea el Wrecking Core: objeto pesado con piercing infinito al repeler.'
+    maxStacks: 1
+    prerequisite: 0
+    accentColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  - id: 8
+    branch: 3
+    displayName: Magnetic Slide
+    description: 'Doble-tap WASD para deslizarte 6m. Invuln 0.2s + daño en trayecto. Cooldown 4s.'
+    maxStacks: 2
+    prerequisite: 0
+    accentColor: {r: 0.4, g: 1, b: 0.6, a: 1}
+  - id: 9
+    branch: 3
+    displayName: Magnetic Slam
+    description: 'Tecla G: salto magnético sobre el enemigo más cercano. AoE 4m + knockdown 1.5s. Cooldown 6s.'
+    maxStacks: 1
+    prerequisite: 8
+    accentColor: {r: 0.4, g: 1, b: 0.6, a: 1}
+  - id: 10
+    branch: 3
+    displayName: Iron Stride
+    description: 'Reduce la penalización de movimiento por carga 50%.'
+    maxStacks: 1
+    prerequisite: 0
+    accentColor: {r: 0.4, g: 1, b: 0.6, a: 1}

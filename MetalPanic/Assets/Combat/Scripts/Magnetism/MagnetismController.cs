@@ -89,13 +89,66 @@ namespace MagnetPanic.Combat
         bool repelEnabled = true;
         ArenaSystem cachedArena;
 
+        // Upgrade modifiers — set by UpgradeSystem. Defaults are no-op.
+        float pullRangeBonus;
+        float pullSpeedMult = 1f;
+        float repelSpeedMult = 1f;
+        int repelDamageBonus;
+        int repelPiercingBonus;
+        int maxCapacityBonus;
+        float chargeMobilityPenaltyMult = 1f;
+
         public float CurrentCharge => currentCharge;
-        public float MaxCapacity => maxCapacity;
+        public float MaxCapacity => EffectiveMaxCapacity;
+        public float EffectiveMaxCapacity => Mathf.Max(1f, maxCapacity + maxCapacityBonus);
+        public float EffectivePullRadius => Mathf.Max(0f, pullRadius + pullRangeBonus);
         public bool IsPulling => pullActive;
         public bool HasOrbitingPayload => orbitingObjects.Count > 0 || pulledEnemies.Count > 0;
         public int OrbitingCount => orbitingObjects.Count + pulledEnemies.Count;
         public bool PullEnabled => pullEnabled;
         public bool RepelEnabled => repelEnabled;
+
+        public float PullRangeBonus
+        {
+            get => pullRangeBonus;
+            set => pullRangeBonus = Mathf.Max(0f, value);
+        }
+
+        public float PullSpeedMult
+        {
+            get => pullSpeedMult;
+            set => pullSpeedMult = Mathf.Max(0.1f, value);
+        }
+
+        public float RepelSpeedMult
+        {
+            get => repelSpeedMult;
+            set => repelSpeedMult = Mathf.Max(0.1f, value);
+        }
+
+        public int RepelDamageBonus
+        {
+            get => repelDamageBonus;
+            set => repelDamageBonus = Mathf.Max(0, value);
+        }
+
+        public int RepelPiercingBonus
+        {
+            get => repelPiercingBonus;
+            set => repelPiercingBonus = Mathf.Max(0, value);
+        }
+
+        public int MaxCapacityBonus
+        {
+            get => maxCapacityBonus;
+            set => maxCapacityBonus = Mathf.Max(0, value);
+        }
+
+        public float ChargeMobilityPenaltyMult
+        {
+            get => chargeMobilityPenaltyMult;
+            set => chargeMobilityPenaltyMult = Mathf.Clamp(value, 0f, 4f);
+        }
 
         public void SetPullEnabled(bool enabled)
         {
@@ -281,7 +334,7 @@ namespace MagnetPanic.Combat
         {
             int count = Physics.OverlapSphereNonAlloc(
                 center,
-                pullRadius,
+                EffectivePullRadius,
                 overlapBuffer,
                 attractableLayers,
                 QueryTriggerInteraction.Collide);
@@ -311,7 +364,8 @@ namespace MagnetPanic.Combat
 
                 Vector3 delta = enemy.transform.position - transform.position;
                 delta.y = 0f;
-                if (delta.sqrMagnitude > pullRadius * pullRadius)
+                float effectiveRadius = EffectivePullRadius;
+                if (delta.sqrMagnitude > effectiveRadius * effectiveRadius)
                     continue;
 
                 enemy.BeginMagneticPull();
@@ -358,7 +412,7 @@ namespace MagnetPanic.Combat
                 }
 
                 Vector3 ringTarget = NearestRingTarget(center, magneticObject.transform.position);
-                magneticObject.TickAttract(ringTarget, pullSpeed, Time.deltaTime);
+                magneticObject.TickAttract(ringTarget, pullSpeed * pullSpeedMult, Time.deltaTime);
 
                 if (!magneticObject.IsCloseEnoughForOrbit(center, orbitRadius))
                     continue;
@@ -395,7 +449,7 @@ namespace MagnetPanic.Combat
                     continue;
 
                 Vector3 holdPoint = transform.position + hold.ApproachDirection * heldEnemyDistance;
-                enemy.MagnetPullTowards(holdPoint, enemyPullSpeed, Time.deltaTime);
+                enemy.MagnetPullTowards(holdPoint, enemyPullSpeed * pullSpeedMult, Time.deltaTime);
 
                 Vector3 delta = enemy.transform.position - holdPoint;
                 delta.y = 0f;
@@ -448,13 +502,17 @@ namespace MagnetPanic.Combat
             int slot = 0;
             FaceRepelDirection(aim);
 
+            float effectiveRepelSpeed = repelSpeed * repelSpeedMult;
+            int effectiveDamageBonus = repelDamageBonus;
+            int effectivePierceBonus = repelPiercingBonus;
+
             for (int i = orbitingObjects.Count - 1; i >= 0; i--)
             {
                 MagneticObject magneticObject = orbitingObjects[i];
                 if (magneticObject == null)
                     continue;
 
-                magneticObject.Repel(DirectionInCone(aim, slot, total), repelSpeed);
+                magneticObject.Repel(DirectionInCone(aim, slot, total), effectiveRepelSpeed, effectiveDamageBonus, effectivePierceBonus);
                 slot++;
             }
 
@@ -466,7 +524,7 @@ namespace MagnetPanic.Combat
 
                 Vector3 coneDir = DirectionInCone(aim, slot, total);
                 Vector3 launchDir = ResolveMagnetizedRepelDirection(enemy, coneDir);
-                enemy.MagnetRepel(launchDir, repelSpeed * 0.78f, magnetizedEnemyDamage, magnetizedEnemyRecoilDamage);
+                enemy.MagnetRepel(launchDir, effectiveRepelSpeed * 0.78f, magnetizedEnemyDamage + effectiveDamageBonus, magnetizedEnemyRecoilDamage);
                 slot++;
             }
 
@@ -591,9 +649,10 @@ namespace MagnetPanic.Combat
 
         void SetCharge(float value)
         {
-            float ceiling = maxCapacity * (1f + Mathf.Max(0f, overflowHeadroom));
+            float capacity = EffectiveMaxCapacity;
+            float ceiling = capacity * (1f + Mathf.Max(0f, overflowHeadroom));
             currentCharge = Mathf.Clamp(value, 0f, ceiling);
-            OnChargeChanged.Invoke(currentCharge, maxCapacity);
+            OnChargeChanged.Invoke(currentCharge, capacity);
         }
 
         void ApplyMovementPenalty()
@@ -601,8 +660,10 @@ namespace MagnetPanic.Combat
             if (motor == null)
                 return;
 
-            float ratio = maxCapacity > 0f ? Mathf.Clamp01(currentCharge / maxCapacity) : 0f;
-            motor.Acceleration = Mathf.Max(0.25f, 1f - ratio * chargePenaltyAtFull);
+            float capacity = EffectiveMaxCapacity;
+            float ratio = capacity > 0f ? Mathf.Clamp01(currentCharge / capacity) : 0f;
+            float effectivePenalty = chargePenaltyAtFull * chargeMobilityPenaltyMult;
+            motor.Acceleration = Mathf.Max(0.25f, 1f - ratio * effectivePenalty);
         }
 
         void EnsureAimIndicator()

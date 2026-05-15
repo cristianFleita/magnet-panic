@@ -51,6 +51,7 @@ namespace MagnetPanic.Combat
         Transform magnetTransform;
         MagneticObjectState state = MagneticObjectState.InWorld;
         int pierceRemaining;
+        int damageBonusActive;
         float projectileAge;
         bool originalColliderIsTrigger;
         bool cachedOriginalColliderState;
@@ -88,6 +89,7 @@ namespace MagnetPanic.Combat
             state = MagneticObjectState.InWorld;
             projectileAge = 0f;
             pierceRemaining = Mathf.Max(1, maxPierceCount);
+            damageBonusActive = 0;
             hitEnemies.Clear();
             objectCollider.enabled = true;
             RestoreColliderMode();
@@ -246,6 +248,11 @@ namespace MagnetPanic.Combat
 
         public void Repel(Vector3 direction, float speed)
         {
+            Repel(direction, speed, 0, 0);
+        }
+
+        public void Repel(Vector3 direction, float speed, int bonusDamage, int bonusPierce)
+        {
             EnsureReferences();
             direction.y = 0f;
             if (direction.sqrMagnitude < 0.01f)
@@ -253,7 +260,8 @@ namespace MagnetPanic.Combat
 
             state = MagneticObjectState.Projectile;
             projectileAge = 0f;
-            pierceRemaining = Mathf.Max(1, maxPierceCount);
+            pierceRemaining = Mathf.Max(1, maxPierceCount + Mathf.Max(0, bonusPierce));
+            damageBonusActive = Mathf.Max(0, bonusDamage);
             hitEnemies.Clear();
             SetKinematic(false);
             objectCollider.enabled = true;
@@ -313,7 +321,7 @@ namespace MagnetPanic.Combat
                 }
 
                 hitEnemies.Add(enemy);
-                enemy.ReceiveMagneticImpact(damage, transform.position, knockbackDistance, true);
+                enemy.ReceiveMagneticImpact(damage + damageBonusActive, transform.position, knockbackDistance, true);
                 OnImpact.Invoke(this);
 
                 pierceRemaining--;
