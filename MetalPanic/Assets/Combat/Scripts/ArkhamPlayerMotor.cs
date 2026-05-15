@@ -26,11 +26,22 @@ namespace MagnetPanic.Combat
         float verticalVelocity;
         float acceleration = 1f;
         bool movementLocked;
+        float externalSpeedMultiplier = 1f;
 
         public Vector2 MoveAxis => moveAxis;
         public Vector3 WorldMoveDirection => worldMoveDirection;
         public bool IsMovementLocked => movementLocked;
-        public float EffectiveSpeed => movementSpeed * acceleration * SprintMultiplier;
+        public float EffectiveSpeed => movementSpeed * acceleration * SprintMultiplier * externalSpeedMultiplier;
+
+        /// <summary>
+        /// Multiplicative speed override consumed by transient gameplay effects
+        /// (e.g. SlowTime compensating for <c>Time.timeScale</c>). Defaults to 1.
+        /// </summary>
+        public float ExternalSpeedMultiplier
+        {
+            get => externalSpeedMultiplier;
+            set => externalSpeedMultiplier = Mathf.Clamp(value, 0.1f, 10f);
+        }
 
         float SprintMultiplier => inputProvider != null && inputProvider.SprintPressed ? sprintMultiplier : 1f;
 

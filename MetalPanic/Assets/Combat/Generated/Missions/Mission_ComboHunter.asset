@@ -14,9 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 1
   displayName: Combo Hunter
-  objective: Do the thing
+  objective: Alcanza un combo x5 sin romper la racha.
+  tier: 1
+  gate: 0
   durationSeconds: 30
   targetCount: 5
   xpReward: 50
   healReward: 0
-  grantsPowerup: 0
+  grantsPowerup: 1
+  powerupWeights:
+    slowTime: 0.5
+    overloadPulse: 0.3
+    magneticMine: 0.2

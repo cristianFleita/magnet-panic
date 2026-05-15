@@ -91,6 +91,7 @@ namespace MagnetPanic.Combat
         public bool isAttackingEnemy { get; private set; }
         public bool isCountering { get; private set; }
         public bool isDodging { get; private set; }
+        public bool ExternalInvulnerability { get; set; }
         public ArkhamEnemy LockedTarget => lockedTarget;
         public ArkhamEnemy LastHitEnemy => PeekStickyTarget();
         public CombatHealth Health => health;
@@ -244,7 +245,7 @@ namespace MagnetPanic.Combat
 
         public void ReceiveDamage(ArkhamEnemy source, int damage, bool knockdown)
         {
-            if (!IsAlive || isCountering || isAttackingEnemy || isDodging || health == null)
+            if (!IsAlive || isCountering || isAttackingEnemy || isDodging || ExternalInvulnerability || health == null)
                 return;
 
             // If grappled, still take damage (that's the point of the grapple)

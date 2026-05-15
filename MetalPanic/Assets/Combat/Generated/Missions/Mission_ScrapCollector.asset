@@ -13,10 +13,16 @@ MonoBehaviour:
   m_Name: Mission_ScrapCollector
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 3
-  displayName: Scrap collector
-  objective: Do the thing
+  displayName: Scrap Collector
+  objective: Mantén 6 piezas de chatarra orbitando al mismo tiempo.
+  tier: 1
+  gate: 0
   durationSeconds: 40
   targetCount: 6
-  xpReward: 60
+  xpReward: 40
   healReward: 0
-  grantsPowerup: 0
+  grantsPowerup: 1
+  powerupWeights:
+    slowTime: 0.2
+    overloadPulse: 0.3
+    magneticMine: 0.5

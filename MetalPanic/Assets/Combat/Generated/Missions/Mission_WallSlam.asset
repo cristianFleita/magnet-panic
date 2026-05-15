@@ -13,10 +13,16 @@ MonoBehaviour:
   m_Name: Mission_WallSlam
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 4
-  displayName: Wall slam
-  objective: Do the thing
+  displayName: Wall Slam
+  objective: Mata 2 enemigos estrellándolos contra una pared.
+  tier: 2
+  gate: 0
   durationSeconds: 35
   targetCount: 2
-  xpReward: 50
+  xpReward: 55
   healReward: 1
-  grantsPowerup: 0
+  grantsPowerup: 1
+  powerupWeights:
+    slowTime: 0.3
+    overloadPulse: 0.5
+    magneticMine: 0.2

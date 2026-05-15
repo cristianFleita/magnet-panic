@@ -1,3 +1,5 @@
+using MagnetPanic.Combat.Powerups;
+
 namespace MagnetPanic.Combat.Missions
 {
     public enum MissionState
@@ -20,6 +22,13 @@ namespace MagnetPanic.Combat.Missions
         public int Progress;
         public float TimeRemaining;
         public MissionState State;
+        /// <summary>
+        /// Powerup rolled at mission start. Surfaced in the HUD so the player
+        /// knows what's on the line before they finish the objective. Granted
+        /// verbatim on completion — re-rolling at completion is intentionally
+        /// avoided (no surprise rewards).
+        /// </summary>
+        public PowerupId RewardPowerup;
 
         public int Target => Definition != null ? Definition.targetCount : 0;
         public float Duration => Definition != null ? Definition.durationSeconds : 0f;
@@ -51,6 +60,7 @@ namespace MagnetPanic.Combat.Missions
             Progress = 0;
             TimeRemaining = 0f;
             State = MissionState.Idle;
+            RewardPowerup = PowerupId.None;
         }
     }
 }
