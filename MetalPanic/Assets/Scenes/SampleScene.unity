@@ -2105,7 +2105,7 @@ MonoBehaviour:
   animator: {fileID: 184304065}
   cameraOverride: {fileID: 722813904}
   inputProvider: {fileID: 0}
-  movementSpeed: 5
+  movementSpeed: 8
   rotationSharpness: 14
   gravity: -25
   groundedStickForce: -2
@@ -4704,7 +4704,7 @@ MonoBehaviour:
   animator: {fileID: 313786056}
   cameraOverride: {fileID: 333139238}
   inputProvider: {fileID: 0}
-  movementSpeed: 5
+  movementSpeed: 8
   rotationSharpness: 14
   gravity: -25
   groundedStickForce: -2
@@ -7335,7 +7335,7 @@ MonoBehaviour:
   animator: {fileID: 574713077}
   cameraOverride: {fileID: 1787851199}
   inputProvider: {fileID: 574713076}
-  movementSpeed: 5
+  movementSpeed: 8
   rotationSharpness: 14
   gravity: -25
   groundedStickForce: -2
@@ -13815,7 +13815,7 @@ MonoBehaviour:
   animator: {fileID: 1224832981}
   cameraOverride: {fileID: 55173613}
   inputProvider: {fileID: 0}
-  movementSpeed: 5
+  movementSpeed: 8
   rotationSharpness: 14
   gravity: -25
   groundedStickForce: -2
@@ -15170,7 +15170,7 @@ MonoBehaviour:
   animator: {fileID: 1293178152}
   cameraOverride: {fileID: 1275628338}
   inputProvider: {fileID: 0}
-  movementSpeed: 5
+  movementSpeed: 8
   rotationSharpness: 14
   gravity: -25
   groundedStickForce: -2

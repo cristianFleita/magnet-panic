@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using MagnetPanic.Combat.Scoring;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -77,6 +78,17 @@ namespace MagnetPanic.Combat
         [SerializeField] float retreatDistance = 4.25f;
         [SerializeField] bool disableStrafe;
 
+        [Header("Pathfinding")]
+        [Tooltip("Route Approach movement around static arena obstacles using NavMesh.CalculatePath. Falls back to straight-line steering if no NavMesh is baked or no path is found.")]
+        [SerializeField] bool useNavMeshPathing = true;
+        [Tooltip("Seconds between path recomputations. Lower = more reactive, higher = cheaper. ~6 Hz is plenty for a 1v1 chase.")]
+        [SerializeField, Min(0.05f)] float pathRecomputeInterval = 0.18f;
+        [Tooltip("How far the player must move from the last sample to force an early recompute.")]
+        [SerializeField, Min(0.1f)] float pathTargetMoveThreshold = 1.25f;
+        [Tooltip("Distance to the current corner that counts as arrival; the follower then advances to the next corner.")]
+        [SerializeField, Min(0.1f)] float pathArrivalThreshold = 0.55f;
+        [SerializeField] bool drawPathGizmo;
+
         [Header("Attack")]
         [SerializeField] float prepareAttackTime = 0.35f;
         [SerializeField] float attackRange = 1.8f;
@@ -97,6 +109,10 @@ namespace MagnetPanic.Combat
         [SerializeField, Tooltip("Reposition tolerance around chargeIdealDistance: bot retreats below distance-tolerance, approaches above distance+tolerance.")]
         float chargeIdealTolerance = 1.2f;
 
+        [Header("Scoring")]
+        [Tooltip("If true, kills against this enemy award the boss XP bonus from ScoringConfig.")]
+        [SerializeField] bool isBoss;
+
         [Header("Events")]
         public UnityEvent<ArkhamEnemy> OnDamaged = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnDeath = new UnityEvent<ArkhamEnemy>();
@@ -104,6 +120,33 @@ namespace MagnetPanic.Combat
         public UnityEvent<ArkhamEnemy> OnCountered = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnAnchored = new UnityEvent<ArkhamEnemy>();
         public UnityEvent<ArkhamEnemy> OnAnchorReleased = new UnityEvent<ArkhamEnemy>();
+
+        KillMethod lastDamageMethod = KillMethod.Unknown;
+        KillMethod pendingDamageMethod = KillMethod.Unknown;
+        public KillMethod LastDamageMethod => lastDamageMethod;
+        public bool IsBoss => isBoss;
+
+        /// <summary>
+        /// Lets external damage sources tag the next call into one of this
+        /// enemy's damage entry points with a specific kill method (e.g. an
+        /// overload or an enemy-as-projectile collision). The tag is consumed
+        /// by the next damage call and reset afterwards.
+        /// </summary>
+        public void TagNextDamageMethod(KillMethod method)
+        {
+            pendingDamageMethod = method;
+        }
+
+        KillMethod ConsumePendingMethod(KillMethod fallback)
+        {
+            if (pendingDamageMethod != KillMethod.Unknown)
+            {
+                KillMethod method = pendingDamageMethod;
+                pendingDamageMethod = KillMethod.Unknown;
+                return method;
+            }
+            return fallback;
+        }
 
         int magneticMarks;
         bool _isPreparingAttack;
@@ -135,6 +178,8 @@ namespace MagnetPanic.Combat
         // Behavior add-ons (detected at runtime)
         SpitterDroneBehavior spitterDrone;
         GrapplerBehavior grappler;
+
+        readonly EnemyNavPath navPath = new EnemyNavPath();
 
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsStunned => isStunned;
@@ -309,7 +354,22 @@ namespace MagnetPanic.Combat
         {
             DecayMagneticMark();
             FacePlayer();
+            TickNavPath();
             Move();
+        }
+
+        void TickNavPath()
+        {
+            if (!useNavMeshPathing || playerCombat == null || !IsAlive || isMagneticallyControlled || isStunned || isLockedTarget)
+                return;
+
+            navPath.recomputeInterval = pathRecomputeInterval;
+            navPath.targetMovedThreshold = pathTargetMoveThreshold;
+            navPath.arrivalThreshold = pathArrivalThreshold;
+            navPath.Tick(transform.position, playerCombat.transform.position, Time.deltaTime);
+
+            if (drawPathGizmo)
+                navPath.DrawDebug(Color.yellow);
         }
 
         public void Configure(
@@ -466,6 +526,7 @@ namespace MagnetPanic.Combat
             StopMoving();
 
             ApplyMark(1);
+            lastDamageMethod = ConsumePendingMethod(KillMethod.Strike);
             combatHealth.ApplyDamage(Mathf.Max(1, damage));
             OnDamaged.Invoke(this);
 
@@ -765,6 +826,7 @@ namespace MagnetPanic.Combat
                 ? markedProjectileDamageMultiplier
                 : 1f;
             int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * multiplier));
+            lastDamageMethod = ConsumePendingMethod(KillMethod.Repel);
             combatHealth.ApplyDamage(finalDamage);
 
             if (clearsMagnetized && markState == MagneticMarkState.Magnetized)
@@ -1056,15 +1118,7 @@ namespace MagnetPanic.Combat
                     else if (distance < idealDist - idealTol)
                         moveMode = MoveMode.Retreat;
                     else
-                    {
-                        int r = Random.Range(0, 3);
-                        moveMode = r switch
-                        {
-                            0 => MoveMode.None,
-                            1 => MoveMode.StrafeLeft,
-                            _ => MoveMode.StrafeRight
-                        };
-                    }
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                 }
                 else if (useLinearCharge)
                 {
@@ -1074,33 +1128,25 @@ namespace MagnetPanic.Combat
                     else if (distance < chargeIdealDistance - chargeIdealTolerance && distance > attackRange * 0.85f)
                         moveMode = MoveMode.Retreat;
                     else
-                        moveMode = MoveMode.None;
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                 }
                 else if (disableStrafe)
                 {
-                    moveMode = DistanceToPlayer() > attackRange * 1.5f ? MoveMode.Approach : MoveMode.None;
+                    moveMode = MoveMode.Approach;
                 }
                 else
                 {
                     if (DistanceToPlayer() > attackRange * 1.5f)
                     {
                         int random = Random.Range(0, 10);
-                        if (random < 4)
+                        if (random < 6)
                             moveMode = MoveMode.Approach;
-                        else if (random < 7)
-                            moveMode = MoveMode.None;
                         else
                             moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                     }
                     else
                     {
-                        int random = Random.Range(0, 3);
-                        moveMode = random switch
-                        {
-                            0 => MoveMode.None,
-                            1 => MoveMode.StrafeLeft,
-                            _ => MoveMode.StrafeRight
-                        };
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
                     }
                 }
 
@@ -1159,7 +1205,9 @@ namespace MagnetPanic.Combat
                     strafeDirection = 1f;
                     break;
                 case MoveMode.Approach:
-                    direction = playerDirection;
+                    direction = useNavMeshPathing && navPath.HasValidPath
+                        ? navPath.GetSteerDirection(transform.position, playerDirection)
+                        : playerDirection;
                     speed = approachSpeed;
                     break;
                 case MoveMode.Retreat:
@@ -1211,6 +1259,13 @@ namespace MagnetPanic.Combat
         {
             if (animator == null)
                 return;
+
+            // Keep the run animation playing by default while the enemy is alive
+            // and not hard-stopped (stun, death, lock). This guarantees the
+            // locomotion blend tree never drops to a static idle pose between
+            // moveMode transitions.
+            if (IsAlive && !isStunned && !isLockedTarget && !isMagneticallyControlled)
+                magnitude = Mathf.Max(magnitude, 0.4f);
 
             animator.SetFloat(InputMagnitudeHash, magnitude, 0.15f, Time.deltaTime);
             animator.SetBool(StrafeHash, strafing);
@@ -1310,6 +1365,7 @@ namespace MagnetPanic.Combat
                     Debug.DrawLine(transform.position + Vector3.up * 1f, contactPoint + Vector3.up * 1f, Color.red, 1.5f, false);
                 }
 
+                enemy.TagNextDamageMethod(KillMethod.EnemyRepel);
                 enemy.ReceiveMagneticImpact(impactDamage, transform.position, knockbackDistance * 1.5f, false);
                 ApplyProjectileRecoil(recoilDamage, contactPoint);
 
@@ -1335,6 +1391,7 @@ namespace MagnetPanic.Combat
             if (!IsAlive || combatHealth == null || damage <= 0)
                 return;
 
+            lastDamageMethod = KillMethod.EnemyRepel;
             combatHealth.ApplyDamage(damage);
             OnDamaged.Invoke(this);
 
@@ -1413,6 +1470,7 @@ namespace MagnetPanic.Combat
             if (!IsAlive)
                 return;
 
+            lastDamageMethod = KillMethod.WallSlam;
             combatHealth.ApplyDamage(Mathf.Max(0, damage));
             OnDamaged.Invoke(this);
 
@@ -1499,6 +1557,11 @@ namespace MagnetPanic.Combat
             moveMode = MoveMode.None;
             magneticMarks = 0;
             markState = MagneticMarkState.Normal;
+            lastDamageMethod = KillMethod.Unknown;
+            pendingDamageMethod = KillMethod.Unknown;
+
+            navPath.Reset();
+            navPath.Randomize();
 
             combatHealth.Configure(maxHealth, true);
 

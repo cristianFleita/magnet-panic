@@ -576,3 +576,451 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260513_214538
+### Commits
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+30f3dc9 chore: adjust enemies
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/Map.unity
+---
+
+## Session End: 20260513_225924
+### Commits
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+30f3dc9 chore: adjust enemies
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticObject.cs
+MetalPanic/Assets/Prefabs/Arena.prefab
+MetalPanic/Assets/Prefabs/Attractables/Heavy_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/LightScrap_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Mine_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Plate_Attractable.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/GameScene.unity.meta
+MetalPanic/Assets/Scenes/Map.unity.meta
+production/session-logs/session-log.md
+---
+
+## Session End: 20260513_231730
+### Commits
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Arena/ArenaSystem.cs
+MetalPanic/Assets/Prefabs/Arena.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+---
+
+## Session End: 20260513_234058
+### Commits
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+c373b59 chore: adjust combo
+911bcf6 chore: adjust health
+3064d32 chore: combat enemies balance
+---
+
+## Session End: 20260514_003143
+### Commits
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/HeavyBot.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/MetalEnemy.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/RunnerBot.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/Scrapling.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/SpitterDrone.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamPlayerMotor.cs
+MetalPanic/Assets/InputSystem_Actions.inputactions
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/SampleScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_022820
+### Commits
+1904bd6 chore: adjust speed + optional controllers
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Map/Gate/gate-door-window.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/structure-window-wide.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-detail-a.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_023507
+### Commits
+1904bd6 chore: adjust speed + optional controllers
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+7f1d294 chore: adjust react app
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate-door-window.prefab
+MetalPanic/Assets/Prefabs/Map/Gate/gate.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/structure-window-wide.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-corner.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall-detail-a.prefab
+MetalPanic/Assets/Prefabs/Map/Wall/template-wall.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_033641
+### Commits
+d1656d7 chore: adjust enemy walking paths
+1904bd6 chore: adjust speed + optional controllers
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/OverloadController.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_035254
+### Commits
+d1656d7 chore: adjust enemy walking paths
+1904bd6 chore: adjust speed + optional controllers
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/OverloadController.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_041227
+### Commits
+13859b5 chore: xp system
+d1656d7 chore: adjust enemy walking paths
+1904bd6 chore: adjust speed + optional controllers
+a8d3f2f chore: adjust health system config
+d8cece4 chore: add obstacle in arena
+150a886 chore: add projectile trigger ignore logic and update arena system configuration with playable area colliders
+516b477 chore: kenny environment + vfx
+f4bebb2 Merge pull request #1 from cristianFleita/feat-combat
+16e5cd1 chore: adjust camera
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Combat/Scripts/Scoring/ScoringRuntime.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_132645
+### Commits
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_164054
+### Commits
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Animation/Character.controller
+MetalPanic/Assets/Animation/Character.controller.meta
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_165704
+### Commits
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Animation/Character.controller
+MetalPanic/Assets/Animation/Character.controller.meta
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_170618
+### Commits
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+bada566 Merge pull request #2 from cristianFleita/feat-xp
+### Uncommitted Changes
+MetalPanic/Assets/Animation/Character.controller
+MetalPanic/Assets/Animation/Character.controller.meta
+MetalPanic/Assets/Combat/Generated/Animators/ArkhamPrototypeEnemy.controller
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_204457
+### Commits
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+5a9a4ea chore: add models to attractablle items
+### Uncommitted Changes
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_215301
+### Commits
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_221954
+### Commits
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/MeleeVfx.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_224504
+### Commits
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/MeleeVfx.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_230158
+### Commits
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/MeleeVfx.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_231706
+### Commits
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/MeleeVfx.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_231930
+### Commits
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/MeleeVfx.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260514_233727
+### Commits
+9112ad3 chore: hit vfx
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/CombatVfxBinder.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260515_000745
+### Commits
+9112ad3 chore: hit vfx
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/OverloadController.cs
+MetalPanic/Assets/Prefabs/Attractables/Heavy_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/LightScrap_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Mine_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Plate_Attractable.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260515_003207
+### Commits
+aa2ac1f chore: fist trail
+9112ad3 chore: hit vfx
+3f3b720 chore: integrate pull/repel vfx on player
+6ca0c22 chore: add health item model
+949a904 chore: adjust enemies animators
+b5824b2 chore: adjust enemies models
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/Attractables/Heavy_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/LightScrap_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Mine_Attractable.prefab
+MetalPanic/Assets/Prefabs/Attractables/Plate_Attractable.prefab
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
