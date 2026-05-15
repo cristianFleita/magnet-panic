@@ -13,10 +13,16 @@ MonoBehaviour:
   m_Name: Mission_NoHands
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 5
-  displayName: No hands
-  objective: Do the thing
+  displayName: No Hands
+  objective: Mata 4 enemigos usando solo repel (sin strikes).
+  tier: 2
+  gate: 0
   durationSeconds: 40
   targetCount: 4
-  xpReward: 70
+  xpReward: 65
   healReward: 0
-  grantsPowerup: 0
+  grantsPowerup: 1
+  powerupWeights:
+    slowTime: 0.5
+    overloadPulse: 0.25
+    magneticMine: 0.25

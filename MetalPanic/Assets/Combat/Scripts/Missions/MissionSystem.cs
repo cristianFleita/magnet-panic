@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MagnetPanic.Combat.Powerups;
 using MagnetPanic.Combat.Scoring;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,7 +15,7 @@ namespace MagnetPanic.Combat.Missions
     /// timer, target check, and reward payout, and routes events to the HUD.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MissionSystem : MonoBehaviour
+    public sealed class MissionSystem : MonoBehaviour, IMissionGateResolver
     {
         public static MissionSystem Instance { get; private set; }
 
@@ -31,6 +32,15 @@ namespace MagnetPanic.Combat.Missions
         [SerializeField] ScoringRuntime scoring;
         [SerializeField] CombatHealth playerHealth;
         [SerializeField] MonoBehaviour powerupBrokerComponent;
+        [SerializeField] WaveDirector waveDirector;
+        [SerializeField] ArkhamEnemyManager enemyManager;
+        [SerializeField] OverloadController overload;
+
+        [Header("Tier Gating")]
+        [Tooltip("Run clock (s) at which Act 2 missions become available.")]
+        [SerializeField, Min(0f)] float act2UnlockSeconds = 90f;
+        [Tooltip("Run clock (s) at which Act 3 missions become available.")]
+        [SerializeField, Min(0f)] float act3UnlockSeconds = 210f;
 
         [Header("Behaviour")]
         [SerializeField] bool autoStart = true;
@@ -222,7 +232,10 @@ namespace MagnetPanic.Combat.Missions
 
         void StartNextMission()
         {
-            MissionDefinition next = catalog.PickRandom(lastMission);
+            int act = ResolveCurrentAct();
+            int maxTier = ResolveMaxTier(act);
+            bool tierBias = act >= 3;
+            MissionDefinition next = catalog.PickNext(lastMission, maxTier, tierBias, this);
             if (next == null)
             {
                 BeginCooldown();
@@ -261,7 +274,66 @@ namespace MagnetPanic.Combat.Missions
                 playerHealth.Heal(def.healReward);
 
             if (def.grantsPowerup && powerupBroker != null)
-                powerupBroker.GrantRandomPowerup();
+                powerupBroker.GrantPowerup(def.powerupWeights);
+        }
+
+        int ResolveCurrentAct()
+        {
+            if (waveDirector != null)
+            {
+                // WaveDirector tracks actIndex zero-based but exposes
+                // CurrentActIndex; map to 1-based for tier logic.
+                return Mathf.Max(1, waveDirector.CurrentActIndex + 1);
+            }
+
+            // Fallback: derive from ScoringRuntime survival time so the catalog
+            // still opens up even when no wave director is wired (e.g. sandbox
+            // scene).
+            if (scoring != null)
+            {
+                float t = scoring.Stats != null ? scoring.Stats.SurvivalTimeSeconds : 0f;
+                if (t >= act3UnlockSeconds)
+                    return 3;
+                if (t >= act2UnlockSeconds)
+                    return 2;
+            }
+            return 1;
+        }
+
+        static int ResolveMaxTier(int act) => act switch
+        {
+            <= 1 => 1,
+            2 => 2,
+            _ => 3,
+        };
+
+        public bool IsGateSatisfied(MissionGate gate)
+        {
+            switch (gate)
+            {
+                case MissionGate.Always:
+                    return true;
+                case MissionGate.RequiresSpitterDrone:
+                    return HasLiveSpitterDrone();
+                case MissionGate.RequiresOverloadAccess:
+                    return overload != null;
+                default:
+                    return true;
+            }
+        }
+
+        bool HasLiveSpitterDrone()
+        {
+            if (enemyManager == null)
+                return false;
+            IReadOnlyList<ArkhamEnemy> enemies = enemyManager.Enemies;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ArkhamEnemy enemy = enemies[i];
+                if (enemy != null && enemy.IsAlive && enemy.GetComponent<SpitterDroneBehavior>() != null)
+                    return true;
+            }
+            return false;
         }
 
         void HandleRunEnded(RunStats _)
@@ -286,6 +358,22 @@ namespace MagnetPanic.Combat.Missions
             powerupBroker = powerupBrokerComponent as IPowerupBroker;
             if (powerupBrokerComponent != null && powerupBroker == null)
                 Debug.LogWarning($"[MissionSystem] '{powerupBrokerComponent.name}' does not implement IPowerupBroker.", this);
+            if (powerupBroker == null)
+            {
+                PowerupController found = FindFirstObjectByType<PowerupController>();
+                if (found != null)
+                {
+                    powerupBroker = found;
+                    powerupBrokerComponent = found;
+                }
+            }
+
+            if (waveDirector == null)
+                waveDirector = FindFirstObjectByType<WaveDirector>();
+            if (enemyManager == null)
+                enemyManager = FindFirstObjectByType<ArkhamEnemyManager>();
+            if (overload == null)
+                overload = FindFirstObjectByType<OverloadController>();
         }
 
         void DiscoverTrackers()

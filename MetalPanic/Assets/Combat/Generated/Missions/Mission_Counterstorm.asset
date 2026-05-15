@@ -13,10 +13,16 @@ MonoBehaviour:
   m_Name: Mission_Counterstorm
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 2
-  displayName: Counter
-  objective: Do the thing
-  durationSeconds: 45
-  targetCount: 3
-  xpReward: 40
+  displayName: Counterstorm
+  objective: Realiza 2 counters exitosos a ataques enemigos.
+  tier: 1
+  gate: 0
+  durationSeconds: 40
+  targetCount: 2
+  xpReward: 45
   healReward: 2
-  grantsPowerup: 0
+  grantsPowerup: 1
+  powerupWeights:
+    slowTime: 0.45
+    overloadPulse: 0.45
+    magneticMine: 0.1

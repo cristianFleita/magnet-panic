@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1c85ad9f1c654644b52fe4bf69c2a4d, type: 3}
-  m_Name: Mission_ScrapCollector
+  m_Name: Mission_IronRain
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
-  id: 3
-  displayName: Scrap Collector
-  objective: Mantén 6 piezas de chatarra orbitando al mismo tiempo.
+  id: 6
+  displayName: Iron Rain
+  objective: Mata 3 enemigos con chatarra repelida (no strikes).
   tier: 1
   gate: 0
-  durationSeconds: 40
-  targetCount: 6
-  xpReward: 40
+  durationSeconds: 35
+  targetCount: 3
+  xpReward: 50
   healReward: 0
   grantsPowerup: 1
   powerupWeights:
-    slowTime: 0.2
-    overloadPulse: 0.3
-    magneticMine: 0.5
+    slowTime: 0.3
+    overloadPulse: 0.4
+    magneticMine: 0.3

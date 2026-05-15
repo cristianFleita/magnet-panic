@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 7384921056438192740}
   - component: {fileID: 5111111111111111101}
   - component: {fileID: 5111111111111111102}
+  - component: {fileID: 5111111111111111120}
   m_Layer: 6
   m_Name: MainCharacter
   m_TagString: Untagged
@@ -624,6 +625,44 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnSlamLanded:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5111111111111111120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e03040006, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Powerups.PowerupController
+  motor: {fileID: 680580263455245825}
+  enemyManager: {fileID: 0}
+  scoring: {fileID: 0}
+  slowTimeScale: 0.4
+  slowTimeDuration: 8
+  pulseInterval: 1
+  pulseRadius: 6
+  pulseDamage: 1
+  pulseKnockbackDistance: 1.6
+  pulseDuration: 10
+  mineAoERadius: 10
+  mineDamage: 4
+  mineMagnetizeMarks: 2
+  mineTriggerRadius: 0.6
+  mineArmTime: 0.5
+  mineTimeout: 30
+  mineColor: {r: 0.18039216, g: 0.85882354, b: 1, a: 1}
+  OnPowerupActivated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPowerupDeactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPowerupTimerChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1197205948732289119
