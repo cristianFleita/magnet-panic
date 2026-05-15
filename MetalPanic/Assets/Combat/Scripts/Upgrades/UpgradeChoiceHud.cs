@@ -7,9 +7,10 @@ using UnityEngine.UIElements;
 namespace MagnetPanic.Combat.Upgrades
 {
     /// <summary>
-    /// UI Toolkit panel that presents 3 upgrade cards. Unlocks the cursor while
-    /// visible, supports mouse click and keys 1/2/3. Runs on unscaled time so it
-    /// works while <c>Time.timeScale = 0</c>.
+    /// UI Toolkit panel that presents 3 upgrade cards. Keyboard-only input:
+    /// A/D (or Left/Right, W/S, Up/Down) move a selection cursor between cards,
+    /// 1/2/3 pick a card directly, and F (or Enter/Space) confirms the highlighted
+    /// card. Runs on unscaled time so it works while <c>Time.timeScale = 0</c>.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public sealed class UpgradeChoiceHud : MonoBehaviour
@@ -17,18 +18,20 @@ namespace MagnetPanic.Combat.Upgrades
         [SerializeField] UpgradeSystem upgradeSystem;
         [SerializeField] Color panelBackground = new Color(0.02f, 0.04f, 0.07f, 0.82f);
         [SerializeField] Color cardBackground = new Color(0.08f, 0.10f, 0.14f, 0.95f);
-        [SerializeField] Color cardHoverBackground = new Color(0.14f, 0.18f, 0.24f, 1f);
+        [SerializeField] Color cardSelectedBackground = new Color(0.14f, 0.18f, 0.24f, 1f);
         [SerializeField] Color titleColor = new Color(0.95f, 0.97f, 1f, 1f);
         [SerializeField] Color bodyColor = new Color(0.78f, 0.86f, 0.94f, 1f);
 
         UIDocument document;
         VisualElement root;
-        VisualElement panel;
         readonly List<CardBinding> cards = new List<CardBinding>(3);
         Action<UpgradeData> callback;
         bool visible;
-        CursorLockMode prevLockMode;
-        bool prevCursorVisible;
+        int selectedIndex;
+        // Edge-trigger guard: ignore any key already held the frame the panel opens,
+        // so the keypress that caused level-up (or a held movement key) cannot
+        // bleed through and select an upgrade immediately.
+        bool inputArmed;
 
         struct CardBinding
         {
@@ -46,24 +49,57 @@ namespace MagnetPanic.Combat.Upgrades
             document = GetComponent<UIDocument>();
         }
 
-        void OnDisable()
-        {
-            if (visible)
-                RestoreCursor();
-        }
-
         void Update()
         {
-            if (!visible || Keyboard.current == null)
+            if (!visible || Keyboard.current == null || cards.Count == 0)
                 return;
 
-            // Keyboard 1 / 2 / 3 selection — read directly to bypass action map state.
-            if (Keyboard.current.digit1Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame)
+            if (!inputArmed)
+            {
+                if (!AnySelectionKeyHeld())
+                    inputArmed = true;
+                return;
+            }
+
+            Keyboard kb = Keyboard.current;
+
+            // Navigation: A/D + Left/Right (and W/S + Up/Down) cycle the highlight.
+            if (kb.aKey.wasPressedThisFrame || kb.leftArrowKey.wasPressedThisFrame
+                || kb.wKey.wasPressedThisFrame || kb.upArrowKey.wasPressedThisFrame)
+            {
+                MoveSelection(-1);
+                return;
+            }
+            if (kb.dKey.wasPressedThisFrame || kb.rightArrowKey.wasPressedThisFrame
+                || kb.sKey.wasPressedThisFrame || kb.downArrowKey.wasPressedThisFrame)
+            {
+                MoveSelection(+1);
+                return;
+            }
+
+            // Direct pick: 1 / 2 / 3 (top row or numpad).
+            if (kb.digit1Key.wasPressedThisFrame || kb.numpad1Key.wasPressedThisFrame)
+            {
                 TrySelectIndex(0);
-            else if (Keyboard.current.digit2Key.wasPressedThisFrame || Keyboard.current.numpad2Key.wasPressedThisFrame)
+                return;
+            }
+            if (kb.digit2Key.wasPressedThisFrame || kb.numpad2Key.wasPressedThisFrame)
+            {
                 TrySelectIndex(1);
-            else if (Keyboard.current.digit3Key.wasPressedThisFrame || Keyboard.current.numpad3Key.wasPressedThisFrame)
+                return;
+            }
+            if (kb.digit3Key.wasPressedThisFrame || kb.numpad3Key.wasPressedThisFrame)
+            {
                 TrySelectIndex(2);
+                return;
+            }
+
+            // Confirm currently highlighted card.
+            if (kb.fKey.wasPressedThisFrame || kb.enterKey.wasPressedThisFrame
+                || kb.numpadEnterKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame)
+            {
+                TrySelectIndex(selectedIndex);
+            }
         }
 
         public void Show(List<UpgradeData> offers, int newLevel, Action<UpgradeData> onChosen)
@@ -73,11 +109,10 @@ namespace MagnetPanic.Combat.Upgrades
             BuildPanel(offers, newLevel);
 
             visible = true;
+            selectedIndex = 0;
+            inputArmed = false;
+            ApplySelectionVisuals();
             root.style.display = DisplayStyle.Flex;
-
-            CaptureCursorState();
-            UnityEngine.Cursor.visible = true;
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
 
         public void Hide()
@@ -87,20 +122,39 @@ namespace MagnetPanic.Combat.Upgrades
             visible = false;
             if (root != null)
                 root.style.display = DisplayStyle.None;
-            RestoreCursor();
             callback = null;
         }
 
-        void CaptureCursorState()
+        bool AnySelectionKeyHeld()
         {
-            prevLockMode = UnityEngine.Cursor.lockState;
-            prevCursorVisible = UnityEngine.Cursor.visible;
+            Keyboard kb = Keyboard.current;
+            return kb.digit1Key.isPressed || kb.numpad1Key.isPressed
+                || kb.digit2Key.isPressed || kb.numpad2Key.isPressed
+                || kb.digit3Key.isPressed || kb.numpad3Key.isPressed
+                || kb.fKey.isPressed || kb.enterKey.isPressed || kb.numpadEnterKey.isPressed
+                || kb.spaceKey.isPressed
+                || kb.aKey.isPressed || kb.dKey.isPressed
+                || kb.wKey.isPressed || kb.sKey.isPressed
+                || kb.leftArrowKey.isPressed || kb.rightArrowKey.isPressed
+                || kb.upArrowKey.isPressed || kb.downArrowKey.isPressed;
         }
 
-        void RestoreCursor()
+        void MoveSelection(int delta)
         {
-            UnityEngine.Cursor.visible = prevCursorVisible;
-            UnityEngine.Cursor.lockState = prevLockMode;
+            int count = cards.Count;
+            selectedIndex = ((selectedIndex + delta) % count + count) % count;
+            ApplySelectionVisuals();
+        }
+
+        void ApplySelectionVisuals()
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                bool isSelected = i == selectedIndex;
+                VisualElement c = cards[i].Root;
+                c.style.backgroundColor = isSelected ? cardSelectedBackground : cardBackground;
+                c.style.scale = new StyleScale(new Scale(isSelected ? new Vector3(1.04f, 1.04f, 1f) : Vector3.one));
+            }
         }
 
         void EnsureRoot()
@@ -124,6 +178,8 @@ namespace MagnetPanic.Combat.Upgrades
             root.style.alignItems = Align.Center;
             root.style.justifyContent = Justify.Center;
             root.style.display = DisplayStyle.None;
+            // Block mouse interaction entirely — selection is keyboard-only.
+            root.pickingMode = PickingMode.Ignore;
             document.rootVisualElement.Add(root);
         }
 
@@ -140,6 +196,7 @@ namespace MagnetPanic.Combat.Upgrades
             container.style.paddingBottom = 12;
             container.style.paddingLeft = 20;
             container.style.paddingRight = 20;
+            container.pickingMode = PickingMode.Ignore;
             root.Add(container);
 
             Label title = new Label($"LEVEL {newLevel}  —  CHOOSE YOUR UPGRADE");
@@ -154,6 +211,7 @@ namespace MagnetPanic.Combat.Upgrades
             row.style.flexDirection = FlexDirection.Row;
             row.style.alignItems = Align.Center;
             row.style.justifyContent = Justify.Center;
+            row.pickingMode = PickingMode.Ignore;
             container.Add(row);
 
             for (int i = 0; i < offers.Count; i++)
@@ -163,7 +221,7 @@ namespace MagnetPanic.Combat.Upgrades
                 cards.Add(card);
             }
 
-            Label footer = new Label("Press 1 / 2 / 3 or click to choose");
+            Label footer = new Label("A/D move  •  1/2/3 pick  •  F confirm");
             footer.style.color = bodyColor;
             footer.style.fontSize = 14;
             footer.style.marginTop = 16;
@@ -196,7 +254,7 @@ namespace MagnetPanic.Combat.Upgrades
             cardRoot.style.borderTopColor = card.Accent;
             cardRoot.style.flexDirection = FlexDirection.Column;
             cardRoot.style.justifyContent = Justify.SpaceBetween;
-            cardRoot.pickingMode = PickingMode.Position;
+            cardRoot.pickingMode = PickingMode.Ignore;
             card.Root = cardRoot;
 
             Label hotkey = new Label($"[{hotkeyNumber}]");
@@ -240,19 +298,6 @@ namespace MagnetPanic.Combat.Upgrades
             cardRoot.Add(stack);
             card.Stack = stack;
 
-            int captured = hotkeyNumber - 1;
-            cardRoot.RegisterCallback<MouseEnterEvent>(_ =>
-            {
-                cardRoot.style.backgroundColor = cardHoverBackground;
-                cardRoot.style.scale = new StyleScale(new Scale(new Vector3(1.04f, 1.04f, 1f)));
-            });
-            cardRoot.RegisterCallback<MouseLeaveEvent>(_ =>
-            {
-                cardRoot.style.backgroundColor = cardBackground;
-                cardRoot.style.scale = new StyleScale(new Scale(Vector3.one));
-            });
-            cardRoot.RegisterCallback<ClickEvent>(_ => TrySelectIndex(captured));
-
             return card;
         }
 
@@ -260,6 +305,9 @@ namespace MagnetPanic.Combat.Upgrades
         {
             if (!visible || index < 0 || index >= cards.Count)
                 return;
+
+            selectedIndex = index;
+            ApplySelectionVisuals();
 
             UpgradeData picked = cards[index].Data;
             Action<UpgradeData> cb = callback;
