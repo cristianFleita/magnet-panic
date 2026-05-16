@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.EnemyDefinition
   archetype: 0
   displayName: Scrapling
-  maxHealth: 3
+  maxHealth: 6
   alwaysPullableByMagnet: 0
   magneticMarksToMagnetize: 2
   magneticMass: 3
@@ -53,6 +53,7 @@ MonoBehaviour:
   canGrapple: 0
   grappleChance: 0.35
   grappleMashesRequired: 6
+  grappleMaxHits: 2
   grappleMaxHoldTime: 3.5
   grappleDamagePerTick: 1
   grappleDamageInterval: 1.2

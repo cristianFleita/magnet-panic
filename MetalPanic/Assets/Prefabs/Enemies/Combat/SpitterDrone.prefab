@@ -331,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4844dba9b72c4ce0b1b73e1ff9563003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CombatHealth
-  maxHealth: 4
+  maxHealth: 3
   refillOnAwake: 1
   OnHealthChanged:
     m_PersistentCalls:
@@ -374,7 +374,7 @@ MonoBehaviour:
   counterStunVfxPrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
   counterStunVfxHeight: 2.15
   counterStunVfxLifetime: 1.05
-  maxHealth: 4
+  maxHealth: 6
   magneticMarksToMagnetize: 2
   stunDuration: 0.45
   counterStunDuration: 1
@@ -420,7 +420,7 @@ MonoBehaviour:
   chargeSpeed: 11
   chargeDuration: 0.55
   chargeHitRadius: 1.1
-  chargeDamage: 2
+  chargeDamage: 8
   chargeCausesKnockdown: 1
   chargeIdealDistance: 5
   chargeIdealTolerance: 1.2
@@ -460,10 +460,10 @@ MonoBehaviour:
   firePoint: {fileID: 1832456022749954378}
   projectilePrefab: {fileID: 5879022150181931213, guid: 0215f699159f8456c84599932f576f61, type: 3}
   projectileSpeed: 25
-  projectileDamage: 1
+  projectileDamage: 2
   burstCount: 3
-  burstInterval: 0.2
-  aimInaccuracy: 6
+  burstInterval: 0.22
+  aimInaccuracy: 7
   idealDistance: 15
   idealTolerance: 1.5
   fireReadyDelay: 0.3

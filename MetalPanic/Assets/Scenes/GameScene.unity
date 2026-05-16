@@ -608,6 +608,10 @@ PrefabInstance:
       propertyPath: enemyManager
       value: 
       objectReference: {fileID: 335756981}
+    - target: {fileID: 1197719874258635975, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      propertyPath: baseOverloadDamage
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2420222518677489139, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
       propertyPath: cameraRig
       value: 
@@ -668,6 +672,14 @@ PrefabInstance:
       propertyPath: cameraOverride
       value: 
       objectReference: {fileID: 1583158216}
+    - target: {fileID: 5111111111111111102, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      propertyPath: slamDamage
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111111111111111102, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      propertyPath: slideContactDamage
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5111111111111111120, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
       propertyPath: mineVfxPrefab
       value: 

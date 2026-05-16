@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4844dba9b72c4ce0b1b73e1ff9563003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CombatHealth
-  maxHealth: 5
+  maxHealth: 10
   refillOnAwake: 1
   OnHealthChanged:
     m_PersistentCalls:
@@ -279,7 +279,7 @@ MonoBehaviour:
   counterStunVfxPrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
   counterStunVfxHeight: 2.15
   counterStunVfxLifetime: 1.05
-  maxHealth: 5
+  maxHealth: 10
   magneticMarksToMagnetize: 2
   stunDuration: 0.45
   counterStunDuration: 1
@@ -325,7 +325,7 @@ MonoBehaviour:
   chargeSpeed: 11
   chargeDuration: 0.55
   chargeHitRadius: 1.1
-  chargeDamage: 2
+  chargeDamage: 4
   chargeCausesKnockdown: 1
   chargeIdealDistance: 5
   chargeIdealTolerance: 1.2
@@ -443,9 +443,9 @@ MonoBehaviour:
   enemy: {fileID: 7106029408107021932}
   playerCombat: {fileID: 0}
   grappleRange: 2.6
-  throwDamage: 2
-  grappleCooldown: 3
-  grappleChance: 0.8
+  throwDamage: 3
+  grappleCooldown: 3.5
+  grappleChance: 0.7
   lungeSpeed: 8
   lungeDuration: 0.35
   OnGrappleStart:

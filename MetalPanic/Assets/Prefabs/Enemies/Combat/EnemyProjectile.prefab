@@ -105,7 +105,7 @@ MonoBehaviour:
   speed: 10
   lifetime: 4
   hitRadius: 0.5
-  damage: 1
+  damage: 2
   knocksDown: 0
   playerLayer:
     serializedVersion: 2

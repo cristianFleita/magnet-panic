@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4844dba9b72c4ce0b1b73e1ff9563003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CombatHealth
-  maxHealth: 10
+  maxHealth: 20
   refillOnAwake: 1
   OnHealthChanged:
     m_PersistentCalls:
@@ -192,8 +192,8 @@ MonoBehaviour:
   health: {fileID: 8821852847888320764}
   maxHealth: 20
   damagePerEnemyHit: 1
-  strikeDamage: 1
-  attackCooldown: 0.38
+  strikeDamage: 2
+  attackCooldown: 0.35
   attackLungeDuration: 0.22
   attackImpactDelay: 0.16
   targetOffset: 0.95
@@ -271,8 +271,8 @@ MonoBehaviour:
   repelConeAngle: 50
   repelCooldown: 0
   repelSpeed: 16
-  magnetizedEnemyDamage: 5
-  magnetizedEnemyRecoilDamage: 5
+  magnetizedEnemyDamage: 3
+  magnetizedEnemyRecoilDamage: 3
   repelAutoAimRadius: 15
   magnetizedRepelWallAimRadius: 5
   heldEnemyDistance: 1.9
@@ -365,7 +365,7 @@ MonoBehaviour:
   criticalThreshold: 0.7
   overloadGracePeriod: 1.5
   baseOverloadDamage: 4
-  damagePerCharge: 2
+  damagePerCharge: 1.5
   overloadRadius: 6
   overloadKnockbackDistance: 2.5
   targetLayers:
@@ -592,10 +592,10 @@ MonoBehaviour:
   animator: {fileID: 0}
   slideDistance: 6
   slideDuration: 0.22
-  slideIFrameDuration: 0.2
+  slideIFrameDuration: 0.22
   slideContactDamage: 2
-  slideKnockbackDistance: 1.2
-  slideContactRadius: 1.2
+  slideKnockbackDistance: 1.4
+  slideContactRadius: 1.3
   doubleTapWindow: 0.25
   baseSlideCooldown: 0
   wallRaycastInset: 0.4
@@ -603,12 +603,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   slamKey: 21
-  slamSearchRadius: 5
+  slamSearchRadius: 2
   slamAirTime: 0.4
-  slamAoeRadius: 4
-  slamDamage: 5
+  slamAoeRadius: 3.5
+  slamDamage: 6
   slamKnockdownDuration: 1.5
-  slamKnockbackDistance: 1.6
+  slamKnockbackDistance: 1.8
   slamCooldown: 0
   slamJumpHeight: 2.2
   slideVfxPrefab: {fileID: 1613383665425959110, guid: aed8a4ae366164ac2b84d2e8a4a18a47, type: 3}
@@ -648,7 +648,7 @@ MonoBehaviour:
   pulseDuration: 10
   pulseVfxPrefab: {fileID: 2784899524707402873, guid: cb3d9b836574d4d6a84adaa766b0e64c, type: 3}
   mineEntityPrefab: {fileID: 4413143886216275161, guid: 53ce61b06bd8c4fd2857f625d7e25a31, type: 3}
-  mineDamage: 4
+  mineDamage: 2
   mineMagnetizeMarks: 2
   mineArmTime: 0.5
   mineTimeout: 30
@@ -789,14 +789,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa03000000000000000000000000aa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Audio.PlayerSfx
-  hitClip: {fileID: 8300000, guid: ff01000000000000000000000000ff01, type: 3}
-  hitVolume: 1
   pullClip: {fileID: 8300000, guid: ce0e79957453c47f3aec6c85ac3cf387, type: 3}
   pullVolume: 0.5
   repelClip: {fileID: 8300000, guid: c3d4d3439218c448ca744f3f1683d4cc, type: 3}
   repelVolume: 0.5
   overloadClip: {fileID: 8300000, guid: 391f6f4b7e59b43088eb62dc1b213ddd, type: 3}
   overloadVolume: 0.5
+  hitClip: {fileID: 8300000, guid: ff01000000000000000000000000ff01, type: 3}
+  hitVolume: 1
   levelUpClip: {fileID: 8300000, guid: beb499858bc6e4347a8cfcf2351b9f90, type: 3}
   levelUpVolume: 0.2
 --- !u!1 &1197205948732289119
