@@ -37,7 +37,7 @@ namespace MagnetPanic.Combat.Scoring
         [Min(0)] public int xpGrowthPerLevel = 15;
 
         [Header("Final score")]
-        [Tooltip("Score points awarded per second survived.")]
+        [Tooltip("Legacy tuning field retained for serialized configs. Survival time no longer awards score.")]
         [Min(0f)] public float survivalScorePerSecond = 2f;
         [Tooltip("Score points awarded per point of the highest combo reached.")]
         [Min(0f)] public float styleScorePerComboPoint = 10f;
