@@ -1,4 +1,5 @@
 using MagnetPanic.Combat.Scoring;
+using MagnetPanic.Combat.Upgrades;
 using MagnetPanic.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,6 +24,7 @@ namespace MagnetPanic.Combat
         [SerializeField] ScoringRuntime scoring;
         [SerializeField] GameInputProvider inputProvider;
         [SerializeField] ArkhamSimpleCameraFollow cameraController;
+        [SerializeField] UpgradeSystem upgradeSystem;
 
         [Header("Navigation")]
         [SerializeField] string retrySceneName = "GameScene";
@@ -39,6 +41,7 @@ namespace MagnetPanic.Combat
         Label timeLabel;
         bool paused;
         bool gameOver;
+        bool upgradeOfferActive;
         float previousTimeScale = 1f;
 
         void Awake()
@@ -78,6 +81,12 @@ namespace MagnetPanic.Combat
             if (gameOver)
                 return;
 
+            // Ignore pause input while the level-up upgrade picker is open —
+            // otherwise ESC stacks the pause menu behind the choice panel and
+            // both modal UIs fight for input (see GDD upgrade-system §Reglas 1).
+            if (upgradeOfferActive)
+                return;
+
             if (PausePressedThisFrame())
                 SetPaused(!paused);
         }
@@ -110,6 +119,8 @@ namespace MagnetPanic.Combat
                 inputProvider = FindFirstObjectByType<GameInputProvider>();
             if (cameraController == null)
                 cameraController = FindFirstObjectByType<ArkhamSimpleCameraFollow>();
+            if (upgradeSystem == null)
+                upgradeSystem = FindFirstObjectByType<UpgradeSystem>();
         }
 
         void ActivateOverlayDocuments()
@@ -125,6 +136,11 @@ namespace MagnetPanic.Combat
                 runController.OnRunEnded.AddListener(HandleRunEnded);
             if (scoring != null)
                 scoring.OnRunEnded.AddListener(HandleScoringRunEnded);
+            if (upgradeSystem != null)
+            {
+                upgradeSystem.OnUpgradeOfferShown.AddListener(HandleUpgradeOfferShown);
+                upgradeSystem.OnUpgradeOfferHidden.AddListener(HandleUpgradeOfferHidden);
+            }
         }
 
         void UnbindRunEvents()
@@ -133,7 +149,15 @@ namespace MagnetPanic.Combat
                 runController.OnRunEnded.RemoveListener(HandleRunEnded);
             if (scoring != null)
                 scoring.OnRunEnded.RemoveListener(HandleScoringRunEnded);
+            if (upgradeSystem != null)
+            {
+                upgradeSystem.OnUpgradeOfferShown.RemoveListener(HandleUpgradeOfferShown);
+                upgradeSystem.OnUpgradeOfferHidden.RemoveListener(HandleUpgradeOfferHidden);
+            }
         }
+
+        void HandleUpgradeOfferShown() => upgradeOfferActive = true;
+        void HandleUpgradeOfferHidden() => upgradeOfferActive = false;
 
         void CacheHudElements()
         {

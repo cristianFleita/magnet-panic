@@ -191,7 +191,6 @@ MonoBehaviour:
   leaderboardUrl: http://localhost:3000/leaderboard
   requestTimeoutSeconds: 3
   loadOnEnable: 1
-  playerName: PLAYER
 --- !u!114 &690008861
 MonoBehaviour:
   m_ObjectHideFlags: 0

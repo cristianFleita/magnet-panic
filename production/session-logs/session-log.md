@@ -1416,3 +1416,14 @@ MetalPanic/Assets/UI/HUD/HudDocument.uss
 MetalPanic/Assets/UI/HUD/HudDocument.uxml
 ---
 
+## Session End: 20260516_114344
+### Commits
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+---
+
