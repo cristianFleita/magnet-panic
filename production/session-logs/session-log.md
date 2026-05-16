@@ -1544,3 +1544,23 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260516_150122
+### Commits
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+### Uncommitted Changes
+leaderboard-server/src/server.js
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
