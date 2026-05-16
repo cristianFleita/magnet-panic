@@ -22,9 +22,16 @@ namespace MagnetPanic.Combat.Audio
         [SerializeField] AudioClip levelUpClip;
         [SerializeField] [Range(0f, 1f)] float levelUpVolume = 1f;
 
-        AudioSource source;
+        AudioSource sfxSource;
+        AudioSource pullSource;
 
-        void Awake() => source = GetComponent<AudioSource>();
+        void Awake()
+        {
+            sfxSource = GetComponent<AudioSource>();
+            pullSource = gameObject.AddComponent<AudioSource>();
+            pullSource.playOnAwake = false;
+            pullSource.loop = false;
+        }
 
         void Start()
         {
@@ -62,9 +69,24 @@ namespace MagnetPanic.Combat.Audio
                 up.OnUpgradeApplied.RemoveListener(PlayLevelUp);
         }
 
-        void PlayPull() { if (pullClip != null) source.PlayOneShot(pullClip, pullVolume); }
-        void PlayRepel(bool _) { if (repelClip != null) source.PlayOneShot(repelClip, repelVolume); }
-        void PlayOverload(Vector3 _, float __, int ___) { if (overloadClip != null) source.PlayOneShot(overloadClip, overloadVolume); }
-        void PlayLevelUp(UpgradeData _, int __) { if (levelUpClip != null) source.PlayOneShot(levelUpClip, levelUpVolume); }
+        void PlayPull()
+        {
+            if (pullClip == null) return;
+            if (!pullSource.isPlaying)
+            {
+                pullSource.clip = pullClip;
+                pullSource.volume = pullVolume;
+                pullSource.Play();
+            }
+        }
+
+        void PlayRepel(bool _)
+        {
+            pullSource.Stop();
+            if (repelClip != null) sfxSource.PlayOneShot(repelClip, repelVolume);
+        }
+
+        void PlayOverload(Vector3 _, float __, int ___) { if (overloadClip != null) sfxSource.PlayOneShot(overloadClip, overloadVolume); }
+        void PlayLevelUp(UpgradeData _, int __) { if (levelUpClip != null) sfxSource.PlayOneShot(levelUpClip, levelUpVolume); }
     }
 }
