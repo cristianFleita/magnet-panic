@@ -20,6 +20,7 @@ namespace MagnetPanic.Combat
         [SerializeField] RunController runController;
         [SerializeField] ScoringRuntime scoring;
         [SerializeField] GameInputProvider inputProvider;
+        [SerializeField] ArkhamSimpleCameraFollow cameraController;
 
         [Header("Navigation")]
         [SerializeField] string retrySceneName = "GameScene";
@@ -81,16 +82,19 @@ namespace MagnetPanic.Combat
 
         public void Resume()
         {
+            Debug.Log("[GameSceneUiController] Resume button clicked.", this);
             SetPaused(false);
         }
 
         public void Retry()
         {
+            Debug.Log("[GameSceneUiController] Retry button clicked.", this);
             LoadScene(retrySceneName);
         }
 
         public void MainMenu()
         {
+            Debug.Log("[GameSceneUiController] Main Menu / Quit button clicked.", this);
             LoadScene(mainMenuSceneName);
         }
 
@@ -102,6 +106,8 @@ namespace MagnetPanic.Combat
                 scoring = ScoringRuntime.Instance != null ? ScoringRuntime.Instance : FindFirstObjectByType<ScoringRuntime>();
             if (inputProvider == null)
                 inputProvider = FindFirstObjectByType<GameInputProvider>();
+            if (cameraController == null)
+                cameraController = FindFirstObjectByType<ArkhamSimpleCameraFollow>();
         }
 
         void ActivateOverlayDocuments()
@@ -157,6 +163,7 @@ namespace MagnetPanic.Combat
                 return;
 
             paused = shouldPause;
+            Debug.Log($"[GameSceneUiController] SetPaused -> {paused}", this);
 
             if (paused)
             {
@@ -168,6 +175,11 @@ namespace MagnetPanic.Combat
 
                 if (inputProvider != null)
                     inputProvider.SetState(GameInputState.UI);
+
+                if (cameraController != null)
+                    cameraController.SetLookEnabled(false);
+                else
+                    ReleaseCursor();
 
                 ShowDocument(pauseDocument);
                 BindPauseButtons();
@@ -181,25 +193,55 @@ namespace MagnetPanic.Combat
 
                 if (inputProvider != null)
                     inputProvider.SetState(GameInputState.Gameplay);
+
+                if (cameraController != null)
+                    cameraController.SetLookEnabled(true);
             }
+        }
+
+        static void ReleaseCursor()
+        {
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
         }
 
         void BindPauseButtons()
         {
             VisualElement root = pauseDocument != null ? pauseDocument.rootVisualElement : null;
+            if (root == null)
+            {
+                Debug.LogWarning("[GameSceneUiController] Pause document root is null while binding buttons.", this);
+                return;
+            }
 
             if (UiDocumentQuery.TryGetButton(root, "resume-button", out Button resume))
             {
+                if (resumeButton != null && resumeButton != resume)
+                    resumeButton.clicked -= Resume;
+
                 resumeButton = resume;
                 resumeButton.clicked -= Resume;
                 resumeButton.clicked += Resume;
+                Debug.Log("[GameSceneUiController] Resume button bound.", this);
+            }
+            else
+            {
+                Debug.LogWarning("[GameSceneUiController] resume-button not found in pause document.", this);
             }
 
             if (UiDocumentQuery.TryGetButton(root, "quit-button", out Button quit))
             {
+                if (quitButton != null && quitButton != quit)
+                    quitButton.clicked -= MainMenu;
+
                 quitButton = quit;
                 quitButton.clicked -= MainMenu;
                 quitButton.clicked += MainMenu;
+                Debug.Log("[GameSceneUiController] Quit button bound.", this);
+            }
+            else
+            {
+                Debug.LogWarning("[GameSceneUiController] quit-button not found in pause document.", this);
             }
         }
 
@@ -241,6 +283,11 @@ namespace MagnetPanic.Combat
 
             if (inputProvider != null)
                 inputProvider.SetInputEnabled(false);
+
+            if (cameraController != null)
+                cameraController.SetLookEnabled(false);
+            else
+                ReleaseCursor();
 
             if (freezeTimeOnGameOver)
             {
@@ -366,6 +413,11 @@ namespace MagnetPanic.Combat
             }
 
             Time.timeScale = 1f;
+            ReleaseCursor();
+
+            if (inputProvider != null)
+                inputProvider.SetState(GameInputState.Disabled);
+
             Pool.ReleaseAll();
             SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
         }

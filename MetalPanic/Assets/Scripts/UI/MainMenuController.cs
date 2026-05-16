@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -29,11 +31,53 @@ namespace MagnetPanic.UI
         void OnEnable()
         {
             ResolveReferences();
+            EnsureCursorUsable();
+            EnsureUiInputAlive();
+            RefreshDocumentPanel(mainMenuDocument);
+            RefreshDocumentPanel(guideDocument);
 
             if (showMenuOnEnable)
                 ShowMenu();
             else
                 BindMenuButtons();
+        }
+
+        static void EnsureCursorUsable()
+        {
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
+        }
+
+        static void EnsureUiInputAlive()
+        {
+            EventSystem eventSystem = EventSystem.current;
+            if (eventSystem == null)
+            {
+                GameObject host = new GameObject("EventSystem");
+                eventSystem = host.AddComponent<EventSystem>();
+                host.AddComponent<InputSystemUIInputModule>();
+                return;
+            }
+
+            InputSystemUIInputModule module = eventSystem.GetComponent<InputSystemUIInputModule>();
+            if (module == null)
+                module = eventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
+
+            module.enabled = false;
+            module.enabled = true;
+        }
+
+        static void RefreshDocumentPanel(UIDocument document)
+        {
+            if (document == null)
+                return;
+
+            PanelSettings settings = document.panelSettings;
+            if (settings == null)
+                return;
+
+            document.panelSettings = null;
+            document.panelSettings = settings;
         }
 
         void OnDisable()

@@ -1346,3 +1346,38 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260516_064045
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+---
+
+## Session End: 20260516_064536
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scripts/UI/MainMenuController.cs
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_065721
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scripts/UI/MainMenuController.cs
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_070210
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scripts/UI/MagnetPanic.UI.asmdef
+MetalPanic/Assets/Scripts/UI/MainMenuController.cs
+production/session-logs/session-log.md
+---
+

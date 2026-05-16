@@ -1,7 +1,9 @@
 {
     "name": "MagnetPanic.UI",
     "rootNamespace": "MagnetPanic.UI",
-    "references": [],
+    "references": [
+        "Unity.InputSystem"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
