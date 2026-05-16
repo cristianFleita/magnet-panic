@@ -62,7 +62,7 @@ namespace MagnetPanic.Combat.Scoring.UI
                 {
                     float a = Mathf.Clamp01(flashTimer / FlashDuration);
                     Color c = levelUpFlash.style.color.value;
-                    levelUpFlash.style.color = new Color(c.r, c.g, c.b, a);
+                    levelUpFlash.style.color = new Color(255, 255, 255, 1);
                     if (flashTimer <= 0f)
                         levelUpFlash.style.display = DisplayStyle.None;
                 }
