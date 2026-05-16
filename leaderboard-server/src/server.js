@@ -5,10 +5,7 @@ const port = Number.parseInt(process.env.PORT ?? "3000", 10);
 const maxEntries = 5;
 
 let leaderboard = [
-  { name: "CRIS", score: 99450 },
-  { name: "CLAUDE", score: 82100 },
-  { name: "JAMMER42", score: 55000 },
-  { name: "PLAYER1", score: 32400 },
+  { name: "BOT", score: 100 },
 ];
 
 const server = http.createServer(async (request, response) => {
