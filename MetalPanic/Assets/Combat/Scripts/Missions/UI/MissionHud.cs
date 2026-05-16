@@ -6,10 +6,8 @@ namespace MagnetPanic.Combat.Missions.UI
 {
     /// <summary>
     /// Compact mission card with name, objective, progress text and a
-    /// horizontal time-remaining track. Slides in on mission start, flashes
-    /// green on complete, dims red on expire. Built in code so it has no
-    /// asset dependencies — drop on the same UIDocument as the rest of the HUD
-    /// or a dedicated one.
+    /// horizontal time-remaining track. Binds the live HUD UXML document so it
+    /// can share one UIDocument with the rest of the run HUD.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public sealed class MissionHud : MonoBehaviour
@@ -99,88 +97,26 @@ namespace MagnetPanic.Combat.Missions.UI
                 return;
 
             VisualElement root = document.rootVisualElement;
-            root.Clear();
-            root.style.position = Position.Absolute;
-            root.style.left = 0;
-            root.style.right = 0;
-            root.style.top = 0;
-            root.style.bottom = 0;
             root.pickingMode = PickingMode.Ignore;
 
-            card = new VisualElement { name = "mission-card" };
-            card.style.position = Position.Absolute;
-            card.style.right = Length.Percent(3);
-            card.style.top = 110;
-            card.style.width = 240;
-            card.style.paddingTop = 8;
-            card.style.paddingBottom = 8;
-            card.style.paddingLeft = 12;
-            card.style.paddingRight = 12;
-            card.style.backgroundColor = background;
-            card.style.borderLeftWidth = 3;
-            card.style.borderLeftColor = accentActive;
-            root.Add(card);
+            card = root.Q<VisualElement>("mission-card");
+            nameLabel = root.Q<Label>("mission-title");
+            objectiveLabel = root.Q<Label>("mission-description");
+            progressLabel = root.Q<Label>("mission-progress");
+            rewardLabel = root.Q<Label>("mission-reward");
+            timerFill = root.Q<VisualElement>("mission-progress-fill");
+            bannerLabel = root.Q<Label>("mission-banner-label");
 
-            VisualElement headerRow = new VisualElement();
-            headerRow.style.flexDirection = FlexDirection.Row;
-            headerRow.style.alignItems = Align.Center;
-            headerRow.style.justifyContent = Justify.SpaceBetween;
-            card.Add(headerRow);
+            if (card != null)
+            {
+                card.style.backgroundColor = background;
+                card.style.borderLeftColor = accentActive;
+            }
 
-            nameLabel = new Label("MISSION");
-            nameLabel.style.color = new Color(0.95f, 0.95f, 0.98f, 1f);
-            nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            nameLabel.style.fontSize = 14;
-            headerRow.Add(nameLabel);
-
-            progressLabel = new Label("0 / 0");
-            progressLabel.style.color = accentActive;
-            progressLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            progressLabel.style.fontSize = 14;
-            headerRow.Add(progressLabel);
-
-            objectiveLabel = new Label("");
-            objectiveLabel.style.color = new Color(0.82f, 0.86f, 0.92f, 1f);
-            objectiveLabel.style.fontSize = 11;
-            objectiveLabel.style.marginTop = 2;
-            objectiveLabel.style.marginBottom = 4;
-            objectiveLabel.style.whiteSpace = WhiteSpace.Normal;
-            card.Add(objectiveLabel);
-
-            rewardLabel = new Label("");
-            rewardLabel.style.color = new Color(1f, 0.85f, 0.4f, 1f);
-            rewardLabel.style.fontSize = 11;
-            rewardLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            rewardLabel.style.marginBottom = 6;
-            rewardLabel.style.whiteSpace = WhiteSpace.Normal;
-            rewardLabel.style.display = DisplayStyle.None;
-            card.Add(rewardLabel);
-
-            VisualElement timerTrack = new VisualElement { name = "timer-track" };
-            timerTrack.style.height = 4;
-            timerTrack.style.backgroundColor = new Color(0.1f, 0.1f, 0.12f, 0.85f);
-            card.Add(timerTrack);
-
-            timerFill = new VisualElement { name = "timer-fill" };
-            timerFill.style.position = Position.Absolute;
-            timerFill.style.left = 0;
-            timerFill.style.top = 0;
-            timerFill.style.bottom = 0;
-            timerFill.style.width = Length.Percent(100);
-            timerFill.style.backgroundColor = accentActive;
-            timerTrack.Add(timerFill);
-
-            bannerLabel = new Label("MISSION COMPLETE");
-            bannerLabel.style.position = Position.Absolute;
-            bannerLabel.style.right = Length.Percent(3);
-            bannerLabel.style.top = 90;
-            bannerLabel.style.minWidth = 240;
-            bannerLabel.style.fontSize = 18;
-            bannerLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            bannerLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-            bannerLabel.style.color = accentComplete;
-            bannerLabel.style.display = DisplayStyle.None;
-            root.Add(bannerLabel);
+            if (progressLabel != null)
+                progressLabel.style.color = accentActive;
+            if (timerFill != null)
+                timerFill.style.backgroundColor = accentActive;
         }
 
         void ShowCard(MissionDefinition def, Color accent)
@@ -189,10 +125,14 @@ namespace MagnetPanic.Combat.Missions.UI
                 return;
             card.style.display = DisplayStyle.Flex;
             card.style.borderLeftColor = accent;
-            progressLabel.style.color = accent;
-            timerFill.style.backgroundColor = accent;
-            nameLabel.text = def != null ? def.displayName.ToUpper() : "MISSION";
-            objectiveLabel.text = def != null ? def.objective : "";
+            if (progressLabel != null)
+                progressLabel.style.color = accent;
+            if (timerFill != null)
+                timerFill.style.backgroundColor = accent;
+            if (nameLabel != null)
+                nameLabel.text = def != null ? def.displayName.ToUpper() : "MISSION";
+            if (objectiveLabel != null)
+                objectiveLabel.text = def != null ? def.objective : "";
         }
 
         void HideCard()
@@ -239,9 +179,13 @@ namespace MagnetPanic.Combat.Missions.UI
         {
             if (state == null || card == null)
                 return;
-            progressLabel.text = state.Progress + " / " + state.Target;
+
+            if (progressLabel != null)
+                progressLabel.text = state.Progress + " / " + state.Target;
+
             float pct = state.TimeRemaining01 * 100f;
-            timerFill.style.width = Length.Percent(pct);
+            if (timerFill != null)
+                timerFill.style.width = Length.Percent(pct);
         }
 
         void HandleCompleted(MissionDefinition def)
@@ -276,8 +220,10 @@ namespace MagnetPanic.Combat.Missions.UI
             if (card == null)
                 return;
             card.style.borderLeftColor = color;
-            progressLabel.style.color = color;
-            timerFill.style.backgroundColor = color;
+            if (progressLabel != null)
+                progressLabel.style.color = color;
+            if (timerFill != null)
+                timerFill.style.backgroundColor = color;
             // Card will be hidden once the next cooldown ends and a new
             // mission starts (HandleStarted). Until then we leave the
             // completed/expired summary on screen as feedback.

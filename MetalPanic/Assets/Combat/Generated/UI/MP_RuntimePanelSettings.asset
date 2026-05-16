@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: MP_RuntimePanelSettings
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.PanelSettings
-  themeUss: {fileID: -4733365628477956816, guid: 0cb29fdecc12148e9b23fe345eee31b1, type: 3}
+  themeUss: {fileID: 4413694071827464959, guid: 7faf459d9c4d14a408642868148185f2, type: 3}
   m_DisableNoThemeWarning: 0
   m_TargetTexture: {fileID: 0}
   m_RenderMode: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_MinAtlasSize: 64
     m_MaxAtlasSize: 4096
     m_MaxSubTextureSize: 64
-    m_ActiveFilters: 31
+    m_ActiveFilters: -1
   m_AtlasBlitShader: {fileID: 9101, guid: 0000000000000000f000000000000000, type: 0}
   m_DefaultShader: {fileID: 9100, guid: 0000000000000000f000000000000000, type: 0}
   m_RuntimeGaussianBlurShader: {fileID: 20300, guid: 0000000000000000f000000000000000, type: 0}

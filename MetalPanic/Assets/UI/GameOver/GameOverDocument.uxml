@@ -1,0 +1,86 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="GameOverDocument.uss" />
+
+    <ui:VisualElement name="gameover-root" class="gameover-root">
+        <ui:VisualElement class="screen-dim" />
+
+        <ui:VisualElement name="gameover-panel" class="gameover-panel">
+            <ui:VisualElement class="frame-top">
+                <ui:VisualElement class="frame-corner" />
+                <ui:VisualElement class="frame-line" />
+                <ui:VisualElement class="frame-corner" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="panel-content">
+                <ui:VisualElement class="result-header">
+                    <ui:VisualElement class="warning-mark">
+                        <ui:Label text="!" class="warning-mark-text" />
+                    </ui:VisualElement>
+                    <ui:Label name="gameover-title" text="RUN ENDED" class="gameover-title" />
+                    <ui:VisualElement class="warning-mark">
+                        <ui:Label text="!" class="warning-mark-text" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="summary-stack">
+                    <ui:VisualElement class="summary-line">
+                        <ui:Label text="FINAL SCORE" class="summary-label" />
+                        <ui:Label name="final-score-value" text="42,350 PTS" class="summary-value score-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="summary-line">
+                        <ui:Label text="SURVIVAL TIME" class="summary-label" />
+                        <ui:Label name="survival-time-value" text="04:12 MIN" class="summary-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="leaderboard-block">
+                    <ui:VisualElement class="section-title-row">
+                        <ui:VisualElement class="section-rule" />
+                        <ui:Label text="LEADERBOARD" class="section-title" />
+                        <ui:VisualElement class="section-rule" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="leaderboard-table" class="leaderboard-table">
+                        <ui:VisualElement class="leaderboard-row">
+                            <ui:Label name="leaderboard-rank-1" text="#1" class="rank-cell" />
+                            <ui:Label name="leaderboard-name-1" text="MAGNETOP" class="name-cell" />
+                            <ui:Label name="leaderboard-score-1" text="88,900 pts" class="points-cell" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="leaderboard-row">
+                            <ui:Label name="leaderboard-rank-2" text="#2" class="rank-cell" />
+                            <ui:Label name="leaderboard-name-2" text="JAMMER42" class="name-cell" />
+                            <ui:Label name="leaderboard-score-2" text="55,000 pts" class="points-cell" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="leaderboard-row">
+                            <ui:Label name="leaderboard-rank-3" text="#3" class="rank-cell" />
+                            <ui:Label name="leaderboard-name-3" text="RIVET" class="name-cell" />
+                            <ui:Label name="leaderboard-score-3" text="48,120 pts" class="points-cell" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="player-leaderboard-row" class="leaderboard-row player-row">
+                            <ui:Label name="leaderboard-rank-player" text="#4" class="rank-cell" />
+                            <ui:Label name="leaderboard-name-player" text="YOUR SCORE" class="name-cell" />
+                            <ui:Label name="leaderboard-score-player" text="42,350 pts" class="points-cell" />
+                            <ui:Label name="leaderboard-highlight-label" text="SAVED" class="highlight-tag" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="leaderboard-row">
+                            <ui:Label name="leaderboard-rank-5" text="#5" class="rank-cell" />
+                            <ui:Label name="leaderboard-name-5" text="PLAYER1" class="name-cell" />
+                            <ui:Label name="leaderboard-score-5" text="32,400 pts" class="points-cell" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="retry-button" text="RETRY" class="gameover-button retry-button" />
+                    <ui:Button name="main-menu-button" text="MAIN MENU" class="gameover-button menu-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="frame-bottom">
+                <ui:VisualElement class="frame-corner" />
+                <ui:VisualElement class="frame-line" />
+                <ui:VisualElement class="frame-corner" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

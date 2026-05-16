@@ -1,0 +1,114 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/HUD/HudDocument.uss?fileID=7433441132597879392&amp;guid=05f16e9df6bb49e69d7b14e54a63cb17&amp;type=3#HudDocument"/>
+    <ui:VisualElement name="hud-root" picking-mode="Ignore" class="hud-root">
+        <ui:VisualElement class="hud-top-row">
+            <ui:VisualElement name="player-status-panel" class="hud-panel status-panel">
+                <ui:VisualElement class="status-line">
+                    <ui:Label text="HP" class="status-label"/>
+                    <ui:VisualElement class="bar-frame hp-frame">
+                        <ui:VisualElement name="hp-fill" class="bar-fill hp-fill"/>
+                        <ui:VisualElement class="bar-shine"/>
+                    </ui:VisualElement>
+                    <ui:Label name="hp-value" text="20/20" class="status-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="status-line xp-line">
+                    <ui:Label name="level-value" text="LV.2" class="status-label level-label"/>
+                    <ui:VisualElement class="bar-frame xp-frame">
+                        <ui:VisualElement name="xp-fill" class="bar-fill xp-fill"/>
+                        <ui:VisualElement class="bar-shine xp-shine"/>
+                    </ui:VisualElement>
+                    <ui:Label name="xp-value" text="5/65" class="status-value xp-value"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="ability-slot">
+                <ui:VisualElement class="ability-bracket left-bracket"/>
+                <ui:VisualElement name="ability-icon" class="ability-icon">
+                    <ui:Label text="R" class="ability-icon-text"/>
+                </ui:VisualElement>
+                <ui:Label name="ability-label" text="REPEL 360" class="ability-title"/>
+                <ui:Label name="ability-value" text="7.2s" class="ability-value"/>
+                <ui:VisualElement class="ability-bracket right-bracket"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="match-panel" class="hud-panel match-panel">
+                <ui:VisualElement class="match-line">
+                    <ui:Label text="TIME" class="match-label"/>
+                    <ui:Label name="time-value" text="04:15" class="match-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="match-line score-line">
+                    <ui:Label text="SCORE" class="match-label"/>
+                    <ui:Label name="score-value" text="000153" class="match-value score-value"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="pause-prompt" class="pause-prompt">
+            <ui:Label text="ESC" class="pause-key"/>
+            <ui:Label text="PAUSE" class="pause-text"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="right-hud-stack">
+            <ui:VisualElement name="mission-card" class="hud-panel mission-card">
+                <ui:VisualElement class="mission-header">
+                    <ui:VisualElement class="mission-icon">
+                        <ui:Label text="!" class="mission-icon-text"/>
+                    </ui:VisualElement>
+                    <ui:Label name="mission-title" text="IRON RAIN" class="mission-title"/>
+                    <ui:Label name="mission-progress" text="0/3" class="mission-progress"/>
+                </ui:VisualElement>
+                <ui:Label name="mission-description" text="Defeat 3 enemies with repelled scrap" class="mission-description"/>
+                <ui:VisualElement class="mission-reward-row">
+                    <ui:Label text="REWARD" class="reward-label"/>
+                    <ui:Label name="mission-reward" text="Overload Pulse" class="reward-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="mission-progress-rail">
+                    <ui:VisualElement name="mission-progress-fill" class="mission-progress-fill"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="combo-panel" class="combo-panel">
+                <ui:VisualElement class="combo-bolt">
+                    <ui:Label text="x" class="combo-bolt-text"/>
+                </ui:VisualElement>
+                <ui:Label text="COMBO" class="combo-label"/>
+                <ui:Label name="combo-value" text="x3" class="combo-value"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label name="mission-banner-label" text="MISSION COMPLETE" class="mission-banner-label" style="display: none;"/>
+        <ui:Label name="level-up-flash" text="LEVEL UP!" class="level-up-flash" style="display: none;"/>
+        <ui:VisualElement name="overload-meter" class="overload-anchor overload-hidden" style="display: flex;">
+            <ui:VisualElement class="overload-panel">
+                <ui:VisualElement class="overload-header">
+                    <ui:Label text="OVERLOAD" class="overload-label"/>
+                    <ui:Label name="overload-state-label" text="PULL HOLD" class="overload-state-label"/>
+                    <ui:Label name="overload-value" text="0%" class="overload-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="overload-track">
+                    <ui:VisualElement name="overload-fill" class="overload-fill"/>
+                    <ui:VisualElement class="overload-danger-zone"/>
+                    <ui:VisualElement class="overload-shine"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="upgrade-strip" class="upgrade-strip">
+            <ui:VisualElement class="upgrade-strip-line"/>
+            <ui:VisualElement class="upgrade-content">
+                <ui:VisualElement class="upgrade-chip magnet-chip">
+                    <ui:VisualElement class="upgrade-icon magnet-icon">
+                        <ui:Label text="M" class="upgrade-icon-text"/>
+                    </ui:VisualElement>
+                    <ui:Label name="magnet-upgrade-count" text="x3" class="upgrade-count"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="upgrade-chip repel-chip">
+                    <ui:VisualElement class="upgrade-icon repel-icon">
+                        <ui:Label text="R" class="upgrade-icon-text"/>
+                    </ui:VisualElement>
+                    <ui:Label name="repel-upgrade-count" text="x1" class="upgrade-count"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="upgrade-chip burst-chip">
+                    <ui:VisualElement class="upgrade-icon burst-icon">
+                        <ui:Label text="B" class="upgrade-icon-text"/>
+                    </ui:VisualElement>
+                    <ui:Label name="burst-upgrade-count" text="x2" class="upgrade-count"/>
+                </ui:VisualElement>
+                <ui:Label text="PERMANENT UPGRADES" class="upgrade-caption"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

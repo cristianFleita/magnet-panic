@@ -1336,3 +1336,13 @@ MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260516_051455
+### Uncommitted Changes
+MetalPanic/Assets/Scenes/Map.unity
+MetalPanic/Assets/Scenes/Map.unity.meta
+MetalPanic/Assets/UI Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss.meta
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

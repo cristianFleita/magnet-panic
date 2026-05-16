@@ -1,0 +1,127 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="MainMenuGuideDocument.uss" />
+
+    <ui:VisualElement name="main-menu-guide-root" class="guide-root">
+        <ui:VisualElement name="main-menu-guide-background" class="guide-background" />
+        <ui:VisualElement class="guide-shade" />
+
+        <ui:VisualElement name="main-menu-guide-panel" class="guide-panel">
+            <ui:VisualElement class="guide-frame-top">
+                <ui:VisualElement class="guide-frame-corner" />
+                <ui:VisualElement class="guide-frame-line" />
+                <ui:VisualElement class="guide-frame-corner" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="guide-content">
+                <ui:VisualElement class="guide-header">
+                    <ui:VisualElement class="brand-block">
+                        <ui:VisualElement class="brand-mark">
+                            <ui:Label text="M" class="brand-mark-text" />
+                        </ui:VisualElement>
+                        <ui:VisualElement>
+                            <ui:Label name="guide-title" text="CONTROLS &amp; GUIDE" class="guide-title" />
+                            <ui:Label name="guide-subtitle" text="[ Survival Manual ]" class="guide-subtitle" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Button name="back-to-menu-button" text="BACK TO MENU" class="guide-button back-button" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="guide-columns">
+                    <ui:VisualElement name="controls-column" class="guide-column controls-column">
+                        <ui:Label text="CONTROLS" class="column-title" />
+                        <ui:VisualElement class="control-list">
+                            <ui:VisualElement class="control-row">
+                                <ui:Label text="WASD" class="key-chip" />
+                                <ui:Label text="Move" class="row-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="control-row">
+                                <ui:Label text="LEFT CLICK" class="key-chip wide-key" />
+                                <ui:Label text="Pull scrap" class="row-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="control-row">
+                                <ui:Label text="DOUBLE CLICK" class="key-chip wide-key" />
+                                <ui:Label text="Repel held scrap" class="row-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="control-row">
+                                <ui:Label text="RIGHT CLICK" class="key-chip wide-key" />
+                                <ui:Label text="Mark / Strike" class="row-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="control-row">
+                                <ui:Label text="SPACE" class="key-chip" />
+                                <ui:Label text="Counter" class="row-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="control-row">
+                                <ui:Label text="ESC" class="key-chip" />
+                                <ui:Label text="Pause" class="row-copy" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="guide-divider" />
+
+                    <ui:VisualElement name="upgrades-column" class="guide-column upgrades-column">
+                        <ui:Label text="UPGRADE GUIDE" class="column-title" />
+                        <ui:VisualElement class="upgrade-list">
+                            <ui:VisualElement class="upgrade-row">
+                                <ui:VisualElement class="upgrade-icon reach-icon">
+                                    <ui:Label text="M" class="upgrade-icon-text" />
+                                </ui:VisualElement>
+                                <ui:VisualElement class="upgrade-copy-block">
+                                    <ui:Label text="Reach" class="upgrade-name" />
+                                    <ui:Label text="+2m Pull range" class="upgrade-copy" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="upgrade-row">
+                                <ui:VisualElement class="upgrade-icon cannon-icon">
+                                    <ui:Label text="R" class="upgrade-icon-text" />
+                                </ui:VisualElement>
+                                <ui:VisualElement class="upgrade-copy-block">
+                                    <ui:Label text="Cannon" class="upgrade-name" />
+                                    <ui:Label text="+1 Repel damage" class="upgrade-copy" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="upgrade-row">
+                                <ui:VisualElement class="upgrade-icon meltdown-icon">
+                                    <ui:Label text="B" class="upgrade-icon-text" />
+                                </ui:VisualElement>
+                                <ui:VisualElement class="upgrade-copy-block">
+                                    <ui:Label text="Meltdown" class="upgrade-name" />
+                                    <ui:Label text="+3 Overload damage" class="upgrade-copy" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="upgrade-row">
+                                <ui:VisualElement class="upgrade-icon fever-icon">
+                                    <ui:Label text="x" class="upgrade-icon-text" />
+                                </ui:VisualElement>
+                                <ui:VisualElement class="upgrade-copy-block">
+                                    <ui:Label text="Magnet Fever" class="upgrade-name" />
+                                    <ui:Label text="Pull multiplier" class="upgrade-copy" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="upgrade-row">
+                                <ui:VisualElement class="upgrade-icon storm-icon">
+                                    <ui:Label text="S" class="upgrade-icon-text" />
+                                </ui:VisualElement>
+                                <ui:VisualElement class="upgrade-copy-block">
+                                    <ui:Label text="Scrap Storm" class="upgrade-name" />
+                                    <ui:Label text="Deadly orbit" class="upgrade-copy" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement name="field-tip" class="field-tip">
+                    <ui:Label text="FIELD TIP" class="tip-label" />
+                    <ui:Label text="Pull scrap, hold to build overload, then repel into grouped enemies." class="tip-copy" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="guide-frame-bottom">
+                <ui:VisualElement class="guide-frame-corner" />
+                <ui:VisualElement class="guide-frame-line" />
+                <ui:VisualElement class="guide-frame-corner" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -15,6 +15,7 @@ public class WebGLBuildScript
         {
             scenes = new[]
             {
+                "Assets/Scenes/MainMenu.unity",
                 "Assets/Scenes/GameScene.unity"
             },
             locationPathName = outputPath,

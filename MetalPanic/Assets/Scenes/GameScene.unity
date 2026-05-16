@@ -388,8 +388,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 71989084}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.14780942, y: 0, z: 0, w: 0.9890159}
-  m_LocalPosition: {x: 0, y: 5.45, z: -10.75}
+  m_LocalRotation: {x: 0.26725715, y: 0.000000028718274, z: -0.000000007964885, w: 0.96362525}
+  m_LocalPosition: {x: 0, y: 5.0801234, z: -10.574627}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -466,7 +466,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &171085444
 Transform:
   m_ObjectHideFlags: 0
@@ -553,9 +553,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.ArkhamEnemyManager
   startAttackDirectorOnPlay: 1
   attackDelayRange: {x: 0.65, y: 1.5}
-  simultaneousAttackThreshold: 5
+  maxSimultaneousAttackers: 2
+  secondAttackerAfterMinutes: 1.5
+  secondAttackerMinAlive: 4
+  attackerStaggerRange: {x: 0.25, y: 0.55}
   delayReductionPerMinute: 0.06
   minDelay: 0.35
+  fairnessExtraDelay: 0.25
+  lowHpFairnessThreshold: 0.25
+  closeEngagementSlots: 3
+  closeEngagementRadius: 4.5
+  reserveOrbitDistance: 6.5
+  engagementUpdateInterval: 0.2
 --- !u!4 &335756982
 Transform:
   m_ObjectHideFlags: 0
@@ -980,6 +989,9 @@ Transform:
   - {fileID: 1336404079}
   - {fileID: 1665981558}
   - {fileID: 171085444}
+  - {fileID: 2000000102}
+  - {fileID: 2000000112}
+  - {fileID: 2000000122}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &848282164
@@ -1242,8 +1254,11 @@ GameObject:
   - component: {fileID: 1336404079}
   - component: {fileID: 1336404078}
   - component: {fileID: 1336404077}
-  m_Layer: 6
-  m_Name: Player Health HUD
+  - component: {fileID: 1336404080}
+  - component: {fileID: 1336404081}
+  - component: {fileID: 1336404082}
+  m_Layer: 5
+  m_Name: HUD Document
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1275,9 +1290,9 @@ MonoBehaviour:
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: d025d023570b8482b8eb74ffa31684f6, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: fc1e5a5ad5745409b9beb8faf2dd4608, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 3cc96f9ef7bb4cc9a9dfe019e4f02f86, type: 3}
   m_SortingOrder: 0
   m_Position: 0
   m_WorldSpaceSizeMode: 1
@@ -1301,6 +1316,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 719226213}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1336404080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336404075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c6018bd97e844578afc42f2bba59a82, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.UI.XpHud
+  scoring: {fileID: 848282166}
+  hideComboAtRest: 1
+  comboColorLow: {r: 0.95, g: 0.95, b: 0.95, a: 1}
+  comboColorHigh: {r: 1, g: 0.55, b: 0.18, a: 1}
+  comboColorRamp: 10
+--- !u!114 &1336404081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336404075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cddf2cf51de84a5484840b5598606ec, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.UI.MissionHud
+  missions: {fileID: 1944696923}
+  background: {r: 0.04, g: 0.05, b: 0.07, a: 0.85}
+  accentActive: {r: 1, g: 0.78, b: 0.22, a: 1}
+  accentComplete: {r: 0.27, g: 0.93, b: 0.45, a: 1}
+  accentExpired: {r: 0.92, g: 0.32, b: 0.32, a: 1}
+--- !u!114 &1336404082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336404075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 316ad6643ff84d1b97bdd6a9ba39d1b2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.GameSceneUiController
+  hudDocument: {fileID: 1336404078}
+  pauseDocument: {fileID: 2000000103}
+  gameOverTopFiveDocument: {fileID: 2000000113}
+  gameOverNoTopFiveDocument: {fileID: 2000000123}
+  runController: {fileID: 576832660}
+  scoring: {fileID: 848282166}
+  inputProvider: {fileID: 0}
+  retrySceneName: GameScene
+  mainMenuSceneName: MainMenu
+  leaderboardPlayerName: PLAYER
+  showTopFiveLayout: 1
+  freezeTimeWhilePaused: 1
+  freezeTimeOnGameOver: 1
+  topFiveLeaderboard: {fileID: 2000000114}
+  noTopFiveLeaderboard: {fileID: 2000000124}
 --- !u!1 &1356560724 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8181967549168216227, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
@@ -1440,8 +1516,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1583158214}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.14780942, y: 0, z: 0, w: 0.9890159}
-  m_LocalPosition: {x: 0, y: 5.45, z: -10.75}
+  m_LocalRotation: {x: 0.26725718, y: 0.000000028718274, z: -0.000000007964886, w: 0.96362525}
+  m_LocalPosition: {x: 0, y: 5.0801234, z: -10.574627}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1667,7 +1743,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1665981558
 Transform:
   m_ObjectHideFlags: 0
@@ -1697,8 +1773,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.UI.XpHud
   scoring: {fileID: 0}
   hideComboAtRest: 1
-  barBackground: {r: 0.1, g: 0.11, b: 0.13, a: 0.92}
-  xpFillColor: {r: 0.96, g: 0.78, b: 0.18, a: 1}
   comboColorLow: {r: 0.95, g: 0.95, b: 0.95, a: 1}
   comboColorHigh: {r: 1, g: 0.55, b: 0.18, a: 1}
   comboColorRamp: 10
@@ -1737,15 +1811,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1669535691}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c6018bd97e844578afc42f2bba59a82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.UI.XpHud
   scoring: {fileID: 0}
   hideComboAtRest: 1
-  barBackground: {r: 0.1, g: 0.11, b: 0.13, a: 0.92}
-  xpFillColor: {r: 0.96, g: 0.78, b: 0.18, a: 1}
   comboColorLow: {r: 0.95, g: 0.95, b: 0.95, a: 1}
   comboColorHigh: {r: 1, g: 0.55, b: 0.18, a: 1}
   comboColorRamp: 10
@@ -2187,6 +2259,205 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.Trackers.LivingAmmoTracker
   scoring: {fileID: 0}
+--- !u!1 &2000000101
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2000000102}
+  - component: {fileID: 2000000103}
+  m_Layer: 5
+  m_Name: Pause
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2000000102
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000101}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 719226213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2000000103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: fc1e5a5ad5745409b9beb8faf2dd4608, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 7ddcc5caa8c34ce6bc49938c775f5128, type: 3}
+  m_SortingOrder: 10
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!1 &2000000111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2000000112}
+  - component: {fileID: 2000000113}
+  - component: {fileID: 2000000114}
+  m_Layer: 5
+  m_Name: Gameover_topFive
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2000000112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000111}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 719226213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2000000113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: fc1e5a5ad5745409b9beb8faf2dd4608, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 6f7a9411972d457aae9dc0bd4ea737e1, type: 3}
+  m_SortingOrder: 20
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &2000000114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43be8c8c117a46f9b80844140fb4f38d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  leaderboardUrl: http://localhost:3000/leaderboard
+  requestTimeoutSeconds: 3
+  loadOnEnable: 0
+  playerName: PLAYER
+--- !u!1 &2000000121
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2000000122}
+  - component: {fileID: 2000000123}
+  - component: {fileID: 2000000124}
+  m_Layer: 5
+  m_Name: Gameover_noTopFive
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2000000122
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000121}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 719226213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2000000123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: fc1e5a5ad5745409b9beb8faf2dd4608, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: da3c9d2fa76a4c469b63b1d949a7b1f5, type: 3}
+  m_SortingOrder: 20
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &2000000124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43be8c8c117a46f9b80844140fb4f38d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  leaderboardUrl: http://localhost:3000/leaderboard
+  requestTimeoutSeconds: 3
+  loadOnEnable: 0
+  playerName: PLAYER
 --- !u!1 &2067095500 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5332592522296601475, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
