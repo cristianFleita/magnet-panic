@@ -37,7 +37,8 @@ namespace MagnetPanic.Combat
         [SerializeField] LayerMask targetLayers = ~0;
 
         [Header("Recovery")]
-        [SerializeField] float overloadCooldown = 2f;
+        [SerializeField, Tooltip("Seconds the magnet stays offline after an overload explosion (simulates capacitor recharge).")]
+        float overloadCooldown = 3f;
         [SerializeField] float overloadStunDuration = 0.5f;
 
         [Header("Camera")]

@@ -35,11 +35,11 @@ Referencia: **Batman Arkham** (enemigos que atacan de a uno/dos, counter-based),
 
 | Tipo | HP | Velocidad | Masa | Marca | Comportamiento |
 |---|---|---|---|---|---|
-| **Scrapling** | 3 | approach 5, strafe 1.25 | 3 | 2 marks → magnetizado | Horda, ataca en melee, fácil de matar |
-| **Metal Enemy** | 5 | approach 4, strafe 1 | 2.2 | Always pullable | Siempre atraíble, más HP, premio magnético |
-| **Runner Bot** | 4 | approach 7, strafe 0 | 4 | 2 marks → magnetizado | Carga lineal con aviso, no strafea |
-| **Heavy Bot** | 8 | approach 3, strafe 0.8 | 5 | 3 marks → magnetizado | Lento, mucho HP, knockback alto. **Puede agarrar scraps y lanzarlos.** |
-| **Spitter Drone** | 4 | approach 3.5, strafe 1.4 | 2.5 | 2 marks → magnetizado | **Ranged:** dispara proyectiles metálicos atraíbles. Se mantiene a distancia. |
+| **Scrapling** | 3 | approach 5, strafe 1.25 | 3 | 2 marks → magnetizado | Horda, ataca en melee, fácil de matar. **Counterable.** |
+| **Metal Enemy** | 5 | approach 4, strafe 1 | 2.2 | Always pullable | Siempre atraíble, más HP, premio magnético. **Counterable.** |
+| **Runner Bot** | 4 | approach 7, strafe 0 | 4 | 2 marks → magnetizado | **Mediana distancia:** orbita ~6.5m, carga lineal telegrafiada de 0.65s. Counterable, esquivable con dodge lateral. |
+| **Heavy Bot** | 8 | approach 3, strafe 0.8 | 5 | 3 marks → magnetizado | Lento, mucho HP, knockback alto. **Puede agarrar scraps y lanzarlos.** ⚠ **No counterable** — sus ataques deben esquivarse con dodge. Cuesta 2 attack tokens. |
+| **Spitter Drone** | 4 | approach 3.5, strafe 1.4 | 2.5 | 2 marks → magnetizado | **Ranged:** dispara proyectiles metálicos atraíbles. Se mantiene a distancia. Counterable. |
 
 Post-MVP: Tank (escudo frontal), Bomber (explota al morir), Flyer (inmune a ground attacks).
 
@@ -75,20 +75,63 @@ Any ──[Counter]──▶ Stunned → decay → Normal
 
 Las marcas decaen después de `markDecayTime = 6s`. Si no se aplica segundo hit a tiempo, la marca se pierde.
 
-#### Regla 3 — AI de combate: Attack Director (enhanced)
+#### Regla 3 — AI de combate: Attack Director (queue + late-game double-team)
 
-El `ArkhamEnemyManager` corre un Attack Director mejorado que escala la presión:
+El `ArkhamEnemyManager` corre un Attack Director estilo Arkham/Spider-Man simplificado: **cola estricta de 1 a la vez** durante el opening, abre un segundo slot **solo cuando ya pasó tiempo de combate** para que el jugador tenga espacio para aprender los patrones.
 
 1. Espera `attackDelayRange` (0.65–1.5s) con **reducción progresiva** por tiempo de run.
-2. Selecciona un enemigo disponible (`CanDirectorSelect`), evitando repetir el anterior.
-3. **Scrap Thief check:** si el enemigo tiene `ScrapThiefBehavior`, primero intenta grab+throw.
-4. **Spitter Drone check:** si el enemigo tiene `SpitterDroneBehavior`, ejecuta `RangedAttackRoutine`.
-5. Si no, ejecuta `AttackRoutine()` o `LinearChargeRoutine()` normal.
-6. Director espera a que el ataque termine (hit, counter, o muerte).
-7. Si el enemigo sobrevive, ejecuta `RetreatRoutine()`.
-8. **Simultaneous attackers:** cuando hay ≥5 enemigos vivos, el Director puede enviar un segundo atacante con stagger de 0.2-0.45s.
+2. Calcula `targetAttackers` con dos puertas:
+   - **Default: 1 attacker** (queue). El director sólo elige al siguiente cuando el actual terminó (hit, counter o muerte).
+   - **Segunda slot:** se abre cuando `minutesElapsed ≥ secondAttackerAfterMinutes` (default 1.5min) **y** `aliveCount ≥ secondAttackerMinAlive` (default 4).
+   - Cap absoluto: `maxSimultaneousAttackers = 2`.
+3. Selecciona el primer enemigo disponible (`CanDirectorSelect`, ya respeta `spawnAttackGracePeriod`), evitando repetir el anterior.
+4. **Scrap Thief check:** si el enemigo tiene `ScrapThiefBehavior`, primero intenta grab+throw.
+5. **Spitter Drone check:** si el enemigo tiene `SpitterDroneBehavior`, ejecuta `RangedAttackRoutine`.
+6. Si no, ejecuta `AttackRoutine()` o `LinearChargeRoutine()` normal.
+7. **Stagger entre attackers:** entre cada attacker adicional el director espera `attackerStaggerRange` (0.18–0.45s) para que los windups no colapsen en el mismo frame.
+8. Director espera a que **todos** los attackers terminen su ataque (hit, counter, o muerte).
+9. Para cada enemigo sobreviviente ejecuta `RetreatRoutine()`.
+
+**Threat-token cost:** los `EnemyDefinition` declaran `attackTokenCost` (1 por default, 2 para HeavyBot). El director cuenta slots, no costos crudos — pero el cost extra del Heavy indica que ese enemigo bloquea más espacio cognitivo en pantalla; el balance se hace bajando su frecuencia en `WaveDirector` cuando coexiste con otros archetypes.
+
+**Spawn grace:** cada enemigo expone `spawnAttackGracePeriod` (default 1.2s, HeavyBot 1.4s, Spitter 1.5s). Mientras está dentro de la ventana de gracia post-spawn, `CanDirectorSelect` devuelve `false`. Esto elimina la sensación de "el bot apareció y me pegó en el mismo frame".
+
+**Fairness rules (Spider-Man style):**
+- Mientras el player está atacando o counter-eando, `GetScaledDelay()` suma `fairnessExtraDelay = 0.25s` extra antes del próximo ciclo.
+- Si el HP del player ≤ `lowHpFairnessThreshold = 25%`, se suma medio `fairnessExtraDelay` para aliviar la presión.
+- Heavy Bot ataques **no son counterables** — el player debe esquivarlos con dodge, no parar-los. Esto rompe el "auto-pilot" del counter y obliga a usar todo el toolkit.
 
 **Delay scaling:** `baseDelay - (minutesElapsed × 0.06)`, floor = 0.35s. Esto crea la curva de dificultad natural sin necesitar un sistema de dificultad separado.
+
+#### Regla 3b — Engagement Slots (anillo de combate cercano)
+
+Inspirado en el slot system de Spider-Man y en el "circle of combat" de
+Arkham. Cap duro de enemigos que pueden estar **pegados al jugador** al
+mismo tiempo, para que no se conviertan en un muro impenetrable.
+
+1. `ArkhamEnemyManager` reevalúa slots cada `engagementUpdateInterval`
+   (default 0.2s).
+2. Lista de vivos ordenados por distancia al jugador.
+3. Los primeros `closeEngagementSlots` (default **3**, configurable) o
+   los que estén comprometidos en `isPreparingAttack`/`isAttacking`
+   conservan su slot — `forcedKeepDistance = false`.
+4. El resto entra como **reservas**: `SetForcedKeepDistance(true, reserveOrbitDistance)`
+   con default `reserveOrbitDistance = 6.5m`.
+5. Una reserva orbita: retreat si está a <ring−0.6m, approach si está a
+   >ring+1.5m, strafe en la banda. Esto pinta el efecto de "rondita".
+6. Apenas un slot se libera (kill, retreat, knockback fuera del anillo),
+   la próxima tick promueve a la reserva más cercana.
+
+**Dispersión:** el vector de separación en `Move()` ahora usa radio
+2.6m (antes 1.8m) y suma un componente tangencial (45%) para que dos
+bots se "deslicen" alrededor en vez de quedarse cara a cara empujándose.
+El signo del tangencial es estable por par (hash de instance ID) — sin
+oscilación.
+
+**Tuning rápido:**
+- `closeEngagementSlots = 3` para arenas chicas, 4-5 para arenas grandes.
+- `closeEngagementRadius = 4.5m` se siente bien con `attackRange` 1.8-2m.
+- `reserveOrbitDistance` debe ser > `closeEngagementRadius + 1.5m`.
 
 #### Regla 4 — AI de movimiento: Strafe + Approach
 
@@ -302,8 +345,20 @@ delayBetweenAttacks = Max(0.35, Random(0.65, 1.5) - minutesElapsed * 0.06)
 |---|---|---|---|---|
 | `maxHealth` | 3–8 | 1–15 | Mueren muy fácil, sin tensión | Esponjas de daño, frustración |
 | `attackDelayRange` | 0.65–1.5s | 0.3–3.0s | Ataques muy frecuentes, overwhelm | Ataques raros, jugador aburrido |
-| `simultaneousAttackThreshold` | 5 | 3–10 | Doble ataque con pocos enemigos, más difícil | Solo doble ataque con muchos, más fácil |
+| `maxSimultaneousAttackers` | 2 | 1–3 | Combate solitario, predecible | Player abrumado, ilegible |
+| `secondAttackerAfterMinutes` | 1.5min | 0–5min | Double-team muy temprano, opening duro | Double-team casi nunca, run plano |
+| `secondAttackerMinAlive` | 4 | 2–8 | Double-team con pocos enemigos en arena | Double-team casi nunca, run plano |
+| `attackerStaggerRange` | 0.25–0.55s | 0.05–1.0s | Telegraphs colapsan en mismo frame | Attackers se sienten desconectados |
+| `spawnAttackGracePeriod` | 1.2s (Heavy 1.4, Spitter 1.5) | 0–3s | "El bot apareció y me pegó" | Spawns demasiado pasivos |
+| `fairnessExtraDelay` | 0.25s | 0–1s | El combo del player se interrumpe | Enemigos demasiado pasivos durante combo |
+| `lowHpFairnessThreshold` | 0.25 | 0–0.5 | Sin compasión en HP bajo | Demasiada compasión en HP bajo |
 | `delayReductionPerMinute` | 0.06 | 0–0.15 | Sin escalada de presión | Ataques cada vez más rápidos |
+| `canBeCountered` (per def) | true (Heavy=false) | bool | Todos los enemigos parrieables, counter trivializa | Nadie counterable, counter es inútil |
+| `counterStunDuration` | 1s | 0.5–2s | Counter casi no recompensa | Counter trivializa enemigos |
+| `attackTokenCost` | 1 (Heavy=2) | 1–3 | Heavies se acumulan en pantalla | Heavies casi nunca atacan |
+| `closeEngagementSlots` | 3 | 1–6 | Combate solitario | Player rodeado de carne |
+| `closeEngagementRadius` | 4.5m | 3–8m | Ring muy chico, reserves casi adentro | Ring inmenso, todos engaged |
+| `reserveOrbitDistance` | 6.5m | 5–10m | Reservas pegadas, sensación de pared | Reservas inalcanzables, sin presión |
 | `magneticMarksToMagnetize` | 2–3 | 1–5 | Magnetiza con 1 hit, demasiado fácil | Nunca magnetiza, loop roto |
 | `markDecayTime` | 6s | 3–10s | Marcas decaen rápido, difícil magnetizar | Marcas persisten mucho, trivializa |
 | `approachSpeed` | 3–7 | 2–10 | Enemigos nunca llegan, sin presión | Enemigos encima instantáneamente |
@@ -316,7 +371,8 @@ delayBetweenAttacks = Max(0.35, Random(0.65, 1.5) - minutesElapsed * 0.06)
 
 ## Visual/Audio Requirements
 
-- **Counter cue**: esfera brillante cyan sobre la cabeza durante `PrepareAttack`. Debe ser muy visible.
+- **Counter cue (sense)**: el indicador de counter ya **no vive en la cabeza del enemigo**; se mudó al jugador como un "sentido magnético" (`CounterSenseIndicator`). Ver `combat-system.md` § Counter Sense. El enemigo ya no aporta cue de pre-counter.
+- **Counter stun VFX (post-counter)**: cuando el jugador acierta el counter, se spawnea `counterStunVfxPrefab` sobre la cabeza del enemigo (default 2.15 m), lifetime ≈ 1 s. Idealmente estrellas/chispas pulsantes (lectura "K.O. temporal").
 - **Magnetized indicator**: glow amarillo pulsante cuando `markState == Magnetized`.
 - **Hit flash**: el material del enemigo flashea blanco por 0.1s al recibir daño.
 - **Death**: animación de "colapso" + partículas de debris. El cadáver persiste 0.8s antes de despawn.

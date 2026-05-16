@@ -265,6 +265,8 @@ GameObject:
   - component: {fileID: 5104196418732024970}
   - component: {fileID: 3136504856111527258}
   - component: {fileID: 5356090497278128468}
+  - component: {fileID: 7101000000000001}
+  - component: {fileID: 7101000000000002}
   m_Layer: 7
   m_Name: SpitterDrone
   m_TagString: Untagged
@@ -329,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4844dba9b72c4ce0b1b73e1ff9563003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CombatHealth
-  maxHealth: 4
+  maxHealth: 3
   refillOnAwake: 1
   OnHealthChanged:
     m_PersistentCalls:
@@ -368,14 +370,19 @@ MonoBehaviour:
   characterController: {fileID: 1644870502366928710}
   combatHealth: {fileID: 865815959147999918}
   healthBar: {fileID: 0}
-  counterIndicator: {fileID: 1404616078653983927}
-  counterParticle: {fileID: 0}
   chargeTelegraph: {fileID: 0}
-  maxHealth: 4
+  counterStunVfxPrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
+  counterStunVfxHeight: 2.15
+  counterStunVfxLifetime: 1.05
+  maxHealth: 6
   magneticMarksToMagnetize: 2
   stunDuration: 0.45
+  counterStunDuration: 1
   knockbackDistance: 0.55
   knockbackDuration: 0.16
+  canBeCountered: 1
+  attackTokenCost: 1
+  spawnAttackGracePeriod: 1.2
   destroyOnDeath: 1
   deathDespawnDelay: 0.8
   autoCreateHealthBar: 1
@@ -390,10 +397,9 @@ MonoBehaviour:
   wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
-  magnetizedIndicator: {fileID: 0}
-  autoCreateMagnetizedIndicator: 1
-  magnetizedIndicatorHeight: 3.2
-  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
+  magnetizedIndicatorPrefab: {fileID: 1058325498707994, guid: 8333d50130027574ca8b4e0268fdd047, type: 3}
+  magnetizedIndicatorHeight: 1
+  magnetizedIndicatorScale: 1
   debugMagnetProjectileCollisions: 0
   strafeSpeed: 1.4
   approachSpeed: 3.5
@@ -414,7 +420,7 @@ MonoBehaviour:
   chargeSpeed: 11
   chargeDuration: 0.55
   chargeHitRadius: 1.1
-  chargeDamage: 2
+  chargeDamage: 8
   chargeCausesKnockdown: 1
   chargeIdealDistance: 5
   chargeIdealTolerance: 1.2
@@ -454,10 +460,10 @@ MonoBehaviour:
   firePoint: {fileID: 1832456022749954378}
   projectilePrefab: {fileID: 5879022150181931213, guid: 0215f699159f8456c84599932f576f61, type: 3}
   projectileSpeed: 25
-  projectileDamage: 1
+  projectileDamage: 2
   burstCount: 3
-  burstInterval: 0.2
-  aimInaccuracy: 6
+  burstInterval: 0.22
+  aimInaccuracy: 7
   idealDistance: 15
   idealTolerance: 1.5
   fireReadyDelay: 0.3
@@ -478,11 +484,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.MagneticStunCue
   enemy: {fileID: 4057190588866879809}
-  cueOverride: {fileID: 0}
-  autoCreateCue: 1
+  cuePrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
   cueHeight: 2.45
-  cueScale: {x: 0.42, y: 0.42, z: 0.42}
-  cueColor: {r: 1, g: 0.18, b: 0.18, a: 0.9}
+  cueLifetime: 1
 --- !u!114 &3136504856111527258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -547,6 +551,118 @@ MonoBehaviour:
     criticalSuffix: '!'
     criticalScaleMultiplier: 1.35
     criticalFontMultiplier: 1.15
+--- !u!82 &7101000000000001
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961922541159132038}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &7101000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961922541159132038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa01000000000000000000000000aa01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Audio.SfxPlayer
+  clips:
+  - {fileID: 8300000, guid: e07d13c6cec864116b6ae00a2e49bd6f, type: 3}
+  volume: 0.411
 --- !u!1 &7359270040645462384
 GameObject:
   m_ObjectHideFlags: 0

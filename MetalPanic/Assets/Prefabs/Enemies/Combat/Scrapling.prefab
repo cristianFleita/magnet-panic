@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4844dba9b72c4ce0b1b73e1ff9563003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CombatHealth
-  maxHealth: 3
+  maxHealth: 4
   refillOnAwake: 1
   OnHealthChanged:
     m_PersistentCalls:
@@ -149,14 +149,19 @@ MonoBehaviour:
   characterController: {fileID: 3560191820634988866}
   combatHealth: {fileID: 486224392401875494}
   healthBar: {fileID: 0}
-  counterIndicator: {fileID: 5904994352360188538}
-  counterParticle: {fileID: 0}
   chargeTelegraph: {fileID: 0}
-  maxHealth: 3
+  counterStunVfxPrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
+  counterStunVfxHeight: 2.15
+  counterStunVfxLifetime: 1.05
+  maxHealth: 8
   magneticMarksToMagnetize: 2
   stunDuration: 0.45
+  counterStunDuration: 1
   knockbackDistance: 0.55
   knockbackDuration: 0.16
+  canBeCountered: 1
+  attackTokenCost: 1
+  spawnAttackGracePeriod: 1.2
   destroyOnDeath: 1
   deathDespawnDelay: 0.8
   autoCreateHealthBar: 1
@@ -171,10 +176,9 @@ MonoBehaviour:
   wallSlamBounceDistance: 0.18
   counterPulseDistance: 1.1
   alwaysPullableByMagnet: 0
-  magnetizedIndicator: {fileID: 0}
-  autoCreateMagnetizedIndicator: 1
-  magnetizedIndicatorHeight: 2.8
-  magnetizedIndicatorColor: {r: 1, g: 0.82, b: 0.16, a: 0.85}
+  magnetizedIndicatorPrefab: {fileID: 1058325498707994, guid: 8333d50130027574ca8b4e0268fdd047, type: 3}
+  magnetizedIndicatorHeight: 1
+  magnetizedIndicatorScale: 1
   debugMagnetProjectileCollisions: 0
   strafeSpeed: 1.25
   approachSpeed: 5
@@ -195,7 +199,7 @@ MonoBehaviour:
   chargeSpeed: 11
   chargeDuration: 0.55
   chargeHitRadius: 1.1
-  chargeDamage: 2
+  chargeDamage: 3
   chargeCausesKnockdown: 1
   chargeIdealDistance: 5
   chargeIdealTolerance: 1.2
@@ -295,11 +299,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.MagneticStunCue
   enemy: {fileID: 5654940927512223136}
-  cueOverride: {fileID: 0}
-  autoCreateCue: 1
+  cuePrefab: {fileID: 1234567890123456781, guid: 8f42d9a5b3c14a2eb70f81d432b8c9e1, type: 3}
   cueHeight: 2.45
-  cueScale: {x: 0.42, y: 0.42, z: 0.42}
-  cueColor: {r: 1, g: 0.18, b: 0.18, a: 0.9}
+  cueLifetime: 1
 --- !u!1 &2446081994739991199
 GameObject:
   m_ObjectHideFlags: 0

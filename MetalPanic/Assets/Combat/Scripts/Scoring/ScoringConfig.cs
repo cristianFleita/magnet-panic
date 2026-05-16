@@ -29,15 +29,19 @@ namespace MagnetPanic.Combat.Scoring
         [Tooltip("Seconds of inactivity before the combo resets.")]
         [Min(0.25f)] public float comboWindowSeconds = 3f;
         [Tooltip("Bonus multiplier added per combo step above 1 (capped by maxComboMultiplier).")]
-        [Min(0f)] public float comboScalingPerStep = 0.1f;
-        [Min(1f)] public float maxComboMultiplier = 3f;
+        [Min(0f)] public float comboScalingPerStep = 0.15f;
+        [Min(1f)] public float maxComboMultiplier = 4f;
+
+        [Header("Missions")]
+        [Tooltip("Multiplier applied to mission XP rewards when a mission is completed.")]
+        [Min(1f)] public float missionXpMultiplier = 1.5f;
 
         [Header("Leveling")]
-        [Min(10)] public int baseXpPerLevel = 50;
-        [Min(0)] public int xpGrowthPerLevel = 15;
+        [Min(10)] public int baseXpPerLevel = 140;
+        [Min(0)] public int xpGrowthPerLevel = 70;
 
         [Header("Final score")]
-        [Tooltip("Score points awarded per second survived.")]
+        [Tooltip("Legacy tuning field retained for serialized configs. Survival time no longer awards score.")]
         [Min(0f)] public float survivalScorePerSecond = 2f;
         [Tooltip("Score points awarded per point of the highest combo reached.")]
         [Min(0f)] public float styleScorePerComboPoint = 10f;

@@ -35,16 +35,27 @@ namespace MagnetPanic.Combat
         [SerializeField] CharacterController characterController;
         [SerializeField] CombatHealth combatHealth;
         [SerializeField] WorldSpaceHealthBar healthBar;
-        [SerializeField] GameObject counterIndicator;
-        [SerializeField] ParticleSystem counterParticle = null;
         [SerializeField] GameObject chargeTelegraph;
+        [Tooltip("Spawned over this enemy's head when the player lands a counter against it. The player carries the pre-counter 'magnetic sense' cue instead.")]
+        [SerializeField] GameObject counterStunVfxPrefab;
+        [SerializeField] float counterStunVfxHeight = 2.15f;
+        [SerializeField] float counterStunVfxLifetime = 1.05f;
 
         [Header("Stats")]
         [SerializeField] int maxHealth = 3;
         [SerializeField] int magneticMarksToMagnetize = 2;
         [SerializeField] float stunDuration = 0.45f;
+        [SerializeField, Tooltip("Stun duration applied when this enemy gets countered by the player. Spider-Man style: a beat of helplessness.")]
+        float counterStunDuration = 1f;
         [SerializeField] float knockbackDistance = 0.55f;
         [SerializeField] float knockbackDuration = 0.16f;
+        [Header("Counter Profile")]
+        [SerializeField, Tooltip("When false, the player's counter cannot interrupt this enemy's telegraph. Heavy archetypes use this to force dodges.")]
+        bool canBeCountered = true;
+        [SerializeField, Tooltip("Threat-token cost the Attack Director spends to send this enemy to attack. Heavy/elite enemies cost 2.")]
+        [Range(1, 3)] int attackTokenCost = 1;
+        [SerializeField, Tooltip("Seconds after spawn before this enemy is eligible to be chosen by the Attack Director (Spider-Man new-enemy grace).")]
+        float spawnAttackGracePeriod = 1.2f;
         [SerializeField] bool destroyOnDeath = true;
         [SerializeField] float deathDespawnDelay = 0.8f;
         [SerializeField] bool autoCreateHealthBar = true;
@@ -62,10 +73,13 @@ namespace MagnetPanic.Combat
         [SerializeField] float wallSlamBounceDistance = 0.18f;
         [SerializeField] float counterPulseDistance = 1.1f;
         [SerializeField] bool alwaysPullableByMagnet;
-        [SerializeField] GameObject magnetizedIndicator;
-        [SerializeField] bool autoCreateMagnetizedIndicator = true;
-        [SerializeField] float magnetizedIndicatorHeight = 2.15f;
-        [SerializeField] Color magnetizedIndicatorColor = new Color(1f, 0.82f, 0.16f, 0.85f);
+        [SerializeField, Tooltip("VFX spawned at the center of the body when this enemy becomes a magnet pull target. Assign the Kenney 'Electricity' particle prefab (or similar) to match the game's style.")]
+        GameObject magnetizedIndicatorPrefab;
+        [SerializeField, Tooltip("Local Y offset for the magnetized VFX. ~1.0 keeps the effect around the body center for a CharacterController-sized enemy.")]
+        float magnetizedIndicatorHeight = 1f;
+        [SerializeField, Tooltip("Local uniform scale applied to the magnetized VFX prefab so it reads at body size without re-authoring the prefab.")]
+        float magnetizedIndicatorScale = 0.6f;
+        GameObject magnetizedIndicator;
 
         [Header("Debug")]
         [SerializeField, Tooltip("Print Console messages and draw debug lines for magnet-repel projectile collisions against other enemies.")]
@@ -166,6 +180,9 @@ namespace MagnetPanic.Combat
         bool isAnchorHeld;
         bool attackHitApplied;
         float lastMarkTime = -999f;
+        float spawnTime = -999f;
+        bool forcedKeepDistance;
+        float forcedKeepDistanceTarget = 6.5f;
         MoveMode moveMode;
         Coroutine behaviorCoroutine;
         Coroutine movementCoroutine;
@@ -193,7 +210,79 @@ namespace MagnetPanic.Combat
         public bool IsAlive => !isDead && isActiveAndEnabled && combatHealth != null && combatHealth.IsAlive;
         public bool IsStunned => isStunned;
         public bool IsAttackable => IsAlive && !isLockedTarget;
+        /// <summary>
+        /// True while this enemy is mid-attack — used by the Attack Director to know
+        /// when an attack slot is still occupied. Includes uncounterable enemies.
+        /// </summary>
         public bool IsCounterable => IsAlive && (isPreparingAttack || isAttacking);
+        /// <summary>
+        /// True only when the player's counter can legitimately punish this enemy's
+        /// telegraph. Heavy archetypes return false even while attacking.
+        /// </summary>
+        public bool IsCounterTarget => IsCounterable && canBeCountered;
+        public bool CanBeCountered => canBeCountered;
+
+        /// <summary>
+        /// True when this enemy's attack is geometrically close enough to land
+        /// THIS beat (melee in range, runner mid-dash, spitter firing). Used by
+        /// the player's CounterSenseIndicator so the cue only blinks when the
+        /// player actually needs to react — not for every distant windup.
+        /// </summary>
+        public bool IsImminentThreat
+        {
+            get
+            {
+                if (!IsAlive)
+                    return false;
+
+                // Shooter actively firing — the projectile is leaving the barrel.
+                if (spitterDrone != null && spitterDrone.IsFiring)
+                    return true;
+
+                // Mid-attack (already past windup): the hit is one frame away.
+                if (isAttacking)
+                    return true;
+
+                // Windup: only flag as imminent when the enemy is geometrically
+                // close enough to actually connect. Use generous tolerance so
+                // the cue flips on a beat before the strike, not after.
+                if (isPreparingAttack && playerCombat != null)
+                {
+                    float dist = DistanceToPlayer();
+                    float threshold;
+                    if (useLinearCharge)
+                        threshold = chargeIdealDistance + chargeIdealTolerance + 1.5f;
+                    else
+                        threshold = attackRange * hitRangeTolerance + 0.5f;
+
+                    return dist <= threshold;
+                }
+
+                return false;
+            }
+        }
+
+        public bool IsImminentCounterThreat => IsImminentThreat && canBeCountered;
+
+        public bool IsShooter => spitterDrone != null;
+        public bool IsShooterFiring => spitterDrone != null && spitterDrone.IsFiring;
+
+        /// <summary>
+        /// Called by <see cref="ArkhamEnemyManager"/> to mark this enemy as a
+        /// reserve — too many bots are already in the player's close-combat
+        /// ring, so this one should orbit at <paramref name="targetDistance"/>
+        /// instead of crowding in. Mid-attack or pre-attack enemies are not
+        /// forced (the manager skips them).
+        /// </summary>
+        public void SetForcedKeepDistance(bool keep, float targetDistance)
+        {
+            forcedKeepDistance = keep;
+            if (keep)
+                forcedKeepDistanceTarget = Mathf.Max(retreatDistance, targetDistance);
+        }
+
+        public bool IsForcedReserve => forcedKeepDistance;
+        public int AttackTokenCost => Mathf.Max(1, attackTokenCost);
         public bool IsAttacking => isAttacking;
         public CombatHealth Health => combatHealth;
         public int CurrentHealth => combatHealth != null ? combatHealth.CurrentHealth : 0;
@@ -214,7 +303,8 @@ namespace MagnetPanic.Combat
             !isMagneticallyControlled &&
             !isPreparingAttack &&
             !isAttacking &&
-            !isRetreating;
+            !isRetreating &&
+            Time.time >= spawnTime + spawnAttackGracePeriod;
 
         void Awake()
         {
@@ -288,6 +378,10 @@ namespace MagnetPanic.Combat
             chargeCausesKnockdown = def.chargeCausesKnockdown;
             chargeIdealDistance = Mathf.Max(0f, def.chargeIdealDistance);
             chargeIdealTolerance = Mathf.Max(0.1f, def.chargeIdealTolerance);
+            canBeCountered = def.canBeCountered;
+            counterStunDuration = Mathf.Max(0.1f, def.counterStunDuration);
+            attackTokenCost = Mathf.Clamp(def.attackTokenCost, 1, 3);
+            spawnAttackGracePeriod = Mathf.Max(0f, def.spawnAttackGracePeriod);
         }
 
         public void ConfigureMagneticProfile(bool alwaysPullable, float mass)
@@ -393,8 +487,10 @@ namespace MagnetPanic.Combat
             playerCombat = player;
             if (targetAnimator != null)
                 animator = targetAnimator;
-            if (indicator != null)
-                counterIndicator = indicator;
+            // 'indicator' is intentionally ignored — the counter cue moved to the player
+            // (CounterSenseIndicator on ArkhamCombatController). The parameter is kept
+            // for back-compat with existing call sites.
+            _ = indicator;
             if (combatHealth == null)
                 combatHealth = GetComponent<CombatHealth>();
             EnsureHealthBar();
@@ -466,6 +562,11 @@ namespace MagnetPanic.Combat
             if (!IsAlive)
                 return;
 
+            // Heavy archetypes shouldn't be counterable — guard at the entry point
+            // so external callers can't bypass the rule via direct CounteredBy().
+            if (!canBeCountered)
+                return;
+
             playerCombat = attacker;
             OnCountered.Invoke(this);
             StopBehaviorCoroutine();
@@ -479,13 +580,26 @@ namespace MagnetPanic.Combat
             isMagneticallyControlled = false;
             SetMarkState(MagneticMarkState.Magnetized);
             StopMoving();
+            SpawnCounterStunVfx();
 
             Vector3 direction = transform.position - attacker.transform.position;
             direction.y = 0f;
             if (direction.sqrMagnitude < 0.01f)
                 direction = transform.forward;
 
-            behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, counterPulseDistance, 0.12f, stunDuration));
+            behaviorCoroutine = StartCoroutine(MagneticPushRoutine(direction.normalized, counterPulseDistance, 0.12f, counterStunDuration));
+        }
+
+        void SpawnCounterStunVfx()
+        {
+            if (counterStunVfxPrefab == null)
+                return;
+
+            Vector3 worldPos = transform.position + Vector3.up * counterStunVfxHeight;
+            GameObject instance = Instantiate(counterStunVfxPrefab, worldPos, Quaternion.identity, transform);
+            instance.name = counterStunVfxPrefab.name + " (CounterStun)";
+            float life = counterStunVfxLifetime > 0f ? counterStunVfxLifetime : counterStunDuration;
+            Destroy(instance, life);
         }
 
         /// <summary>
@@ -871,8 +985,13 @@ namespace MagnetPanic.Combat
             attackHitApplied = false;
             moveMode = MoveMode.Approach;
 
+            // Short safety window: if the player slipped out during the windup,
+            // close the gap for up to ~1.2s and then commit the swing. Anything
+            // longer makes the attack feel sluggish (e.g. the MetalEnemy "thinks
+            // about it" forever bug).
             float approachTimer = 0f;
-            while (IsAlive && playerCombat != null && DistanceToPlayer() > attackRange && approachTimer < 2.2f)
+            const float maxAttackCloseTime = 1.2f;
+            while (IsAlive && playerCombat != null && DistanceToPlayer() > attackRange && approachTimer < maxAttackCloseTime)
             {
                 approachTimer += Time.deltaTime;
                 yield return null;
@@ -1116,6 +1235,23 @@ namespace MagnetPanic.Combat
         {
             while (IsAlive && !isLockedTarget && !isStunned && !isPreparingAttack && !isAttacking && !isRetreating)
             {
+                // Reserve enemies (over capacity in the player's close-combat ring)
+                // orbit at forcedKeepDistanceTarget until a slot opens up. This is
+                // what stops 8 Scraplings from glomming onto the player at once.
+                if (forcedKeepDistance)
+                {
+                    float reserveDist = DistanceToPlayer();
+                    if (reserveDist < forcedKeepDistanceTarget - 0.6f)
+                        moveMode = MoveMode.Retreat;
+                    else if (reserveDist > forcedKeepDistanceTarget + 1.5f)
+                        moveMode = MoveMode.Approach;
+                    else
+                        moveMode = Random.value > 0.5f ? MoveMode.StrafeLeft : MoveMode.StrafeRight;
+
+                    yield return new WaitForSeconds(Random.Range(0.25f, 0.55f));
+                    continue;
+                }
+
                 // Ranged enemy: maintain ideal distance like a linear charger
                 if (spitterDrone != null)
                 {
@@ -1229,31 +1365,43 @@ namespace MagnetPanic.Combat
             {
                 if (manager != null)
                 {
+                    // Wider separation + a tangential nudge: instead of pushing
+                    // straight away from a neighbor (which causes head-on jams
+                    // when two enemies want the same slot), we mix in a sideways
+                    // component so they ring around each other and form an arc.
                     Vector3 separation = Vector3.zero;
                     int neighbors = 0;
-                    float separationRadius = 1.8f;
-                    float sqrRadius = separationRadius * separationRadius;
-                    
+                    const float separationRadius = 2.6f;
+                    const float sqrRadius = separationRadius * separationRadius;
+
                     for (int i = 0; i < manager.Enemies.Count; i++)
                     {
                         var other = manager.Enemies[i];
                         if (other == null || !other.IsAlive || other == this)
                             continue;
-                            
+
                         Vector3 diff = transform.position - other.transform.position;
                         diff.y = 0f;
                         float sqrDist = diff.sqrMagnitude;
-                        
+
                         if (sqrDist > 0.01f && sqrDist < sqrRadius)
                         {
-                            separation += diff.normalized * (1f - (Mathf.Sqrt(sqrDist) / separationRadius));
+                            float dist = Mathf.Sqrt(sqrDist);
+                            float falloff = 1f - (dist / separationRadius);
+                            Vector3 radial = diff / dist;
+                            // Tangential component perpendicular to the radial — sign
+                            // is stable per pair (hash-based) so two enemies don't
+                            // oscillate trying to pass each other.
+                            int sign = (other.GetInstanceID() < GetInstanceID()) ? 1 : -1;
+                            Vector3 tangent = new Vector3(-radial.z, 0f, radial.x) * sign;
+                            separation += (radial + tangent * 0.45f) * falloff;
                             neighbors++;
                         }
                     }
-                    
+
                     if (neighbors > 0)
                     {
-                        direction += (separation / neighbors) * 1.5f;
+                        direction += (separation / neighbors) * 1.8f;
                         direction.Normalize();
                     }
                 }
@@ -1563,6 +1711,7 @@ namespace MagnetPanic.Combat
             attackHitApplied = false;
             lastArenaWallHitNormal = Vector3.zero;
             lastMarkTime = -999f;
+            spawnTime = Time.time;
             moveMode = MoveMode.None;
             magneticMarks = 0;
             markState = MagneticMarkState.Normal;
@@ -1600,26 +1749,19 @@ namespace MagnetPanic.Combat
             return delta.magnitude;
         }
 
+        /// <summary>
+        /// Deprecated — the pre-counter cue moved to the player's head
+        /// (CounterSenseIndicator). Kept as a no-op so legacy callers
+        /// (e.g. GrapplerBehavior) continue to compile and run. The
+        /// player-side indicator already picks up isPreparingAttack.
+        /// </summary>
         public void ShowCounterCue()
         {
-            if (counterIndicator != null)
-                counterIndicator.SetActive(true);
-
-            if (counterParticle != null)
-                counterParticle.Play(true);
+            // Intentionally empty: counter telegraph now lives on the player.
         }
 
         public void HideCounterCue()
         {
-            if (counterIndicator != null)
-                counterIndicator.SetActive(false);
-
-            if (counterParticle != null)
-            {
-                counterParticle.Clear(true);
-                counterParticle.Stop(true);
-            }
-
             HideChargeTelegraph();
         }
 
@@ -1637,24 +1779,24 @@ namespace MagnetPanic.Combat
 
         void EnsureMagnetizedIndicator()
         {
-            if (!autoCreateMagnetizedIndicator || magnetizedIndicator != null)
+            if (magnetizedIndicator != null || magnetizedIndicatorPrefab == null)
                 return;
 
-            GameObject cue = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            cue.name = "Magnetized Cue";
-            cue.transform.SetParent(transform, false);
-            cue.transform.localPosition = new Vector3(0f, magnetizedIndicatorHeight, 0f);
-            cue.transform.localScale = new Vector3(0.72f, 0.018f, 0.72f);
+            GameObject vfx = Instantiate(magnetizedIndicatorPrefab, transform);
+            vfx.name = magnetizedIndicatorPrefab.name + " (Magnetized VFX)";
+            vfx.transform.localPosition = new Vector3(0f, magnetizedIndicatorHeight, 0f);
+            vfx.transform.localRotation = Quaternion.identity;
+            float scale = Mathf.Max(0.01f, magnetizedIndicatorScale);
+            vfx.transform.localScale = new Vector3(scale, scale, scale);
 
-            Collider cueCollider = cue.GetComponent<Collider>();
-            if (cueCollider != null)
-                DestroyLocalObject(cueCollider);
+            // Strip colliders the source prefab might ship with so the VFX
+            // never participates in physics queries or blocks the player's
+            // strikes.
+            Collider[] colliders = vfx.GetComponentsInChildren<Collider>(true);
+            for (int i = 0; i < colliders.Length; i++)
+                DestroyLocalObject(colliders[i]);
 
-            Renderer renderer = cue.GetComponent<Renderer>();
-            if (renderer != null)
-                renderer.sharedMaterial = CreateCueMaterial(magnetizedIndicatorColor);
-
-            magnetizedIndicator = cue;
+            magnetizedIndicator = vfx;
             magnetizedIndicator.SetActive(false);
         }
 
@@ -1673,20 +1815,6 @@ namespace MagnetPanic.Combat
         {
             if (magnetizedIndicator != null)
                 magnetizedIndicator.SetActive(IsAlive && IsMagneticPullTarget);
-        }
-
-        static Material CreateCueMaterial(Color color)
-        {
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-            if (shader == null)
-                shader = Shader.Find("Standard");
-
-            return new Material(shader)
-            {
-                color = color
-            };
         }
 
         static void DestroyLocalObject(Object target)

@@ -32,7 +32,7 @@ namespace MagnetPanic.Combat.Upgrades
         [SerializeField] float slideKnockbackDistance = 1.2f;
         [SerializeField] float slideContactRadius = 1.2f;
         [SerializeField] float doubleTapWindow = 0.25f;
-        [SerializeField] float baseSlideCooldown = 4f;
+        [SerializeField] float baseSlideCooldown = 0f;
         [SerializeField] float wallRaycastInset = 0.4f;
         [SerializeField] LayerMask wallLayers = ~0;
 
@@ -44,7 +44,7 @@ namespace MagnetPanic.Combat.Upgrades
         [SerializeField] int slamDamage = 5;
         [SerializeField] float slamKnockdownDuration = 1.5f;
         [SerializeField] float slamKnockbackDistance = 1.6f;
-        [SerializeField] float slamCooldown = 6f;
+        [SerializeField] float slamCooldown = 0f;
         [SerializeField] float slamJumpHeight = 2.2f;
 
         [Header("VFX")]
@@ -79,7 +79,7 @@ namespace MagnetPanic.Combat.Upgrades
         public bool SlamUnlocked => slamUnlocked;
         public float SlideCooldownRemaining => Mathf.Max(0f, nextSlideReadyTime - Time.time);
         public float SlamCooldownRemaining => Mathf.Max(0f, nextSlamReadyTime - Time.time);
-        public float SlideCooldown => Mathf.Max(0.5f, baseSlideCooldown - slideCooldownBonus);
+        public float SlideCooldown => Mathf.Max(0f, baseSlideCooldown - slideCooldownBonus);
         public float SlamCooldown => slamCooldown;
 
         public void UnlockSlide() => slideUnlocked = true;

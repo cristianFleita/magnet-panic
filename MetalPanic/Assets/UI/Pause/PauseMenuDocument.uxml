@@ -1,0 +1,75 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="PauseMenuDocument.uss" />
+
+    <ui:VisualElement name="pause-root" class="pause-root">
+        <ui:VisualElement class="pause-dim" />
+
+        <ui:VisualElement name="pause-panel" class="pause-panel">
+            <ui:VisualElement class="pause-frame-top">
+                <ui:VisualElement class="pause-frame-corner" />
+                <ui:VisualElement class="pause-frame-line" />
+                <ui:VisualElement class="pause-frame-corner" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="pause-content">
+                <ui:Label name="pause-title" text="GAME PAUSED" class="pause-title" />
+
+                <ui:VisualElement class="pause-actions">
+                    <ui:Button name="resume-button" text="RESUME" class="pause-button resume-button" />
+                    <ui:Button name="quit-button" text="QUIT" class="pause-button quit-button" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pause-columns">
+                    <ui:VisualElement name="controls-column" class="pause-column controls-column">
+                        <ui:Label text="CONTROLS" class="column-title" />
+                        <ui:VisualElement class="pause-list">
+                            <ui:Label text="- WASD: Move" class="pause-list-item" />
+                            <ui:Label text="- Q: Dodge / Roll" class="pause-list-item" />
+                            <ui:Label text="- Left Click / F: Pull · Repel (hold &amp; release)" class="pause-list-item" />
+                            <ui:Label text="- Right Click / J: Strike · Mark" class="pause-list-item" />
+                            <ui:Label text="- Esc: Pause" class="pause-list-item" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="pause-divider" />
+
+                    <ui:VisualElement name="upgrades-column" class="pause-column upgrades-column">
+                        <ui:Label text="UPGRADE BRANCHES" class="column-title" />
+                        <ui:VisualElement class="pause-list">
+                            <ui:VisualElement class="upgrade-guide-row">
+                                <ui:VisualElement class="upgrade-guide-icon fever-icon">
+                                    <ui:Label text="M" class="upgrade-guide-icon-text" />
+                                </ui:VisualElement>
+                                <ui:Label text="Magnetism: Reach · Quick Coil · Chain" class="pause-list-item guide-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="upgrade-guide-row">
+                                <ui:VisualElement class="upgrade-guide-icon reach-icon">
+                                    <ui:Label text="C" class="upgrade-guide-icon-text" />
+                                </ui:VisualElement>
+                                <ui:Label text="Combat: Scrap Cannon · Railgun" class="pause-list-item guide-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="upgrade-guide-row">
+                                <ui:VisualElement class="upgrade-guide-icon meltdown-icon">
+                                    <ui:Label text="+" class="upgrade-guide-icon-text" />
+                                </ui:VisualElement>
+                                <ui:Label text="Capacity: Deep Pockets · Heavy Lifter" class="pause-list-item guide-copy" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="upgrade-guide-row">
+                                <ui:VisualElement class="upgrade-guide-icon storm-icon">
+                                    <ui:Label text="V" class="upgrade-guide-icon-text" />
+                                </ui:VisualElement>
+                                <ui:Label text="Mobility: Slide · Slam · Iron Stride" class="pause-list-item guide-copy" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="pause-frame-bottom">
+                <ui:VisualElement class="pause-frame-corner" />
+                <ui:VisualElement class="pause-frame-line" />
+                <ui:VisualElement class="pause-frame-corner" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

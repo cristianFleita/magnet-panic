@@ -1,0 +1,138 @@
+.no-top-five-panel {
+    max-width: 860px;
+}
+
+.no-top-five-content {
+    padding-top: 14px;
+}
+
+.missed-rank-card {
+    width: 68%;
+    min-width: 430px;
+    max-width: 600px;
+    margin-top: 24px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    align-items: center;
+    background-color: rgba(35, 11, 19, 0.44);
+    border-left-width: 3px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(255, 186, 45);
+    border-right-color: rgba(255, 186, 45, 0.28);
+    border-top-color: rgba(255, 186, 45, 0.28);
+    border-bottom-color: rgba(255, 186, 45, 0.28);
+}
+
+.missed-rank-title {
+    font-size: 18px;
+    color: rgb(255, 213, 92);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.82);
+}
+
+.encouragement-message {
+    margin-top: 8px;
+    white-space: normal;
+    font-size: 13px;
+    color: rgb(226, 238, 244);
+    -unity-text-align: middle-center;
+}
+
+.cutoff-row {
+    width: 78%;
+    height: 26px;
+    margin-top: 8px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cutoff-label {
+    font-size: 12px;
+    color: rgb(165, 188, 202);
+}
+
+.cutoff-value {
+    font-size: 13px;
+    color: rgb(255, 213, 92);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.72);
+}
+
+.points-needed-value {
+    color: rgb(62, 222, 255);
+}
+
+.no-top-five-board {
+    margin-top: 22px;
+}
+
+.cutoff-player-row {
+    background-color: rgba(255, 206, 55, 0.07);
+    border-left-width: 2px;
+    border-left-color: rgba(255, 206, 55, 0.64);
+}
+
+@media (max-width: 1400px) {
+    .missed-rank-card {
+        width: 76%;
+        min-width: 400px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .missed-rank-card {
+        width: 88%;
+        min-width: 0;
+        margin-top: 18px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .missed-rank-title {
+        font-size: 15px;
+    }
+
+    .encouragement-message {
+        font-size: 11px;
+    }
+
+    .cutoff-row {
+        width: 92%;
+    }
+}
+
+@media (max-width: 760px) {
+    .missed-rank-card {
+        width: 94%;
+    }
+
+    .cutoff-row {
+        width: 100%;
+    }
+
+    .cutoff-label,
+    .cutoff-value {
+        font-size: 10px;
+    }
+}
+
+@media (max-height: 720px) {
+    .missed-rank-card {
+        margin-top: 12px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .encouragement-message {
+        margin-top: 5px;
+    }
+
+    .no-top-five-board {
+        margin-top: 12px;
+    }
+}

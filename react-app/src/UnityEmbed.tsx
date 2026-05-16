@@ -1,21 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 
+declare const __UNITY_BUILD_VERSION__: string;
+
 const BUILD_PATH = "/unity-build/Build";
-const LOADER_FILE = `${BUILD_PATH}/unity-build.loader.js`;
-const DATA_FILE = `${BUILD_PATH}/unity-build.data.unityweb`;
-const FRAMEWORK_FILE = `${BUILD_PATH}/unity-build.framework.js.unityweb`;
-const WASM_FILE = `${BUILD_PATH}/unity-build.wasm.unityweb`;
+const LOGO_FILE = "/brand/magnet-panic-scrapstorm-logo.png";
+const LOCAL_BACKEND_URL = "http://localhost:3000";
+const LEADERBOARD_PATH = "/leaderboard";
+const UNITY_BUILD_VERSION =
+  typeof __UNITY_BUILD_VERSION__ === "string" && __UNITY_BUILD_VERSION__.trim()
+    ? __UNITY_BUILD_VERSION__.trim()
+    : "local";
+
+function versionedUnityFile(fileName: string): string {
+  return `${BUILD_PATH}/${fileName}?v=${encodeURIComponent(UNITY_BUILD_VERSION)}`;
+}
+
+const LOADER_FILE = versionedUnityFile("unity-build.loader.js");
+const DATA_FILE = versionedUnityFile("unity-build.data.unityweb");
+const FRAMEWORK_FILE = versionedUnityFile("unity-build.framework.js.unityweb");
+const WASM_FILE = versionedUnityFile("unity-build.wasm.unityweb");
+const EXPECTED_BUILD_FILES = [
+  "unity-build.loader.js",
+  "unity-build.data.unityweb",
+  "unity-build.framework.js.unityweb",
+  "unity-build.wasm.unityweb",
+].join(" / ");
+let unityLoaderPromise: Promise<void> | null = null;
+
+interface MagnetPanicConfig {
+  leaderboardUrl?: string;
+}
 
 declare global {
   interface Window {
-    unityInstance: any;
+    unityInstance: unknown;
     onUnityReady?: () => void;
     BACKEND_URL?: string;
+    MAGNET_PANIC_CONFIG?: MagnetPanicConfig;
     createUnityInstance: (
       canvas: HTMLCanvasElement,
       config: object,
       onProgress?: (progress: number) => void
-    ) => Promise<any>;
+    ) => Promise<unknown>;
   }
 }
 
@@ -37,6 +63,59 @@ function waitForCreateUnityInstance(timeoutMs = 15000): Promise<void> {
   });
 }
 
+function trimToValue(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function withLeaderboardPath(url: string): string {
+  const trimmed = url.trim();
+  if (trimmed.toLowerCase().endsWith(LEADERBOARD_PATH)) return trimmed;
+  if (trimmed.toLowerCase().endsWith(`${LEADERBOARD_PATH}/`)) return trimmed.slice(0, -1);
+  return `${trimmed.replace(/\/+$/, "")}${LEADERBOARD_PATH}`;
+}
+
+function configureUnityRuntime() {
+  const backendUrl = trimToValue(import.meta.env.VITE_BACKEND_URL) ?? LOCAL_BACKEND_URL;
+  const leaderboardUrl = withLeaderboardPath(
+    trimToValue(import.meta.env.VITE_LEADERBOARD_URL) ?? backendUrl
+  );
+
+  window.BACKEND_URL = backendUrl;
+  window.MAGNET_PANIC_CONFIG = {
+    ...window.MAGNET_PANIC_CONFIG,
+    leaderboardUrl,
+  };
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
+}
+
+function loadUnityLoader(): Promise<void> {
+  if (typeof window.createUnityInstance === "function") {
+    return Promise.resolve();
+  }
+
+  if (unityLoaderPromise) {
+    return unityLoaderPromise;
+  }
+
+  unityLoaderPromise = new Promise<void>((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = LOADER_FILE;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => {
+      unityLoaderPromise = null;
+      reject(new Error(`Failed to load Unity loader at ${LOADER_FILE}`));
+    };
+    document.body.appendChild(s);
+  });
+
+  return unityLoaderPromise;
+}
+
 interface UnityEmbedProps {
   width?: string | number;
   height?: string | number;
@@ -56,19 +135,24 @@ export default function UnityEmbed({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-
-      if (document.visibilityState === "visible" && window.unityInstance) {
-        console.log("[UnityEmbed] Tab focused: Signaling Unity to resume.");
-      }
+    const swallow = (event: Event) => {
+      event.stopImmediatePropagation();
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", swallow, true);
+    window.addEventListener("focusout", swallow, true);
+    document.addEventListener("visibilitychange", swallow, true);
+
+    const originalHasFocus = document.hasFocus.bind(document);
+    document.hasFocus = () => true;
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", swallow, true);
+      window.removeEventListener("focusout", swallow, true);
+      document.removeEventListener("visibilitychange", swallow, true);
+      document.hasFocus = originalHasFocus;
     };
-  }, [loaded]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,24 +160,21 @@ export default function UnityEmbed({
     async function loadUnity() {
       if (!canvasRef.current) return;
 
-      window.BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:3001";
+      configureUnityRuntime();
 
-      if (!document.querySelector(`script[src="${LOADER_FILE}"]`)) {
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement("script");
-          s.src = LOADER_FILE;
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error(`Failed to load: ${LOADER_FILE}`));
-          document.body.appendChild(s);
-        });
+      try {
+        await loadUnityLoader();
+      } catch (error: unknown) {
+        if (!cancelled) setError(errorMessage(error, "Failed to load Unity loader"));
+        return;
       }
 
       if (cancelled) return;
 
       try {
         await waitForCreateUnityInstance();
-      } catch (e: any) {
-        if (!cancelled) setError(e.message);
+      } catch (error: unknown) {
+        if (!cancelled) setError(errorMessage(error, "Timed out waiting for Unity loader"));
         return;
       }
 
@@ -106,9 +187,17 @@ export default function UnityEmbed({
             dataUrl: DATA_FILE,
             frameworkUrl: FRAMEWORK_FILE,
             codeUrl: WASM_FILE,
+            streamingAssetsUrl: "/unity-build/StreamingAssets",
             companyName: "DefaultCompany",
             productName: "MagnetPanic",
             productVersion: "0.1",
+            showBanner: (message: string, type: string) => {
+              if (type === "error" && !cancelled) {
+                setError(message);
+              }
+              const log = type === "error" ? console.error : console.warn;
+              log(`[UnityEmbed] ${type}:`, message);
+            },
           },
           (p: number) => {
             if (!cancelled) setProgress(Math.round(p * 100));
@@ -121,9 +210,9 @@ export default function UnityEmbed({
           console.log("[UnityEmbed] Unity loaded ✓");
           if (typeof window.onUnityReady === "function") window.onUnityReady();
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) {
-          setError(err?.message ?? "Unity failed to load");
+          setError(errorMessage(err, "Unity failed to load"));
           console.error("[UnityEmbed] error:", err);
         }
       }
@@ -142,152 +231,83 @@ export default function UnityEmbed({
         position: "relative",
         width,
         height,
-        background: "#1a2e1a",
+        background: "#020813",
         ...style,
       }}
     >
       {/* Loading overlay */}
       {!loaded && !error && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#f3e7ca",
-            fontFamily: "'Bebas Neue', Impact, sans-serif",
-            background: "radial-gradient(ellipse at 70% 30%, #312e22 85%, #171613 100%)",
-            gap: 24,
-            zIndex: 10,
-            letterSpacing: 1,
-            boxShadow: "inset 0 0 180px #13130e",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 54,
-              userSelect: "none",
-              filter: "drop-shadow(0 2px 10px #13130e88)",
-              color: "#e1b758",
-            }}
-          >
-            🗝️
-          </div>
-          <div
-            style={{
-              fontSize: 34,
-              fontWeight: 900,
-              textTransform: "uppercase",
-              letterSpacing: 2,
-              color: "#e7effa",
-              textShadow: "2px 4px 0 #000, 0 1px 8px #000000ad",
-            }}
-          >
-            Magent Panic
-          </div>
-          <div
-            style={{
-              fontSize: 17,
-              color: "#e1b758",
-              fontWeight: 600,
-              letterSpacing: 1,
-              textShadow: "0 1px 10px #222",
-              marginBottom: 6,
-            }}
-          >
-            Grabing scrap
-          </div>
-          {/* Prison bars as visual loader */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 3,
-              width: 210,
-              height: 28,
-              margin: "6px 0",
-              background: "#23231e",
-              borderRadius: 7,
-              position: "relative",
-              boxShadow: "0 2px 16px #0e0e0b9b",
-              overflow: "hidden",
-            }}
-          >
-            {[...Array(7)].map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  width: 15,
-                  height: "100%",
-                  background:
-                    i < Math.ceil(progress / (100 / 7))
-                      ? "linear-gradient(180deg, #faa733 0%, #33331d 100%)"
-                      : "#595641",
-                  borderRadius: 3,
-                  boxShadow:
-                    i < Math.ceil(progress / (100 / 7))
-                      ? "0 1px 4px #ffecbc"
-                      : "none",
-                  transition: "background 0.3s, box-shadow 0.3s",
-                }}
-              />
-            ))}
-            {/* Animated escapee icon */}
-            <div
-              style={{
-                position: "absolute",
-                left: `${(progress / 100) * 180 + 5}px`,
-                top: 1,
-                transition: "left 0.4s cubic-bezier(.36,1.01,.81,.97)",
-                fontSize: 18,
-                userSelect: "none",
-                textShadow: "0 1px 2px #000",
-              }}
-            >
-              🏃‍♂️
+        <div className="mp-loader" aria-live="polite">
+          <div className="mp-loader__arena" />
+          <div className="mp-loader__danger mp-loader__danger--left" />
+          <div className="mp-loader__danger mp-loader__danger--right" />
+
+          <section className="mp-loader__panel" aria-label="Game loading">
+            <span className="mp-loader__corner mp-loader__corner--tl" />
+            <span className="mp-loader__corner mp-loader__corner--tr" />
+            <span className="mp-loader__corner mp-loader__corner--bl" />
+            <span className="mp-loader__corner mp-loader__corner--br" />
+
+            <img
+              className="mp-loader__logo"
+              src={LOGO_FILE}
+              alt="Magnet Panic: Scrapstorm"
+              draggable={false}
+            />
+
+            <div className="mp-loader__readout">
+              <div>
+                <span className="mp-loader__eyebrow">MAGNETIC FIELD</span>
+                <strong>Charging arena systems</strong>
+              </div>
+              <span className="mp-loader__percent">{progress}%</span>
             </div>
-          </div>
-          <div style={{ fontSize: 14, color: "#bbb", textShadow: "0 1px 7px #1d170a85" }}>
-            {progress}%
-          </div>
+
+            <div
+              className="mp-loader__track"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progress}
+              aria-label="Loading Magnet Panic: Scrapstorm"
+            >
+              <div className="mp-loader__bar" style={{ width: `${progress}%` }} />
+              <div
+                className="mp-loader__spark"
+                style={{ left: `${Math.max(2, Math.min(progress, 98))}%` }}
+              />
+            </div>
+
+            <div className="mp-loader__status">
+              <span>SCRAPSTORM INIT</span>
+              <span>OVERLOAD CHECK</span>
+              <span>TOP 5 SYNC</span>
+            </div>
+          </section>
         </div>
       )}
 
       {/* Error overlay */}
       {error && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#ff6b6b",
-            fontFamily: "sans-serif",
-            gap: 12,
-            padding: 24,
-            textAlign: "center",
-            zIndex: 10,
-          }}
-        >
-          <div style={{ fontSize: 40 }}>⚠️</div>
-          <div style={{ fontSize: 18, fontWeight: 600 }}>
-            Failed to load game
-          </div>
-          <div style={{ fontSize: 13, color: "#aaa", maxWidth: 440 }}>
-            {error}
-          </div>
-          <div style={{ fontSize: 12, color: "#666" }}>
-            Place your Unity build in <code>public/unity/Build/</code>
-            <br />
-            Expected:{" "}
-            <code>
-              unity-build.loader.js / .data / .framework.js / .wasm
-            </code>
-          </div>
+        <div className="mp-loader mp-loader--error" role="alert">
+          <div className="mp-loader__arena" />
+          <section className="mp-loader__panel mp-loader__panel--error">
+            <span className="mp-loader__corner mp-loader__corner--tl" />
+            <span className="mp-loader__corner mp-loader__corner--tr" />
+            <span className="mp-loader__corner mp-loader__corner--bl" />
+            <span className="mp-loader__corner mp-loader__corner--br" />
+            <img
+              className="mp-loader__logo mp-loader__logo--error"
+              src={LOGO_FILE}
+              alt="Magnet Panic: Scrapstorm"
+              draggable={false}
+            />
+            <div className="mp-loader__error-title">Unity link failed</div>
+            <div className="mp-loader__error-message">{error}</div>
+            <div className="mp-loader__error-code">
+              Expected build: {EXPECTED_BUILD_FILES}
+            </div>
+          </section>
         </div>
       )}
 

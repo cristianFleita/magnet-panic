@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 6
   displayName: Iron Rain
-  objective: Mata 3 enemigos con chatarra repelida (no strikes).
+  objective: Kill 3 enemies with repelled scrap (no strikes).
   tier: 1
   gate: 0
   durationSeconds: 35

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 3
   displayName: Scrap Collector
-  objective: Mantén 6 piezas de chatarra orbitando al mismo tiempo.
+  objective: Keep 6 pieces of scrap orbiting at the same time.
   tier: 1
   gate: 0
   durationSeconds: 40

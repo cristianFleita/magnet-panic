@@ -1132,3 +1132,651 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260515_154105
+### Commits
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+7ffc043 chore: adjust power ups + add vfx activation
+### Uncommitted Changes
+MetalPanic/Assets/Scenes/GameScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260515_160625
+### Commits
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Editor/EnemyPrefabFactory.cs
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/HeavyBot.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/MetalEnemy.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/RunnerBot.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/Scrapling.asset
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/SpitterDrone.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/Enemies/EnemyDefinition.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+design/gdd/combat-system.md
+design/gdd/enemy-system.md
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260515_174306
+### Commits
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/MetalEnemy.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+design/gdd/enemy-system.md
+---
+
+## Session End: 20260515_180127
+### Commits
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/EnemyDefinitions/MetalEnemy.asset
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+design/gdd/enemy-system.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_181341
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+---
+
+## Session End: 20260515_183125
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_184221
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_184440
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_185122
+### Commits
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemyManager.cs
+MetalPanic/Assets/Combat/Scripts/CounterSenseIndicator.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagneticStunCue.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Vfx/CounterStunVfx.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_193108
+### Commits
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+---
+
+## Session End: 20260515_194307
+### Commits
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamCombatController.cs
+MetalPanic/Assets/Combat/Scripts/StrikeTargetIndicator.cs
+production/session-logs/session-log.md
+---
+
+## Session End: 20260515_202426
+### Commits
+f69d764 chore: adjust camera
+d0e5b6b chore: adjust enemy targets indicator
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+---
+
+## Session End: 20260515_203100
+### Commits
+f69d764 chore: adjust camera
+d0e5b6b chore: adjust enemy targets indicator
+850f26a chore: adjust enemy magnetism
+6a8ecf0 chore: adjust enemy attacks
+522c910 chore: adjust enemy algorithm
+13ecc54 Merge pull request #4 from cristianFleita/feat-power-ups+upgrades
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/ArkhamEnemy.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_051455
+### Uncommitted Changes
+MetalPanic/Assets/Scenes/Map.unity
+MetalPanic/Assets/Scenes/Map.unity.meta
+MetalPanic/Assets/UI Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss.meta
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_064045
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+---
+
+## Session End: 20260516_064536
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scripts/UI/MainMenuController.cs
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_065721
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scripts/UI/MainMenuController.cs
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_070210
+### Commits
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scripts/UI/MagnetPanic.UI.asmdef
+MetalPanic/Assets/Scripts/UI/MainMenuController.cs
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_072801
+### Commits
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scripts/UI/LeaderboardController.cs
+leaderboard-server/src/server.js
+---
+
+## Session End: 20260516_074614
+### Commits
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scripts/UI/LeaderboardController.cs
+leaderboard-server/src/server.js
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_111900
+### Commits
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/UI/HUD/HudDocument.uss
+MetalPanic/Assets/UI/HUD/HudDocument.uxml
+---
+
+## Session End: 20260516_114344
+### Commits
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+---
+
+## Session End: 20260516_115320
+### Commits
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/UI/MainMenu/MainMenuGuideDocument.uss
+MetalPanic/Assets/UI/MainMenu/MainMenuGuideDocument.uxml
+MetalPanic/Assets/UI/Pause/PauseMenuDocument.uxml
+---
+
+## Session End: 20260516_123159
+### Commits
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/OverloadController.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/SampleScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_125547
+### Commits
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Combat/Scripts/Magnetism/OverloadController.cs
+MetalPanic/Assets/Combat/Scripts/Upgrades/MovementAbilityController.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/SampleScene.unity
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_132558
+### Commits
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/SampleScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_143820
+### Commits
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scripts/UI/LeaderboardController.cs
+MetalPanic/Assets/UI/GameOver/GameOverDocument.uxml
+MetalPanic/Assets/UI/GameOver/GameOverNoTopFiveDocument.uxml
+MetalPanic/Assets/UI/MainMenu/MainMenuDocument.uxml
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_144953
+### Commits
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+### Uncommitted Changes
+leaderboard-server/package.json
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_150122
+### Commits
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+### Uncommitted Changes
+leaderboard-server/src/server.js
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_155009
+### Commits
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+### Uncommitted Changes
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_160214
+### Commits
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+### Uncommitted Changes
+MetalPanic/ProjectSettings/ProjectSettings.asset
+production/session-logs/session-log.md
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+react-app/src/UnityEmbed.tsx
+---
+
+## Session End: 20260516_163802
+### Commits
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/Missions/Mission_BulletCatcher.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_ChainReaction.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_ComboHunter.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_Counterstorm.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_IronRain.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_LivingAmmo.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_MagnetMaestro.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_NoHands.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_OverloadArtist.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_ScrapCollector.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_WallSlam.asset
+MetalPanic/Assets/Combat/Generated/Missions/Mission_WreckingBall.asset
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_171531
+### Commits
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineBehaviour.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/MainMenu.unity
+---
+
+## Session End: 20260516_174735
+### Commits
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineBehaviour.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Mine.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/MainMenu.unity
+production/session-logs/session-log.md
+---
+
+## Session End: 20260516_175519
+### Commits
+5544191 chore: sfx
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Audio/PlayerSfx.cs
+---
+
+## Session End: 20260516_183246
+### Commits
+fee664a chore: adjust sfx
+61f4c0f chore: fix pull sfx
+5544191 chore: sfx
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Audio/PlayerSfx.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+react-app/public/unity-build/Build/unity-build.data.unityweb
+---
+
+## Session End: 20260516_185913
+### Commits
+bb48f53 chore: adjust scoring
+045c133 chore: hit sfx
+fee664a chore: adjust sfx
+61f4c0f chore: fix pull sfx
+5544191 chore: sfx
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/ScoringConfig.asset
+MetalPanic/Assets/Combat/Scripts/Scoring/ScoringConfig.cs
+MetalPanic/Assets/Combat/Scripts/Scoring/ScoringRuntime.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
+## Session End: 20260516_192159
+### Commits
+fd16287 chore: adjust xp
+bb48f53 chore: adjust scoring
+045c133 chore: hit sfx
+fee664a chore: adjust sfx
+61f4c0f chore: fix pull sfx
+5544191 chore: sfx
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Prefabs/Enemies/Combat/EnemyProjectile.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/HeavyBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/MetalEnemy.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/RunnerBot.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/Scrapling.prefab
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

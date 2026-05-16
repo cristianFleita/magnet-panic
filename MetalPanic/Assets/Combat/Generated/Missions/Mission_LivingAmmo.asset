@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 12
   displayName: Living Ammo
-  objective: Usa un enemigo magnetizado como proyectil y mata a otro con él.
+  objective: Use a magnetized enemy as a projectile and kill another with it.
   tier: 3
   gate: 0
   durationSeconds: 30

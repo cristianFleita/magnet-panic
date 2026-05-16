@@ -4783,18 +4783,11 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
   heldEnemySpacing: 0.9
-  autoCreateAimIndicator: 1
-  aimLine: {fileID: 1593389713}
-  aimTip: {fileID: 117979810}
-  aimIndicatorLength: 5
-  aimIndicatorHeight: 0.08
-  aimLineWidth: 0.08
-  aimIndicatorColor: {r: 0.2, g: 0.85, b: 1, a: 0.85}
   OnPullStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -7414,18 +7407,11 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
   heldEnemySpacing: 0.9
-  autoCreateAimIndicator: 1
-  aimLine: {fileID: 886801642}
-  aimTip: {fileID: 892279962}
-  aimIndicatorLength: 5
-  aimIndicatorHeight: 0.08
-  aimLineWidth: 0.08
-  aimIndicatorColor: {r: 0.2, g: 0.85, b: 1, a: 0.85}
   OnPullStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -13894,18 +13880,11 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
   heldEnemySpacing: 0.9
-  autoCreateAimIndicator: 1
-  aimLine: {fileID: 0}
-  aimTip: {fileID: 0}
-  aimIndicatorLength: 5
-  aimIndicatorHeight: 0.08
-  aimLineWidth: 0.08
-  aimIndicatorColor: {r: 0.2, g: 0.85, b: 1, a: 0.85}
   OnPullStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -15249,18 +15228,11 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
   heldEnemySpacing: 0.9
-  autoCreateAimIndicator: 1
-  aimLine: {fileID: 0}
-  aimTip: {fileID: 0}
-  aimIndicatorLength: 5
-  aimIndicatorHeight: 0.08
-  aimLineWidth: 0.08
-  aimIndicatorColor: {r: 0.2, g: 0.85, b: 1, a: 0.85}
   OnPullStarted:
     m_PersistentCalls:
       m_Calls: []

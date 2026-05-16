@@ -262,7 +262,10 @@ namespace MagnetPanic.Combat.Scoring
 
             stats.MissionsCompleted++;
             if (xpReward > 0)
-                ApplyXp(xpReward);
+            {
+                int multiplied = Mathf.Max(1, Mathf.RoundToInt(xpReward * config.missionXpMultiplier));
+                ApplyXp(multiplied);
+            }
         }
 
         /// <summary>
@@ -357,9 +360,8 @@ namespace MagnetPanic.Combat.Scoring
 
         long ComputeFinalScore()
         {
-            long survival = (long)Mathf.Floor(stats.SurvivalTimeSeconds * config.survivalScorePerSecond);
             long style = (long)Mathf.Floor(stats.MaxComboReached * config.styleScorePerComboPoint);
-            return stats.TotalXpEarned + survival + style;
+            return stats.TotalXpEarned + style;
         }
 
         void RecomputeAndBroadcastScore()

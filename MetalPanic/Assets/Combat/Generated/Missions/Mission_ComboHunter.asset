@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 1
   displayName: Combo Hunter
-  objective: Alcanza un combo x5 sin romper la racha.
+  objective: Reach a x5 combo without breaking the streak.
   tier: 1
   gate: 0
   durationSeconds: 30

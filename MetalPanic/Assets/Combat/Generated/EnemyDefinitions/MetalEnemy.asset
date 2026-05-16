@@ -18,17 +18,21 @@ MonoBehaviour:
   alwaysPullableByMagnet: 1
   magneticMarksToMagnetize: 2
   magneticMass: 2.2
-  approachSpeed: 6
+  approachSpeed: 6.5
   strafeSpeed: 1.6
   retreatSpeed: 3
   retreatDistance: 4.25
   disableStrafe: 0
-  prepareAttackTime: 0.4
-  attackRange: 1.8
-  attackHitDelay: 0.22
-  attackRecovery: 0.6
+  prepareAttackTime: 0.28
+  attackRange: 2
+  attackHitDelay: 0.14
+  attackRecovery: 0.42
   knockbackDistance: 0.55
   knockbackDuration: 0.16
+  canBeCountered: 1
+  counterStunDuration: 1
+  attackTokenCost: 1
+  spawnAttackGracePeriod: 1.2
   useLinearCharge: 0
   chargeSpeed: 11
   chargeDuration: 0.55

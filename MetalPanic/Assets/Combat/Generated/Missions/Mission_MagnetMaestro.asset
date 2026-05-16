@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 7
   displayName: Magnet Maestro
-  objective: Magnetiza a 3 enemigos (hasta el estado Magnetized).
+  objective: Magnetize 3 enemies (up to the Magnetized state).
   tier: 2
   gate: 0
   durationSeconds: 30

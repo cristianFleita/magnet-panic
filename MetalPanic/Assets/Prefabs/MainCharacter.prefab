@@ -26,6 +26,9 @@ GameObject:
   - component: {fileID: 5111111111111111101}
   - component: {fileID: 5111111111111111102}
   - component: {fileID: 5111111111111111120}
+  - component: {fileID: 1629325032200880163}
+  - component: {fileID: 7201000000000001}
+  - component: {fileID: 7201000000000002}
   m_Layer: 6
   m_Name: MainCharacter
   m_TagString: Untagged
@@ -48,8 +51,6 @@ Transform:
   m_Children:
   - {fileID: 5613738685016796588}
   - {fileID: 7943770415526651035}
-  - {fileID: 6460133251109452453}
-  - {fileID: 1176439106275208016}
   - {fileID: 5819154571631960145}
   - {fileID: 5111111111111111104}
   m_Father: {fileID: 0}
@@ -113,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4844dba9b72c4ce0b1b73e1ff9563003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CombatHealth
-  maxHealth: 10
+  maxHealth: 20
   refillOnAwake: 1
   OnHealthChanged:
     m_PersistentCalls:
@@ -191,8 +192,8 @@ MonoBehaviour:
   health: {fileID: 8821852847888320764}
   maxHealth: 20
   damagePerEnemyHit: 1
-  strikeDamage: 1
-  attackCooldown: 0.38
+  strikeDamage: 2
+  attackCooldown: 0.35
   attackLungeDuration: 0.22
   attackImpactDelay: 0.16
   targetOffset: 0.95
@@ -268,20 +269,16 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
-  magnetizedEnemyDamage: 5
-  magnetizedEnemyRecoilDamage: 5
-  magnetizedRepelAutoAimRadius: 5
+  magnetizedEnemyDamage: 3
+  magnetizedEnemyRecoilDamage: 3
+  repelAutoAimRadius: 15
+  magnetizedRepelWallAimRadius: 5
   heldEnemyDistance: 1.9
   enemyAnchorLockDistance: 0.4
-  autoCreateAimIndicator: 1
-  aimLine: {fileID: 417033637546984419}
-  aimTip: {fileID: 1176439106275208016}
-  aimIndicatorLength: 5
-  aimIndicatorHeight: 0.08
-  aimLineWidth: 0.08
-  aimIndicatorColor: {r: 0.2, g: 0.85, b: 1, a: 0.85}
+  magnetizedHoldTimeout: 3
+  magnetizedMaxDistance: 8
   OnPullStarted:
     m_PersistentCalls:
       m_Calls: []
@@ -368,13 +365,13 @@ MonoBehaviour:
   criticalThreshold: 0.7
   overloadGracePeriod: 1.5
   baseOverloadDamage: 4
-  damagePerCharge: 2
+  damagePerCharge: 1.5
   overloadRadius: 6
   overloadKnockbackDistance: 2.5
   targetLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  overloadCooldown: 2
+  overloadCooldown: 3
   overloadStunDuration: 0.5
   overloadShakeAmplitude: 0.3
   overloadShakeDuration: 0.3
@@ -595,24 +592,24 @@ MonoBehaviour:
   animator: {fileID: 0}
   slideDistance: 6
   slideDuration: 0.22
-  slideIFrameDuration: 0.2
+  slideIFrameDuration: 0.22
   slideContactDamage: 2
-  slideKnockbackDistance: 1.2
-  slideContactRadius: 1.2
+  slideKnockbackDistance: 1.4
+  slideContactRadius: 1.3
   doubleTapWindow: 0.25
-  baseSlideCooldown: 4
+  baseSlideCooldown: 0
   wallRaycastInset: 0.4
   wallLayers:
     serializedVersion: 2
     m_Bits: 4294967295
   slamKey: 21
-  slamSearchRadius: 5
+  slamSearchRadius: 2
   slamAirTime: 0.4
-  slamAoeRadius: 4
-  slamDamage: 5
+  slamAoeRadius: 3.5
+  slamDamage: 6
   slamKnockdownDuration: 1.5
-  slamKnockbackDistance: 1.6
-  slamCooldown: 6
+  slamKnockbackDistance: 1.8
+  slamCooldown: 0
   slamJumpHeight: 2.2
   slideVfxPrefab: {fileID: 1613383665425959110, guid: aed8a4ae366164ac2b84d2e8a4a18a47, type: 3}
   slideVfxLifetime: 1.5
@@ -651,7 +648,7 @@ MonoBehaviour:
   pulseDuration: 10
   pulseVfxPrefab: {fileID: 2784899524707402873, guid: cb3d9b836574d4d6a84adaa766b0e64c, type: 3}
   mineEntityPrefab: {fileID: 4413143886216275161, guid: 53ce61b06bd8c4fd2857f625d7e25a31, type: 3}
-  mineDamage: 4
+  mineDamage: 2
   mineMagnetizeMarks: 2
   mineArmTime: 0.5
   mineTimeout: 30
@@ -665,6 +662,143 @@ MonoBehaviour:
   OnPowerupTimerChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1629325032200880163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21bdddf3da90a4d5aa7c59492da04704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.CounterSenseIndicator
+  combat: {fileID: 2420222518677489139}
+  senseVfxPrefab: {fileID: 1234567890123456784, guid: 05bae6eaacb9f4e758389df6575322d8, type: 3}
+  vfxHeight: 2.1
+  fallbackColor: {r: 1, g: 0.42, b: 0.16, a: 0.85}
+  strikeRadius: 2
+  hideWhileBusy: 1
+--- !u!82 &7201000000000001
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &7201000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303172768677247653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa03000000000000000000000000aa03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Audio.PlayerSfx
+  pullClip: {fileID: 8300000, guid: ce0e79957453c47f3aec6c85ac3cf387, type: 3}
+  pullVolume: 0.5
+  repelClip: {fileID: 8300000, guid: c3d4d3439218c448ca744f3f1683d4cc, type: 3}
+  repelVolume: 0.5
+  overloadClip: {fileID: 8300000, guid: 391f6f4b7e59b43088eb62dc1b213ddd, type: 3}
+  overloadVolume: 0.5
+  hitClip: {fileID: 8300000, guid: ff01000000000000000000000000ff01, type: 3}
+  hitVolume: 1
+  levelUpClip: {fileID: 8300000, guid: beb499858bc6e4347a8cfcf2351b9f90, type: 3}
+  levelUpVolume: 0.2
 --- !u!1 &1197205948732289119
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,238 +830,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4094992919086183482}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1800853086887190495
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6460133251109452453}
-  - component: {fileID: 417033637546984419}
-  m_Layer: 6
-  m_Name: Repel Aim Line
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6460133251109452453
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1800853086887190495}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4094992919086183482}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!120 &417033637546984419
-LineRenderer:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1800853086887190495}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 0
-  m_LightProbeUsage: 0
-  m_ReflectionProbeUsage: 0
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
-  m_Parameters:
-    serializedVersion: 3
-    widthMultiplier: 0.08
-    widthCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    colorGradient:
-      serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
-      key2: {r: 0, g: 0, b: 0, a: 0}
-      key3: {r: 0, g: 0, b: 0, a: 0}
-      key4: {r: 0, g: 0, b: 0, a: 0}
-      key5: {r: 0, g: 0, b: 0, a: 0}
-      key6: {r: 0, g: 0, b: 0, a: 0}
-      key7: {r: 0, g: 0, b: 0, a: 0}
-      ctime0: 0
-      ctime1: 65535
-      ctime2: 0
-      ctime3: 0
-      ctime4: 0
-      ctime5: 0
-      ctime6: 0
-      ctime7: 0
-      atime0: 0
-      atime1: 65535
-      atime2: 0
-      atime3: 0
-      atime4: 0
-      atime5: 0
-      atime6: 0
-      atime7: 0
-      m_Mode: 0
-      m_ColorSpace: -1
-      m_NumColorKeys: 2
-      m_NumAlphaKeys: 2
-    numCornerVertices: 0
-    numCapVertices: 4
-    alignment: 0
-    textureMode: 0
-    textureScale: {x: 1, y: 1}
-    shadowBias: 0.5
-    generateLightingData: 0
-  m_UseWorldSpace: 1
-  m_Loop: 0
-  m_ApplyActiveColorSpace: 1
---- !u!1 &2315302699808856442
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1176439106275208016}
-  - component: {fileID: 8734819059190124083}
-  - component: {fileID: 5539552363394474145}
-  m_Layer: 6
-  m_Name: Repel Aim Tip
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1176439106275208016
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2315302699808856442}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.28, y: 0.04, z: 0.55}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4094992919086183482}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8734819059190124083
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2315302699808856442}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &5539552363394474145
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2315302699808856442}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 1
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5111111111111111103
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 9
   displayName: Overload Artist
-  objective: Llega a sobrecarga crítica y libera la explosión (sin morir).
+  objective: Reach critical overload and release the blast (without dying).
   tier: 3
   gate: 2
   durationSeconds: 45

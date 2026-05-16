@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 5
   displayName: No Hands
-  objective: Mata 4 enemigos usando solo repel (sin strikes).
+  objective: Kill 4 enemies using only repel (no strikes).
   tier: 2
   gate: 0
   durationSeconds: 40

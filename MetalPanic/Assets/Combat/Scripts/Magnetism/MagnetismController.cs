@@ -36,27 +36,25 @@ namespace MagnetPanic.Combat
 
         [Header("Repel")]
         [SerializeField] float repelConeAngle = 50f;
-        [SerializeField] float repelCooldown = 0.25f;
+        [SerializeField, Tooltip("Seconds of forced downtime between repels. 0 = no cooldown. Recharge gate lives on the OverloadController instead.")]
+        float repelCooldown = 0f;
         [SerializeField] float repelSpeed = 16f;
         [SerializeField] int magnetizedEnemyDamage = 5;
         [SerializeField, Tooltip("Damage the repelled enemy itself takes each time it collides with another enemy mid-flight (mirrors wall-slam recoil).")]
         int magnetizedEnemyRecoilDamage = 5;
-        [SerializeField, Tooltip("When repelling a magnetized enemy, snap the launch direction toward the nearest enemy or arena wall within this radius. 0 disables auto-aim.")]
-        float magnetizedRepelAutoAimRadius = 5f;
+        [SerializeField, Tooltip("Search radius (m) used to home every repelled projectile toward the nearest enemy. 0 disables auto-aim and falls back to the cone spread.")]
+        float repelAutoAimRadius = 15f;
+        [SerializeField, Tooltip("When repelling a magnetized enemy, also snap toward arena walls within this radius if no enemy is closer (lets the recoil/wall-slam combo work). 0 disables wall auto-aim.")]
+        float magnetizedRepelWallAimRadius = 5f;
 
         [Header("Enemy Pull")]
         [SerializeField] float heldEnemyDistance = 1.9f;
         [SerializeField, Tooltip("Once a magnetized enemy gets within this distance of the hold point, it locks in place and stops following the player. Enables the Pull → Strike → Repel combo.")]
         float enemyAnchorLockDistance = 0.4f;
-
-        [Header("Aim Assist")]
-        [SerializeField] bool autoCreateAimIndicator = true;
-        [SerializeField] LineRenderer aimLine;
-        [SerializeField] Transform aimTip;
-        [SerializeField] float aimIndicatorLength = 5f;
-        [SerializeField] float aimIndicatorHeight = 0.08f;
-        [SerializeField] float aimLineWidth = 0.08f;
-        [SerializeField] Color aimIndicatorColor = new Color(0.2f, 0.85f, 1f, 0.85f);
+        [SerializeField, Tooltip("Seconds the player has to fire Repel after starting a pull. If no repel fires within this window the enemy demagnetizes and walks off.")]
+        float magnetizedHoldTimeout = 3f;
+        [SerializeField, Tooltip("Maximum distance a pulled magnetized enemy may be from the player. If the player runs away (or the enemy is dragged past this radius) it demagnetizes and is released.")]
+        float magnetizedMaxDistance = 5f;
 
         [Header("Events")]
         public UnityEvent OnPullStarted = new UnityEvent();
@@ -78,6 +76,7 @@ namespace MagnetPanic.Combat
             public Vector3 ApproachDirection;
             public Vector3 AnchorPosition;
             public bool IsAnchored;
+            public float PullStartTime;
         }
 
         float currentCharge;
@@ -195,8 +194,6 @@ namespace MagnetPanic.Combat
 
             if (inputProvider == null)
                 inputProvider = GameInputProvider.EnsureOn(gameObject);
-
-            EnsureAimIndicator();
         }
 
         void Update()
@@ -207,7 +204,6 @@ namespace MagnetPanic.Combat
                 TickPull();
 
             TickOrbit();
-            UpdateAimIndicator();
             ApplyMovementPenalty();
         }
 
@@ -222,8 +218,6 @@ namespace MagnetPanic.Combat
 
             if (animator == null)
                 animator = GetComponentInChildren<Animator>();
-
-            EnsureAimIndicator();
         }
 
         void OnApplicationFocus(bool hasFocus)
@@ -291,7 +285,6 @@ namespace MagnetPanic.Combat
             pullHeld = false;
             StopPullAnimation();
             nextRepelTime = Time.time + repelCooldown;
-            UpdateAimIndicator();
         }
 
         void TogglePullRepel()
@@ -375,6 +368,7 @@ namespace MagnetPanic.Combat
                     ApproachDirection = CaptureEnemyAnchor(enemy),
                     AnchorPosition = Vector3.zero,
                     IsAnchored = false,
+                    PullStartTime = Time.time,
                 });
                 OnEnemyPulled.Invoke(enemy);
                 OnEnemyOrbited.Invoke(enemy);
@@ -445,6 +439,12 @@ namespace MagnetPanic.Combat
 
                 PulledEnemyHold hold = pulledEnemyHolds[i];
 
+                if (ShouldDemagnetizePulledEnemy(enemy, hold))
+                {
+                    DemagnetizeAndRelease(enemy, i);
+                    continue;
+                }
+
                 if (hold.IsAnchored)
                     continue;
 
@@ -468,6 +468,29 @@ namespace MagnetPanic.Combat
             pulledEnemies.RemoveAt(index);
             if (index < pulledEnemyHolds.Count)
                 pulledEnemyHolds.RemoveAt(index);
+        }
+
+        bool ShouldDemagnetizePulledEnemy(ArkhamEnemy enemy, PulledEnemyHold hold)
+        {
+            if (magnetizedHoldTimeout > 0f && Time.time - hold.PullStartTime >= magnetizedHoldTimeout)
+                return true;
+
+            if (magnetizedMaxDistance > 0f)
+            {
+                Vector3 delta = enemy.transform.position - transform.position;
+                delta.y = 0f;
+                if (delta.sqrMagnitude > magnetizedMaxDistance * magnetizedMaxDistance)
+                    return true;
+            }
+
+            return false;
+        }
+
+        void DemagnetizeAndRelease(ArkhamEnemy enemy, int index)
+        {
+            enemy.SetMarkState(MagneticMarkState.Normal);
+            enemy.CancelMagneticPull();
+            RemovePulledEnemyAt(index);
         }
 
         void TickOrbit()
@@ -498,9 +521,10 @@ namespace MagnetPanic.Combat
         {
             int total = orbitingObjects.Count + pulledEnemies.Count;
             bool empty = total == 0;
-            Vector3 aim = AimDirection();
+            Vector3 manualAim = AimDirection();
+            Vector3 primaryAim = ResolvePrimaryAutoAim(manualAim);
             int slot = 0;
-            FaceRepelDirection(aim);
+            FaceRepelDirection(primaryAim);
 
             float effectiveRepelSpeed = repelSpeed * repelSpeedMult;
             int effectiveDamageBonus = repelDamageBonus;
@@ -512,7 +536,9 @@ namespace MagnetPanic.Combat
                 if (magneticObject == null)
                     continue;
 
-                magneticObject.Repel(DirectionInCone(aim, slot, total), effectiveRepelSpeed, effectiveDamageBonus, effectivePierceBonus);
+                Vector3 coneDir = DirectionInCone(primaryAim, slot, total);
+                Vector3 launchDir = ResolveProjectileAutoAim(magneticObject.transform.position, coneDir);
+                magneticObject.Repel(launchDir, effectiveRepelSpeed, effectiveDamageBonus, effectivePierceBonus);
                 slot++;
             }
 
@@ -522,7 +548,7 @@ namespace MagnetPanic.Combat
                 if (enemy == null)
                     continue;
 
-                Vector3 coneDir = DirectionInCone(aim, slot, total);
+                Vector3 coneDir = DirectionInCone(primaryAim, slot, total);
                 Vector3 launchDir = ResolveMagnetizedRepelDirection(enemy, coneDir);
                 enemy.MagnetRepel(launchDir, effectiveRepelSpeed * 0.78f, magnetizedEnemyDamage + effectiveDamageBonus, magnetizedEnemyRecoilDamage);
                 slot++;
@@ -533,7 +559,6 @@ namespace MagnetPanic.Combat
             pulledEnemyHolds.Clear();
             SetCharge(0f);
             OnRepelFired.Invoke(empty);
-            UpdateAimIndicator();
         }
 
         void CancelAttractingPayload()
@@ -666,155 +691,121 @@ namespace MagnetPanic.Combat
             motor.Acceleration = Mathf.Max(0.25f, 1f - ratio * effectivePenalty);
         }
 
-        void EnsureAimIndicator()
+        Vector3 ResolvePrimaryAutoAim(Vector3 fallback)
         {
-            if (!autoCreateAimIndicator)
-                return;
-
-            Material indicatorMaterial = CreateIndicatorMaterial(aimIndicatorColor);
-
-            if (aimLine == null)
-            {
-                GameObject lineObject = new GameObject("Repel Aim Line");
-                lineObject.transform.SetParent(transform, false);
-                aimLine = lineObject.AddComponent<LineRenderer>();
-                aimLine.useWorldSpace = true;
-                aimLine.positionCount = 2;
-                aimLine.widthMultiplier = aimLineWidth;
-                aimLine.numCapVertices = 4;
-                aimLine.material = indicatorMaterial;
-                aimLine.enabled = false;
-            }
-
-            if (aimTip == null)
-            {
-                GameObject tip = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                tip.name = "Repel Aim Tip";
-                tip.transform.SetParent(transform, false);
-                tip.transform.localScale = new Vector3(0.28f, 0.04f, 0.55f);
-                Collider tipCollider = tip.GetComponent<Collider>();
-                if (tipCollider != null)
-                    DestroyLocalObject(tipCollider);
-
-                Renderer renderer = tip.GetComponent<Renderer>();
-                if (renderer != null)
-                    renderer.sharedMaterial = indicatorMaterial;
-
-                aimTip = tip.transform;
-                aimTip.gameObject.SetActive(false);
-            }
+            return ResolveProjectileAutoAim(transform.position, fallback);
         }
 
-        void UpdateAimIndicator()
+        Vector3 ResolveProjectileAutoAim(Vector3 origin, Vector3 fallback)
         {
-            bool visible = pullActive || HasOrbitingPayload;
-            if (aimLine != null)
-                aimLine.enabled = visible;
+            if (repelAutoAimRadius <= 0f)
+                return fallback;
 
-            if (aimTip != null)
-                aimTip.gameObject.SetActive(visible);
+            if (TryFindNearestEnemyDirection(origin, repelAutoAimRadius, null, out Vector3 dir))
+                return dir;
 
-            if (!visible)
-                return;
-
-            Vector3 aim = AimDirection();
-            Vector3 start = transform.position + Vector3.up * aimIndicatorHeight;
-            Vector3 end = start + aim * aimIndicatorLength;
-
-            if (aimLine != null)
-            {
-                aimLine.SetPosition(0, start);
-                aimLine.SetPosition(1, end);
-            }
-
-            if (aimTip != null)
-            {
-                aimTip.position = end;
-                aimTip.rotation = Quaternion.LookRotation(aim, Vector3.up);
-            }
-        }
-
-        static Material CreateIndicatorMaterial(Color color)
-        {
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-            if (shader == null)
-                shader = Shader.Find("Standard");
-
-            Material material = new Material(shader)
-            {
-                color = color
-            };
-
-            return material;
-        }
-
-        static void DestroyLocalObject(Object target)
-        {
-            if (target == null)
-                return;
-
-            if (Application.isPlaying)
-                Destroy(target);
-            else
-                DestroyImmediate(target);
+            return fallback;
         }
 
         Vector3 ResolveMagnetizedRepelDirection(ArkhamEnemy projectile, Vector3 fallback)
         {
-            if (magnetizedRepelAutoAimRadius <= 0f || projectile == null)
+            if (projectile == null)
                 return fallback;
 
             Vector3 origin = projectile.transform.position;
-            float bestDistSqr = magnetizedRepelAutoAimRadius * magnetizedRepelAutoAimRadius;
+            float enemyRadius = repelAutoAimRadius;
+            float wallRadius = magnetizedRepelWallAimRadius;
+            float searchRadius = Mathf.Max(enemyRadius, wallRadius);
+            if (searchRadius <= 0f)
+                return fallback;
+
+            float bestDistSqr = searchRadius * searchRadius;
             Vector3 bestTarget = Vector3.zero;
             bool found = false;
 
-            if (enemyManager != null)
+            if (enemyRadius > 0f && TryFindNearestEnemyPoint(origin, enemyRadius, projectile, out Vector3 enemyPoint, out float enemyDistSqr))
             {
-                IReadOnlyList<ArkhamEnemy> roster = enemyManager.Enemies;
-                for (int i = 0; i < roster.Count; i++)
-                {
-                    ArkhamEnemy other = roster[i];
-                    if (other == null || other == projectile || !other.IsAlive)
-                        continue;
-                    if (pulledEnemies.Contains(other))
-                        continue;
-
-                    Vector3 delta = other.transform.position - origin;
-                    delta.y = 0f;
-                    float distSqr = delta.sqrMagnitude;
-                    if (distSqr < 0.04f || distSqr > bestDistSqr)
-                        continue;
-
-                    bestDistSqr = distSqr;
-                    bestTarget = other.transform.position;
-                    found = true;
-                }
+                bestDistSqr = enemyDistSqr;
+                bestTarget = enemyPoint;
+                found = true;
             }
 
-            ArenaSystem arena = ResolveArenaSystem();
-            if (arena != null)
+            if (wallRadius > 0f)
             {
-                Vector3 wallPoint = NearestArenaWallPoint(origin, arena.PlayableBounds);
-                Vector3 delta = wallPoint - origin;
-                delta.y = 0f;
-                float distSqr = delta.sqrMagnitude;
-                if (distSqr > 0.04f && distSqr <= bestDistSqr)
+                ArenaSystem arena = ResolveArenaSystem();
+                if (arena != null)
                 {
-                    bestDistSqr = distSqr;
-                    bestTarget = wallPoint;
-                    found = true;
+                    Vector3 wallPoint = NearestArenaWallPoint(origin, arena.PlayableBounds);
+                    Vector3 delta = wallPoint - origin;
+                    delta.y = 0f;
+                    float distSqr = delta.sqrMagnitude;
+                    float wallMaxSqr = wallRadius * wallRadius;
+                    if (distSqr > 0.04f && distSqr <= wallMaxSqr && distSqr <= bestDistSqr)
+                    {
+                        bestDistSqr = distSqr;
+                        bestTarget = wallPoint;
+                        found = true;
+                    }
                 }
             }
 
             if (!found)
                 return fallback;
 
-            Vector3 dir = bestTarget - origin;
-            dir.y = 0f;
-            return dir.sqrMagnitude > 0.0001f ? dir.normalized : fallback;
+            Vector3 toTarget = bestTarget - origin;
+            toTarget.y = 0f;
+            return toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : fallback;
+        }
+
+        bool TryFindNearestEnemyDirection(Vector3 origin, float radius, ArkhamEnemy exclude, out Vector3 direction)
+        {
+            if (TryFindNearestEnemyPoint(origin, radius, exclude, out Vector3 point, out _))
+            {
+                Vector3 delta = point - origin;
+                delta.y = 0f;
+                if (delta.sqrMagnitude > 0.0001f)
+                {
+                    direction = delta.normalized;
+                    return true;
+                }
+            }
+
+            direction = Vector3.zero;
+            return false;
+        }
+
+        bool TryFindNearestEnemyPoint(Vector3 origin, float radius, ArkhamEnemy exclude, out Vector3 point, out float distanceSqr)
+        {
+            point = Vector3.zero;
+            distanceSqr = float.MaxValue;
+            if (enemyManager == null || radius <= 0f)
+                return false;
+
+            float bestDistSqr = radius * radius;
+            bool found = false;
+
+            IReadOnlyList<ArkhamEnemy> roster = enemyManager.Enemies;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                ArkhamEnemy other = roster[i];
+                if (other == null || other == exclude || !other.IsAlive)
+                    continue;
+                if (pulledEnemies.Contains(other))
+                    continue;
+
+                Vector3 delta = other.transform.position - origin;
+                delta.y = 0f;
+                float distSqr = delta.sqrMagnitude;
+                if (distSqr < 0.04f || distSqr > bestDistSqr)
+                    continue;
+
+                bestDistSqr = distSqr;
+                point = other.transform.position;
+                found = true;
+            }
+
+            distanceSqr = bestDistSqr;
+            return found;
         }
 
         ArenaSystem ResolveArenaSystem()

@@ -94,6 +94,7 @@ namespace MagnetPanic.Combat
         public bool ExternalInvulnerability { get; set; }
         public ArkhamEnemy LockedTarget => lockedTarget;
         public ArkhamEnemy LastHitEnemy => PeekStickyTarget();
+        public ArkhamEnemy NextStrikeTarget => IsAlive ? ResolveStrikeTarget() : null;
         public CombatHealth Health => health;
         public bool IsAlive => health == null || health.IsAlive;
         public float CounterRadius => counterRadius;
@@ -133,6 +134,7 @@ namespace MagnetPanic.Combat
             characterController = GetComponent<CharacterController>();
 
             StrikeTargetIndicator.EnsureOn(gameObject, this);
+            CounterSenseIndicator.EnsureOn(gameObject, this);
         }
 
         void OnValidate()
@@ -192,12 +194,7 @@ namespace MagnetPanic.Combat
             if (TryStartCounterFromStrike())
                 return;
 
-            // 1. Try sticky target first (last-hit enemy stays locked)
-            ArkhamEnemy target = PeekStickyTarget();
-
-            // 2. Fall back to scanner
-            if (target == null && targetScanner != null)
-                target = targetScanner.FindTarget(enemyManager, transform.position, ResolveStrikeDirection());
+            ArkhamEnemy target = ResolveStrikeTarget();
 
             if (target == null)
             {
@@ -207,6 +204,58 @@ namespace MagnetPanic.Combat
             }
 
             StartAttack(target, false);
+        }
+
+        // Spider-Man-style proximity targeting:
+        //   pass 1 — cone in front of the character (handles "I'm aiming with the avatar")
+        //   pass 2 — cone in front of the camera   (handles "I'm aiming with the look stick")
+        //   pass 3 — 360° pure-distance fallback   (handles enemies behind us)
+        // The sticky target wins only when the cascade still picks it, so movement
+        // and reorientation re-evaluate to the closest valid enemy automatically.
+        ArkhamEnemy ResolveStrikeTarget()
+        {
+            ArkhamEnemy scanned = ScanWithFallbacks();
+            ArkhamEnemy sticky = PeekStickyTarget();
+
+            if (sticky == null)
+                return scanned;
+
+            if (scanned == null || scanned == sticky)
+                return sticky;
+
+            return scanned;
+        }
+
+        ArkhamEnemy ScanWithFallbacks()
+        {
+            if (targetScanner == null || enemyManager == null)
+                return null;
+
+            ArkhamEnemy front = targetScanner.FindTarget(enemyManager, transform.position, ResolveStrikeDirection());
+            if (front != null)
+                return front;
+
+            Vector3 camDir = ResolveCameraDirection();
+            if (camDir.sqrMagnitude > 0.01f)
+            {
+                ArkhamEnemy fromCamera = targetScanner.FindTarget(enemyManager, transform.position, camDir);
+                if (fromCamera != null)
+                    return fromCamera;
+            }
+
+            // Vector3.zero disables the cone filter in the scanner — pure-distance scoring.
+            return targetScanner.FindTarget(enemyManager, transform.position, Vector3.zero);
+        }
+
+        Vector3 ResolveCameraDirection()
+        {
+            Camera cam = Camera.main;
+            if (cam == null)
+                return Vector3.zero;
+
+            Vector3 forward = cam.transform.forward;
+            forward.y = 0f;
+            return forward.sqrMagnitude > 0.01f ? forward.normalized : Vector3.zero;
         }
 
         bool TryStartCounterFromStrike()
@@ -354,13 +403,12 @@ namespace MagnetPanic.Combat
                 if (!useAnimationEventsForHits)
                     ApplyHit();
 
-                // Finisher has longer recovery
+                // Finisher chains back instantly so the last hit feels snappy.
                 bool isFinisher = attackTriggers != null && comboIndex >= attackTriggers.Length;
-                float recovery = isFinisher
-                    ? attackCooldown + comboFinisherRecovery
-                    : attackCooldown;
+                float recovery = isFinisher ? 0f : attackCooldown;
 
-                yield return new WaitForSeconds(recovery);
+                if (recovery > 0f)
+                    yield return new WaitForSeconds(recovery);
 
                 if (!isFinisher && !counterAttack)
                 {

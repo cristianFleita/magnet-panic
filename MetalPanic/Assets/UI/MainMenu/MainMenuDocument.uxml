@@ -1,0 +1,66 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu/MainMenuDocument.uss?fileID=7433441132597879392&amp;guid=60d4fd0fe7d7437580d14cf730f6e719&amp;type=3#MainMenuDocument"/>
+    <ui:VisualElement name="main-menu-root" class="main-menu-root">
+        <ui:VisualElement name="main-menu-background" class="main-menu-background"/>
+        <ui:VisualElement class="background-shade"/>
+        <ui:VisualElement name="main-menu-panel" class="main-menu-panel">
+            <ui:VisualElement class="frame-top">
+                <ui:VisualElement class="frame-corner"/>
+                <ui:VisualElement class="frame-line"/>
+                <ui:VisualElement class="frame-corner"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="menu-content">
+                <ui:VisualElement class="logo-block">
+                    <ui:VisualElement name="main-menu-logo" class="main-menu-logo"/>
+                </ui:VisualElement>
+                <ui:Label name="version-label" text="[ Version v1.0 - Game Jam Build ]" class="version-label"/>
+                <ui:VisualElement class="main-columns">
+                    <ui:VisualElement name="menu-column" class="main-column menu-column">
+                        <ui:Label text="MENU" class="column-title"/>
+                        <ui:VisualElement class="menu-box">
+                            <ui:Button name="play-run-button" text="PLAY RUN" class="main-menu-button play-button"/>
+                            <ui:Button name="controls-guide-button" text="CONTROLS &amp; GUIDE" class="main-menu-button guide-button"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="column-divider"/>
+                    <ui:VisualElement name="leaderboard-column" class="main-column leaderboard-column">
+                        <ui:Label text="GLOBAL TOP 5" class="column-title"/>
+                        <ui:VisualElement name="leaderboard-table" class="leaderboard-table">
+                            <ui:VisualElement class="leaderboard-row">
+                                <ui:Label name="leaderboard-rank-1" text="#1" class="rank-cell"/>
+                                <ui:Label name="leaderboard-name-1" text="CRIS" class="name-cell"/>
+                                <ui:Label name="leaderboard-score-1" text="99,450 pts" class="points-cell"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="leaderboard-row">
+                                <ui:Label name="leaderboard-rank-2" text="#2" class="rank-cell"/>
+                                <ui:Label name="leaderboard-name-2" text="CLAUDE_AI" class="name-cell"/>
+                                <ui:Label name="leaderboard-score-2" text="82,100 pts" class="points-cell"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="leaderboard-row">
+                                <ui:Label name="leaderboard-rank-3" text="#3" class="rank-cell"/>
+                                <ui:Label name="leaderboard-name-3" text="JAMMER42" class="name-cell"/>
+                                <ui:Label name="leaderboard-score-3" text="55,000 pts" class="points-cell"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="leaderboard-row">
+                                <ui:Label name="leaderboard-rank-4" text="#4" class="rank-cell"/>
+                                <ui:Label name="leaderboard-name-4" text="PLAYER1" class="name-cell"/>
+                                <ui:Label name="leaderboard-score-4" text="32,400 pts" class="points-cell"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="leaderboard-row">
+                                <ui:Label name="leaderboard-rank-5" text="#5" class="rank-cell"/>
+                                <ui:Label name="leaderboard-name-5" text="ANON" class="name-cell"/>
+                                <ui:Label name="leaderboard-score-5" text="12,000 pts" class="points-cell"/>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Label name="leaderboard-unavailable-label" text="Leaderboard not available" class="leaderboard-unavailable" style="display: none;"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="frame-bottom">
+                <ui:VisualElement class="frame-corner"/>
+                <ui:VisualElement class="frame-line"/>
+                <ui:VisualElement class="frame-corner"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

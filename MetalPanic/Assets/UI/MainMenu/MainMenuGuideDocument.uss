@@ -1,0 +1,538 @@
+.guide-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    color: rgb(225, 235, 241);
+    -unity-font-style: bold;
+}
+
+.guide-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("MainMenuBackground.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.guide-shade {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.54);
+}
+
+.guide-panel {
+    width: 74%;
+    max-width: 980px;
+    min-width: 640px;
+    max-height: 86%;
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    background-color: rgba(7, 12, 22, 0.84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(92, 210, 255, 0.22);
+    border-right-color: rgba(92, 210, 255, 0.22);
+    border-top-color: rgba(255, 208, 71, 0.3);
+    border-bottom-color: rgba(92, 210, 255, 0.22);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.guide-frame-top,
+.guide-frame-bottom {
+    height: 12px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.guide-frame-bottom {
+    margin-top: 18px;
+}
+
+.guide-frame-corner {
+    width: 8px;
+    height: 8px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(235, 244, 248, 0.7);
+    border-right-color: rgba(235, 244, 248, 0.7);
+    border-top-color: rgba(235, 244, 248, 0.7);
+    border-bottom-color: rgba(235, 244, 248, 0.7);
+}
+
+.guide-frame-line {
+    flex-grow: 1;
+    height: 2px;
+    margin-left: 6px;
+    margin-right: 6px;
+    background-color: rgba(235, 244, 248, 0.7);
+}
+
+.guide-content {
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-top: 22px;
+    padding-bottom: 0;
+}
+
+.guide-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand-block {
+    flex-direction: row;
+    align-items: center;
+}
+
+.brand-mark {
+    width: 30px;
+    height: 30px;
+    margin-right: 12px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: rgb(255, 66, 72);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgb(102, 220, 255);
+    border-right-color: rgb(102, 220, 255);
+    border-top-color: rgb(102, 220, 255);
+    border-bottom-color: rgb(102, 220, 255);
+}
+
+.brand-mark-text {
+    font-size: 16px;
+    color: rgb(5, 12, 24);
+    -unity-text-align: middle-center;
+}
+
+.guide-title {
+    font-size: 24px;
+    color: rgb(238, 244, 248);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.82);
+}
+
+.guide-subtitle {
+    margin-top: 4px;
+    font-size: 14px;
+    color: rgba(225, 235, 241, 0.68);
+}
+
+.guide-button {
+    width: 168px;
+    height: 36px;
+    background-color: rgba(4, 11, 25, 0.52);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(92, 210, 255, 0.34);
+    border-right-color: rgba(92, 210, 255, 0.34);
+    border-top-color: rgba(255, 208, 71, 0.36);
+    border-bottom-color: rgba(92, 210, 255, 0.34);
+    color: rgb(228, 238, 244);
+    font-size: 13px;
+    -unity-text-align: middle-center;
+}
+
+.guide-button:hover {
+    background-color: rgba(22, 44, 70, 0.78);
+    border-left-color: rgba(255, 208, 71, 0.68);
+    border-right-color: rgba(255, 208, 71, 0.68);
+    border-top-color: rgba(255, 208, 71, 0.86);
+    border-bottom-color: rgba(255, 208, 71, 0.68);
+    color: rgb(255, 226, 92);
+}
+
+.guide-button:active {
+    background-color: rgba(255, 206, 55, 0.2);
+}
+
+.back-button {
+    border-left-color: rgba(255, 206, 55, 0.5);
+}
+
+.guide-columns {
+    margin-top: 34px;
+    flex-direction: row;
+}
+
+.guide-column {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.controls-column {
+    padding-right: 26px;
+}
+
+.upgrades-column {
+    padding-left: 26px;
+}
+
+.guide-divider {
+    width: 2px;
+    background-color: rgba(235, 244, 248, 0.5);
+}
+
+.column-title {
+    font-size: 17px;
+    color: rgb(212, 225, 233);
+}
+
+.control-list,
+.upgrade-list {
+    margin-top: 14px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background-color: rgba(4, 9, 20, 0.5);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(235, 244, 248, 0.42);
+    border-right-color: rgba(235, 244, 248, 0.42);
+    border-top-color: rgba(235, 244, 248, 0.42);
+    border-bottom-color: rgba(235, 244, 248, 0.42);
+}
+
+.control-row {
+    height: 34px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.key-chip {
+    width: 94px;
+    height: 24px;
+    margin-right: 14px;
+    background-color: rgba(10, 25, 43, 0.9);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(92, 210, 255, 0.5);
+    border-right-color: rgba(92, 210, 255, 0.5);
+    border-top-color: rgba(255, 208, 71, 0.45);
+    border-bottom-color: rgba(92, 210, 255, 0.5);
+    color: rgb(255, 213, 92);
+    font-size: 11px;
+    -unity-text-align: middle-center;
+}
+
+.wide-key {
+    width: 116px;
+}
+
+.key-chip-slim {
+    width: 34px;
+    margin-left: -6px;
+    margin-right: 12px;
+    color: rgba(255, 213, 92, 0.78);
+    border-top-color: rgba(255, 208, 71, 0.32);
+    border-left-color: rgba(92, 210, 255, 0.32);
+    border-right-color: rgba(92, 210, 255, 0.32);
+    border-bottom-color: rgba(92, 210, 255, 0.32);
+}
+
+.row-copy {
+    flex-grow: 1;
+    font-size: 15px;
+    color: rgb(225, 235, 241);
+}
+
+.upgrade-row {
+    height: 54px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.upgrade-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.upgrade-icon-text {
+    font-size: 11px;
+    color: rgb(5, 12, 24);
+    -unity-text-align: middle-center;
+}
+
+.upgrade-copy-block {
+    flex-grow: 1;
+    min-width: 0;
+    justify-content: center;
+}
+
+.upgrade-name {
+    height: 18px;
+    font-size: 14px;
+    color: rgb(238, 244, 248);
+}
+
+.upgrade-copy {
+    height: 16px;
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgba(225, 235, 241, 0.7);
+}
+
+.reach-icon {
+    background-color: rgb(255, 66, 72);
+    border-left-color: rgb(102, 220, 255);
+    border-right-color: rgb(102, 220, 255);
+    border-top-color: rgb(102, 220, 255);
+    border-bottom-color: rgb(102, 220, 255);
+}
+
+.cannon-icon {
+    background-color: rgb(54, 220, 255);
+    border-left-color: rgb(255, 219, 69);
+    border-right-color: rgb(255, 219, 69);
+    border-top-color: rgb(255, 219, 69);
+    border-bottom-color: rgb(255, 219, 69);
+}
+
+.meltdown-icon {
+    background-color: rgb(255, 181, 42);
+    border-left-color: rgb(255, 82, 56);
+    border-right-color: rgb(255, 82, 56);
+    border-top-color: rgb(255, 82, 56);
+    border-bottom-color: rgb(255, 82, 56);
+}
+
+.fever-icon {
+    background-color: rgb(53, 213, 255);
+    border-left-color: rgb(255, 213, 92);
+    border-right-color: rgb(255, 213, 92);
+    border-top-color: rgb(255, 213, 92);
+    border-bottom-color: rgb(255, 213, 92);
+}
+
+.storm-icon {
+    background-color: rgb(218, 226, 232);
+    border-left-color: rgb(92, 210, 255);
+    border-right-color: rgb(92, 210, 255);
+    border-top-color: rgb(92, 210, 255);
+    border-bottom-color: rgb(92, 210, 255);
+}
+
+.field-tip {
+    margin-top: 28px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(4, 9, 20, 0.46);
+    border-left-width: 2px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(255, 208, 71, 0.78);
+    border-right-color: rgba(92, 210, 255, 0.28);
+    border-top-color: rgba(92, 210, 255, 0.28);
+    border-bottom-color: rgba(92, 210, 255, 0.28);
+}
+
+.tip-label {
+    width: 92px;
+    font-size: 13px;
+    color: rgb(255, 213, 92);
+}
+
+.tip-copy {
+    flex-grow: 1;
+    font-size: 13px;
+    color: rgba(225, 235, 241, 0.82);
+}
+
+@media (min-width: 2200px) {
+    .guide-panel {
+        max-width: 940px;
+    }
+
+    .guide-title {
+        font-size: 22px;
+    }
+
+    .column-title {
+        font-size: 15px;
+    }
+
+    .row-copy,
+    .upgrade-name {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 1280px) {
+    .guide-panel {
+        width: 86%;
+        min-width: 580px;
+    }
+
+    .guide-content {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .guide-title {
+        font-size: 20px;
+    }
+
+    .guide-columns {
+        margin-top: 28px;
+    }
+
+    .column-title {
+        font-size: 15px;
+    }
+
+    .row-copy,
+    .upgrade-name {
+        font-size: 13px;
+    }
+
+    .upgrade-copy,
+    .tip-copy {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 900px) {
+    .guide-panel {
+        width: 94%;
+        min-width: 0;
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .guide-content {
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 16px;
+    }
+
+    .guide-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .guide-button {
+        width: 100%;
+        margin-top: 16px;
+    }
+
+    .guide-title {
+        font-size: 18px;
+    }
+
+    .guide-subtitle {
+        font-size: 11px;
+    }
+
+    .guide-columns {
+        flex-direction: column;
+        margin-top: 22px;
+    }
+
+    .controls-column {
+        padding-right: 0;
+    }
+
+    .upgrades-column {
+        padding-left: 0;
+        margin-top: 20px;
+    }
+
+    .guide-divider {
+        display: none;
+    }
+
+    .field-tip {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tip-label {
+        width: 100%;
+    }
+
+    .tip-copy {
+        margin-top: 4px;
+    }
+}
+
+@media (max-height: 720px) {
+    .guide-panel {
+        max-height: 94%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .guide-content {
+        padding-top: 10px;
+    }
+
+    .guide-columns {
+        margin-top: 20px;
+    }
+
+    .control-list,
+    .upgrade-list {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .control-row {
+        height: 28px;
+    }
+
+    .upgrade-row {
+        height: 46px;
+    }
+
+    .field-tip {
+        margin-top: 18px;
+    }
+
+    .guide-frame-bottom {
+        margin-top: 10px;
+    }
+}

@@ -29,14 +29,18 @@ MonoBehaviour:
   attackRecovery: 0.5
   knockbackDistance: 0.7
   knockbackDuration: 0.18
+  canBeCountered: 1
+  counterStunDuration: 1
+  attackTokenCost: 1
+  spawnAttackGracePeriod: 1.2
   useLinearCharge: 1
   chargeSpeed: 16
   chargeDuration: 0.55
   chargeHitRadius: 1.2
   chargeDamage: 2
   chargeCausesKnockdown: 1
-  chargeIdealDistance: 5
-  chargeIdealTolerance: 1.2
+  chargeIdealDistance: 6.5
+  chargeIdealTolerance: 1.4
   useRangedAttack: 0
   projectilePrefab: {fileID: 0}
   projectileSpeed: 10
