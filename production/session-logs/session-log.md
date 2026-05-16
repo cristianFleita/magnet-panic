@@ -1637,3 +1637,47 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260516_171531
+### Commits
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineBehaviour.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/MainMenu.unity
+---
+
+## Session End: 20260516_174735
+### Commits
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Powerups/MagneticMineBehaviour.cs
+MetalPanic/Assets/Prefabs/Enemies/Combat/SpitterDrone.prefab
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Prefabs/Mine.prefab
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scenes/MainMenu.unity
+production/session-logs/session-log.md
+---
+

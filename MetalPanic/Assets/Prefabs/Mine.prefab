@@ -67,6 +67,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b21a3e57c7a14d8d9f01a02e0304000a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Powerups.MagneticMineBehaviour
+  explosionSfx: {fileID: 8300000, guid: 74cb05234884349d5ab1456ce0f56734, type: 3}
+  explosionSfxVolume: 1
 --- !u!1 &8093148590969827988
 GameObject:
   m_ObjectHideFlags: 0

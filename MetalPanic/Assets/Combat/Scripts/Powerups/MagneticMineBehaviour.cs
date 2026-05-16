@@ -17,6 +17,9 @@ namespace MagnetPanic.Combat.Powerups
     [RequireComponent(typeof(SphereCollider))]
     public sealed class MagneticMineBehaviour : MonoBehaviour
     {
+        [SerializeField] AudioClip explosionSfx;
+        [SerializeField] [Range(0f, 1f)] float explosionSfxVolume = 1f;
+
         int damage = 4;
         int magnetizeMarks = 2;
         float armTime = 0.5f;
@@ -182,6 +185,9 @@ namespace MagnetPanic.Combat.Powerups
 
         void SpawnExplosionVfx(Vector3 origin)
         {
+            if (explosionSfx != null)
+                AudioSource.PlayClipAtPoint(explosionSfx, origin, explosionSfxVolume);
+
             if (explosionVfxPrefab == null)
                 return;
 
