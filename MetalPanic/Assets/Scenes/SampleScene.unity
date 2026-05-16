@@ -4783,7 +4783,7 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
@@ -7414,7 +7414,7 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
@@ -13894,7 +13894,7 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9
@@ -15249,7 +15249,7 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   heldEnemyDistance: 1.9

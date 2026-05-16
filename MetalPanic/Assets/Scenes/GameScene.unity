@@ -614,7 +614,7 @@ PrefabInstance:
       objectReference: {fileID: 1583158215}
     - target: {fileID: 2420222518677489139, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
       propertyPath: maxHealth
-      value: 1
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2420222518677489139, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
       propertyPath: enemyManager
@@ -1374,6 +1374,7 @@ MonoBehaviour:
   scoring: {fileID: 848282166}
   inputProvider: {fileID: 0}
   cameraController: {fileID: 0}
+  upgradeSystem: {fileID: 0}
   retrySceneName: GameScene
   mainMenuSceneName: MainMenu
   freezeTimeWhilePaused: 1

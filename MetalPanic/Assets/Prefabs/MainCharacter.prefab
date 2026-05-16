@@ -269,11 +269,12 @@ MonoBehaviour:
   orbitRejectSpeed: 7
   chargePenaltyAtFull: 0.2
   repelConeAngle: 50
-  repelCooldown: 0.25
+  repelCooldown: 0
   repelSpeed: 16
   magnetizedEnemyDamage: 5
   magnetizedEnemyRecoilDamage: 5
-  magnetizedRepelAutoAimRadius: 5
+  repelAutoAimRadius: 15
+  magnetizedRepelWallAimRadius: 5
   heldEnemyDistance: 1.9
   enemyAnchorLockDistance: 0.4
   magnetizedHoldTimeout: 3
@@ -377,7 +378,7 @@ MonoBehaviour:
   targetLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  overloadCooldown: 2
+  overloadCooldown: 3
   overloadStunDuration: 0.5
   overloadShakeAmplitude: 0.3
   overloadShakeDuration: 0.3
@@ -603,7 +604,7 @@ MonoBehaviour:
   slideKnockbackDistance: 1.2
   slideContactRadius: 1.2
   doubleTapWindow: 0.25
-  baseSlideCooldown: 4
+  baseSlideCooldown: 0
   wallRaycastInset: 0.4
   wallLayers:
     serializedVersion: 2
@@ -615,7 +616,7 @@ MonoBehaviour:
   slamDamage: 5
   slamKnockdownDuration: 1.5
   slamKnockbackDistance: 1.6
-  slamCooldown: 6
+  slamCooldown: 0
   slamJumpHeight: 2.2
   slideVfxPrefab: {fileID: 1613383665425959110, guid: aed8a4ae366164ac2b84d2e8a4a18a47, type: 3}
   slideVfxLifetime: 1.5

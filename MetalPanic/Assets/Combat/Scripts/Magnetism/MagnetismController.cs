@@ -36,13 +36,16 @@ namespace MagnetPanic.Combat
 
         [Header("Repel")]
         [SerializeField] float repelConeAngle = 50f;
-        [SerializeField] float repelCooldown = 0.25f;
+        [SerializeField, Tooltip("Seconds of forced downtime between repels. 0 = no cooldown. Recharge gate lives on the OverloadController instead.")]
+        float repelCooldown = 0f;
         [SerializeField] float repelSpeed = 16f;
         [SerializeField] int magnetizedEnemyDamage = 5;
         [SerializeField, Tooltip("Damage the repelled enemy itself takes each time it collides with another enemy mid-flight (mirrors wall-slam recoil).")]
         int magnetizedEnemyRecoilDamage = 5;
-        [SerializeField, Tooltip("When repelling a magnetized enemy, snap the launch direction toward the nearest enemy or arena wall within this radius. 0 disables auto-aim.")]
-        float magnetizedRepelAutoAimRadius = 5f;
+        [SerializeField, Tooltip("Search radius (m) used to home every repelled projectile toward the nearest enemy. 0 disables auto-aim and falls back to the cone spread.")]
+        float repelAutoAimRadius = 15f;
+        [SerializeField, Tooltip("When repelling a magnetized enemy, also snap toward arena walls within this radius if no enemy is closer (lets the recoil/wall-slam combo work). 0 disables wall auto-aim.")]
+        float magnetizedRepelWallAimRadius = 5f;
 
         [Header("Enemy Pull")]
         [SerializeField] float heldEnemyDistance = 1.9f;
@@ -533,9 +536,10 @@ namespace MagnetPanic.Combat
         {
             int total = orbitingObjects.Count + pulledEnemies.Count;
             bool empty = total == 0;
-            Vector3 aim = AimDirection();
+            Vector3 manualAim = AimDirection();
+            Vector3 primaryAim = ResolvePrimaryAutoAim(manualAim);
             int slot = 0;
-            FaceRepelDirection(aim);
+            FaceRepelDirection(primaryAim);
 
             float effectiveRepelSpeed = repelSpeed * repelSpeedMult;
             int effectiveDamageBonus = repelDamageBonus;
@@ -547,7 +551,9 @@ namespace MagnetPanic.Combat
                 if (magneticObject == null)
                     continue;
 
-                magneticObject.Repel(DirectionInCone(aim, slot, total), effectiveRepelSpeed, effectiveDamageBonus, effectivePierceBonus);
+                Vector3 coneDir = DirectionInCone(primaryAim, slot, total);
+                Vector3 launchDir = ResolveProjectileAutoAim(magneticObject.transform.position, coneDir);
+                magneticObject.Repel(launchDir, effectiveRepelSpeed, effectiveDamageBonus, effectivePierceBonus);
                 slot++;
             }
 
@@ -557,7 +563,7 @@ namespace MagnetPanic.Combat
                 if (enemy == null)
                     continue;
 
-                Vector3 coneDir = DirectionInCone(aim, slot, total);
+                Vector3 coneDir = DirectionInCone(primaryAim, slot, total);
                 Vector3 launchDir = ResolveMagnetizedRepelDirection(enemy, coneDir);
                 enemy.MagnetRepel(launchDir, effectiveRepelSpeed * 0.78f, magnetizedEnemyDamage + effectiveDamageBonus, magnetizedEnemyRecoilDamage);
                 slot++;
@@ -796,60 +802,121 @@ namespace MagnetPanic.Combat
                 DestroyImmediate(target);
         }
 
+        Vector3 ResolvePrimaryAutoAim(Vector3 fallback)
+        {
+            return ResolveProjectileAutoAim(transform.position, fallback);
+        }
+
+        Vector3 ResolveProjectileAutoAim(Vector3 origin, Vector3 fallback)
+        {
+            if (repelAutoAimRadius <= 0f)
+                return fallback;
+
+            if (TryFindNearestEnemyDirection(origin, repelAutoAimRadius, null, out Vector3 dir))
+                return dir;
+
+            return fallback;
+        }
+
         Vector3 ResolveMagnetizedRepelDirection(ArkhamEnemy projectile, Vector3 fallback)
         {
-            if (magnetizedRepelAutoAimRadius <= 0f || projectile == null)
+            if (projectile == null)
                 return fallback;
 
             Vector3 origin = projectile.transform.position;
-            float bestDistSqr = magnetizedRepelAutoAimRadius * magnetizedRepelAutoAimRadius;
+            float enemyRadius = repelAutoAimRadius;
+            float wallRadius = magnetizedRepelWallAimRadius;
+            float searchRadius = Mathf.Max(enemyRadius, wallRadius);
+            if (searchRadius <= 0f)
+                return fallback;
+
+            float bestDistSqr = searchRadius * searchRadius;
             Vector3 bestTarget = Vector3.zero;
             bool found = false;
 
-            if (enemyManager != null)
+            if (enemyRadius > 0f && TryFindNearestEnemyPoint(origin, enemyRadius, projectile, out Vector3 enemyPoint, out float enemyDistSqr))
             {
-                IReadOnlyList<ArkhamEnemy> roster = enemyManager.Enemies;
-                for (int i = 0; i < roster.Count; i++)
-                {
-                    ArkhamEnemy other = roster[i];
-                    if (other == null || other == projectile || !other.IsAlive)
-                        continue;
-                    if (pulledEnemies.Contains(other))
-                        continue;
-
-                    Vector3 delta = other.transform.position - origin;
-                    delta.y = 0f;
-                    float distSqr = delta.sqrMagnitude;
-                    if (distSqr < 0.04f || distSqr > bestDistSqr)
-                        continue;
-
-                    bestDistSqr = distSqr;
-                    bestTarget = other.transform.position;
-                    found = true;
-                }
+                bestDistSqr = enemyDistSqr;
+                bestTarget = enemyPoint;
+                found = true;
             }
 
-            ArenaSystem arena = ResolveArenaSystem();
-            if (arena != null)
+            if (wallRadius > 0f)
             {
-                Vector3 wallPoint = NearestArenaWallPoint(origin, arena.PlayableBounds);
-                Vector3 delta = wallPoint - origin;
-                delta.y = 0f;
-                float distSqr = delta.sqrMagnitude;
-                if (distSqr > 0.04f && distSqr <= bestDistSqr)
+                ArenaSystem arena = ResolveArenaSystem();
+                if (arena != null)
                 {
-                    bestDistSqr = distSqr;
-                    bestTarget = wallPoint;
-                    found = true;
+                    Vector3 wallPoint = NearestArenaWallPoint(origin, arena.PlayableBounds);
+                    Vector3 delta = wallPoint - origin;
+                    delta.y = 0f;
+                    float distSqr = delta.sqrMagnitude;
+                    float wallMaxSqr = wallRadius * wallRadius;
+                    if (distSqr > 0.04f && distSqr <= wallMaxSqr && distSqr <= bestDistSqr)
+                    {
+                        bestDistSqr = distSqr;
+                        bestTarget = wallPoint;
+                        found = true;
+                    }
                 }
             }
 
             if (!found)
                 return fallback;
 
-            Vector3 dir = bestTarget - origin;
-            dir.y = 0f;
-            return dir.sqrMagnitude > 0.0001f ? dir.normalized : fallback;
+            Vector3 toTarget = bestTarget - origin;
+            toTarget.y = 0f;
+            return toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : fallback;
+        }
+
+        bool TryFindNearestEnemyDirection(Vector3 origin, float radius, ArkhamEnemy exclude, out Vector3 direction)
+        {
+            if (TryFindNearestEnemyPoint(origin, radius, exclude, out Vector3 point, out _))
+            {
+                Vector3 delta = point - origin;
+                delta.y = 0f;
+                if (delta.sqrMagnitude > 0.0001f)
+                {
+                    direction = delta.normalized;
+                    return true;
+                }
+            }
+
+            direction = Vector3.zero;
+            return false;
+        }
+
+        bool TryFindNearestEnemyPoint(Vector3 origin, float radius, ArkhamEnemy exclude, out Vector3 point, out float distanceSqr)
+        {
+            point = Vector3.zero;
+            distanceSqr = float.MaxValue;
+            if (enemyManager == null || radius <= 0f)
+                return false;
+
+            float bestDistSqr = radius * radius;
+            bool found = false;
+
+            IReadOnlyList<ArkhamEnemy> roster = enemyManager.Enemies;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                ArkhamEnemy other = roster[i];
+                if (other == null || other == exclude || !other.IsAlive)
+                    continue;
+                if (pulledEnemies.Contains(other))
+                    continue;
+
+                Vector3 delta = other.transform.position - origin;
+                delta.y = 0f;
+                float distSqr = delta.sqrMagnitude;
+                if (distSqr < 0.04f || distSqr > bestDistSqr)
+                    continue;
+
+                bestDistSqr = distSqr;
+                point = other.transform.position;
+                found = true;
+            }
+
+            distanceSqr = bestDistSqr;
+            return found;
         }
 
         ArenaSystem ResolveArenaSystem()
