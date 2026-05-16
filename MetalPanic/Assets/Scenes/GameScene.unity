@@ -2632,7 +2632,7 @@ MonoBehaviour:
   musicVolume: 0.281
   enemySpawnClip: {fileID: 8300000, guid: e70b1d3b170104b06876682c376e0a0b, type: 3}
   spawnVolume: 0.2
-  waveCompleteClip: {fileID: 8300000, guid: beb499858bc6e4347a8cfcf2351b9f90, type: 3}
+  waveCompleteClip: {fileID: 0}
   waveCompleteVolume: 0.578
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
