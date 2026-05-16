@@ -1699,3 +1699,25 @@ dd94104 chore: adjust cooldowns
 MetalPanic/Assets/Combat/Scripts/Audio/PlayerSfx.cs
 ---
 
+## Session End: 20260516_183246
+### Commits
+fee664a chore: adjust sfx
+61f4c0f chore: fix pull sfx
+5544191 chore: sfx
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Audio/PlayerSfx.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+react-app/public/unity-build/Build/unity-build.data.unityweb
+---
+

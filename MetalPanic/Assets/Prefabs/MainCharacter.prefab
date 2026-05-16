@@ -789,6 +789,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa03000000000000000000000000aa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Audio.PlayerSfx
+  hitClip: {fileID: 8300000, guid: ff01000000000000000000000000ff01, type: 3}
+  hitVolume: 1
   pullClip: {fileID: 8300000, guid: ce0e79957453c47f3aec6c85ac3cf387, type: 3}
   pullVolume: 0.5
   repelClip: {fileID: 8300000, guid: c3d4d3439218c448ca744f3f1683d4cc, type: 3}

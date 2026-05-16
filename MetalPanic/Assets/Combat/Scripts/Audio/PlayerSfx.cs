@@ -18,6 +18,10 @@ namespace MagnetPanic.Combat.Audio
         [SerializeField] AudioClip overloadClip;
         [SerializeField] [Range(0f, 1f)] float overloadVolume = 1f;
 
+        [Header("Hit (melee connects)")]
+        [SerializeField] AudioClip hitClip;
+        [SerializeField] [Range(0f, 1f)] float hitVolume = 1f;
+
         [Header("Level Up (upgrade picked)")]
         [SerializeField] AudioClip levelUpClip;
         [SerializeField] [Range(0f, 1f)] float levelUpVolume = 1f;
@@ -49,6 +53,10 @@ namespace MagnetPanic.Combat.Audio
             UpgradeSystem up = GetComponent<UpgradeSystem>();
             if (up != null)
                 up.OnUpgradeApplied.AddListener(PlayLevelUp);
+
+            ArkhamCombatController combat = GetComponent<ArkhamCombatController>();
+            if (combat != null)
+                combat.OnHit.AddListener(PlayHit);
         }
 
         void OnDestroy()
@@ -67,6 +75,10 @@ namespace MagnetPanic.Combat.Audio
             UpgradeSystem up = GetComponent<UpgradeSystem>();
             if (up != null)
                 up.OnUpgradeApplied.RemoveListener(PlayLevelUp);
+
+            ArkhamCombatController combat = GetComponent<ArkhamCombatController>();
+            if (combat != null)
+                combat.OnHit.RemoveListener(PlayHit);
         }
 
         void PlayPull()
@@ -86,6 +98,7 @@ namespace MagnetPanic.Combat.Audio
             if (repelClip != null) sfxSource.PlayOneShot(repelClip, repelVolume);
         }
 
+        void PlayHit(ArkhamEnemy _) { if (hitClip != null) sfxSource.PlayOneShot(hitClip, hitVolume); }
         void PlayOverload(Vector3 _, float __, int ___) { if (overloadClip != null) sfxSource.PlayOneShot(overloadClip, overloadVolume); }
         void PlayLevelUp(UpgradeData _, int __) { if (levelUpClip != null) sfxSource.PlayOneShot(levelUpClip, levelUpVolume); }
     }
