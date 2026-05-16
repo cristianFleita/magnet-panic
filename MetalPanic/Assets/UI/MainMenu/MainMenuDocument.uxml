@@ -52,6 +52,7 @@
                                 <ui:Label name="leaderboard-score-5" text="12,000 pts" class="points-cell"/>
                             </ui:VisualElement>
                         </ui:VisualElement>
+                        <ui:Label name="leaderboard-unavailable-label" text="Leaderboard not available" class="leaderboard-unavailable" style="display: none;"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

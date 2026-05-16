@@ -357,13 +357,21 @@ namespace MagnetPanic.Combat
             LeaderboardController client = topFiveLeaderboard != null ? topFiveLeaderboard : noTopFiveLeaderboard;
             if (client == null)
             {
-                Debug.LogWarning("[GameOver] No LeaderboardController assigned; falling back to top-five layout without backend.", this);
-                PresentLayout(gameOverTopFiveDocument, scoreValue, survivalSeconds);
+                Debug.LogWarning("[GameOver] No LeaderboardController assigned; presenting offline layout.", this);
+                PresentUnavailableLayout(scoreValue, survivalSeconds);
                 return;
             }
 
             Debug.Log("[GameOver] Fetching leaderboard...", this);
             client.FetchTopFive(entries => RouteByLeaderboard(entries, playerName, scoreValue, survivalSeconds));
+        }
+
+        void PresentUnavailableLayout(long scoreValue, float survivalSeconds)
+        {
+            HideDocument(gameOverNoTopFiveDocument);
+            PresentLayout(gameOverTopFiveDocument, scoreValue, survivalSeconds);
+            if (topFiveLeaderboard != null)
+                topFiveLeaderboard.ShowUnavailable();
         }
 
         static void EnsureUiInputAlive()
@@ -394,8 +402,8 @@ namespace MagnetPanic.Combat
         {
             if (entries == null)
             {
-                Debug.LogWarning("[GameOver] Leaderboard fetch failed; showing top-five layout without submission.", this);
-                PresentLayout(gameOverTopFiveDocument, scoreValue, survivalSeconds);
+                Debug.LogWarning("[GameOver] Leaderboard fetch failed; showing offline layout without submission.", this);
+                PresentUnavailableLayout(scoreValue, survivalSeconds);
                 return;
             }
 

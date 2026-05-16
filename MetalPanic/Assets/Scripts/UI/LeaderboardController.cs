@@ -12,19 +12,12 @@ namespace MagnetPanic.UI
     public sealed class LeaderboardController : MonoBehaviour
     {
         public const int TopCount = 5;
+        const string TableElementName = "leaderboard-table";
+        const string UnavailableLabelName = "leaderboard-unavailable-label";
 
         [SerializeField] string leaderboardUrl = "http://localhost:3000/leaderboard";
         [SerializeField, Min(0.1f)] float requestTimeoutSeconds = 3f;
         [SerializeField] bool loadOnEnable = true;
-
-        static readonly LeaderboardEntry[] FallbackEntries =
-        {
-            new LeaderboardEntry(1, "CRIS", 99450),
-            new LeaderboardEntry(2, "CLAUDE", 82100),
-            new LeaderboardEntry(3, "JAMMER42", 55000),
-            new LeaderboardEntry(4, "PLAYER1", 32400),
-            new LeaderboardEntry(5, "ANON", 12000),
-        };
 
         UIDocument document;
         Coroutine activeRoutine;
@@ -41,10 +34,12 @@ namespace MagnetPanic.UI
             if (document == null)
                 document = GetComponent<UIDocument>();
 
-            RenderTopFive(FallbackEntries, null, 0L);
+            ClearTable();
 
             if (loadOnEnable && !string.IsNullOrWhiteSpace(leaderboardUrl))
                 Refresh();
+            else
+                ShowUnavailable();
         }
 
         void OnDisable()
@@ -77,6 +72,8 @@ namespace MagnetPanic.UI
             if (table == null || entries == null)
                 return;
 
+            SetUnavailableVisible(false);
+            table.style.display = DisplayStyle.Flex;
             table.Clear();
 
             int highlightIndex = FindHighlightIndex(entries, highlightName, highlightScore);
@@ -85,17 +82,55 @@ namespace MagnetPanic.UI
                 table.Add(BuildRow(entries[i], i == highlightIndex));
         }
 
+        public void ShowUnavailable()
+        {
+            if (activeRoutine != null)
+            {
+                StopCoroutine(activeRoutine);
+                activeRoutine = null;
+            }
+
+            ClearTable();
+
+            VisualElement table = ResolveTable();
+            if (table != null)
+                table.style.display = DisplayStyle.None;
+
+            SetUnavailableVisible(true);
+        }
+
+        void ClearTable()
+        {
+            VisualElement table = ResolveTable();
+            if (table != null)
+                table.Clear();
+        }
+
+        void SetUnavailableVisible(bool visible)
+        {
+            VisualElement root = document != null ? document.rootVisualElement : null;
+            if (root == null)
+                return;
+
+            Label label = root.Q<Label>(UnavailableLabelName);
+            if (label != null)
+                label.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
         public void RenderMissedTopFive(LeaderboardEntry[] entries, string playerName, long playerScore)
         {
             VisualElement root = document != null ? document.rootVisualElement : null;
             if (root == null)
                 return;
 
-            VisualElement table = root.Q<VisualElement>("leaderboard-table");
+            SetUnavailableVisible(false);
+
+            VisualElement table = root.Q<VisualElement>(TableElementName);
             int existing = 0;
 
             if (table != null)
             {
+                table.style.display = DisplayStyle.Flex;
                 table.Clear();
                 int count = entries != null ? Mathf.Min(entries.Length, TopCount) : 0;
                 for (int i = 0; i < count; i++)
@@ -125,6 +160,8 @@ namespace MagnetPanic.UI
             yield return Fetch(result => entries = result);
             if (entries != null)
                 RenderTopFive(entries, null, 0L);
+            else
+                ShowUnavailable();
         }
 
         IEnumerator Fetch(Action<LeaderboardEntry[]> onResult)
@@ -188,7 +225,7 @@ namespace MagnetPanic.UI
         VisualElement ResolveTable()
         {
             VisualElement root = document != null ? document.rootVisualElement : null;
-            return root?.Q<VisualElement>("leaderboard-table");
+            return root?.Q<VisualElement>(TableElementName);
         }
 
         static int FindHighlightIndex(LeaderboardEntry[] entries, string name, long score)
