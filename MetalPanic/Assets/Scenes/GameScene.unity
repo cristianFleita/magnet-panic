@@ -613,6 +613,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1583158215}
     - target: {fileID: 2420222518677489139, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
+      propertyPath: maxHealth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2420222518677489139, guid: 94df1040999b54efe9c43a56d0bbf48c, type: 3}
       propertyPath: enemyManager
       value: 
       objectReference: {fileID: 335756981}
@@ -1326,7 +1330,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c6018bd97e844578afc42f2bba59a82, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Scoring.UI.XpHud
   scoring: {fileID: 848282166}
   hideComboAtRest: 1
@@ -1343,7 +1347,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3cddf2cf51de84a5484840b5598606ec, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.UI.MissionHud
   missions: {fileID: 1944696923}
   background: {r: 0.04, g: 0.05, b: 0.07, a: 0.85}
@@ -1360,7 +1364,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 316ad6643ff84d1b97bdd6a9ba39d1b2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.GameSceneUiController
   hudDocument: {fileID: 1336404078}
   pauseDocument: {fileID: 2000000103}
@@ -1369,6 +1373,7 @@ MonoBehaviour:
   runController: {fileID: 576832660}
   scoring: {fileID: 848282166}
   inputProvider: {fileID: 0}
+  cameraController: {fileID: 0}
   retrySceneName: GameScene
   mainMenuSceneName: MainMenu
   leaderboardPlayerName: PLAYER
@@ -2301,7 +2306,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: fc1e5a5ad5745409b9beb8faf2dd4608, type: 2}
   m_ParentUI: {fileID: 0}
@@ -2357,7 +2362,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: fc1e5a5ad5745409b9beb8faf2dd4608, type: 2}
   m_ParentUI: {fileID: 0}
@@ -2380,8 +2385,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43be8c8c117a46f9b80844140fb4f38d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   leaderboardUrl: http://localhost:3000/leaderboard
   requestTimeoutSeconds: 3
   loadOnEnable: 0
@@ -2429,7 +2434,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: fc1e5a5ad5745409b9beb8faf2dd4608, type: 2}
   m_ParentUI: {fileID: 0}
@@ -2452,8 +2457,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43be8c8c117a46f9b80844140fb4f38d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   leaderboardUrl: http://localhost:3000/leaderboard
   requestTimeoutSeconds: 3
   loadOnEnable: 0

@@ -1,7 +1,9 @@
 using MagnetPanic.Combat.Scoring;
 using MagnetPanic.UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -25,8 +27,6 @@ namespace MagnetPanic.Combat
         [Header("Navigation")]
         [SerializeField] string retrySceneName = "GameScene";
         [SerializeField] string mainMenuSceneName = "MainMenu";
-        [SerializeField] string leaderboardPlayerName = "PLAYER";
-        [SerializeField] bool showTopFiveLayout = true;
         [SerializeField] bool freezeTimeWhilePaused = true;
         [SerializeField] bool freezeTimeOnGameOver = true;
         [SerializeField] LeaderboardController topFiveLeaderboard;
@@ -43,6 +43,7 @@ namespace MagnetPanic.Combat
 
         void Awake()
         {
+            PlayerIdentity.NewRun();
             ResolveReferences();
         }
 
@@ -222,7 +223,6 @@ namespace MagnetPanic.Combat
                 resumeButton = resume;
                 resumeButton.clicked -= Resume;
                 resumeButton.clicked += Resume;
-                Debug.Log("[GameSceneUiController] Resume button bound.", this);
             }
             else
             {
@@ -237,7 +237,6 @@ namespace MagnetPanic.Combat
                 quitButton = quit;
                 quitButton.clicked -= MainMenu;
                 quitButton.clicked += MainMenu;
-                Debug.Log("[GameSceneUiController] Quit button bound.", this);
             }
             else
             {
@@ -273,6 +272,7 @@ namespace MagnetPanic.Combat
                 return;
 
             gameOver = true;
+            Debug.Log("[GameOver] ShowGameOver invoked.", this);
 
             if (paused)
             {
@@ -281,13 +281,18 @@ namespace MagnetPanic.Combat
                 HideDocument(pauseDocument);
             }
 
+            // Switch input to UI map (same pattern as pause) so UI Toolkit clicks aren't
+            // shadowed by gameplay action map. SetInputEnabled(false) leaves PlayerInput
+            // on the Player map, which intermittently blocks pointer events on the panel.
             if (inputProvider != null)
-                inputProvider.SetInputEnabled(false);
+                inputProvider.SetState(GameInputState.UI);
 
             if (cameraController != null)
                 cameraController.SetLookEnabled(false);
             else
                 ReleaseCursor();
+
+            EnsureUiInputAlive();
 
             if (freezeTimeOnGameOver)
             {
@@ -295,22 +300,182 @@ namespace MagnetPanic.Combat
                 Time.timeScale = 0f;
             }
 
-            UIDocument document = showTopFiveLayout ? gameOverTopFiveDocument : gameOverNoTopFiveDocument;
-            UIDocument other = showTopFiveLayout ? gameOverNoTopFiveDocument : gameOverTopFiveDocument;
-            HideDocument(other);
-            ShowDocument(document);
-            UpdateGameOverLabels(document, stats);
-            SubmitLeaderboardScore(document, stats);
-            BindGameOverButtons(document);
-        }
-
-        void UpdateGameOverLabels(UIDocument document, RunStats stats)
-        {
-            VisualElement root = document != null ? document.rootVisualElement : null;
-            long scoreValue = stats != null ? stats.FinalScore : scoring != null ? scoring.Score : 0;
+            long scoreValue = stats != null ? stats.FinalScore : scoring != null ? scoring.Score : 0L;
             float survivalSeconds = stats != null
                 ? stats.SurvivalTimeSeconds
                 : runController != null ? runController.RunDuration : 0f;
+            string playerName = PlayerIdentity.CurrentName;
+            Debug.Log($"[GameOver] score={scoreValue} survival={survivalSeconds:F1}s player={playerName}", this);
+
+            ActivateDocumentHost(gameOverTopFiveDocument);
+            ActivateDocumentHost(gameOverNoTopFiveDocument);
+            HideDocument(gameOverTopFiveDocument);
+            HideDocument(gameOverNoTopFiveDocument);
+
+            LeaderboardController client = topFiveLeaderboard != null ? topFiveLeaderboard : noTopFiveLeaderboard;
+            if (client == null)
+            {
+                Debug.LogWarning("[GameOver] No LeaderboardController assigned; falling back to top-five layout without backend.", this);
+                PresentLayout(gameOverTopFiveDocument, scoreValue, survivalSeconds);
+                return;
+            }
+
+            Debug.Log("[GameOver] Fetching leaderboard...", this);
+            client.FetchTopFive(entries => RouteByLeaderboard(entries, playerName, scoreValue, survivalSeconds));
+        }
+
+        static void EnsureUiInputAlive()
+        {
+            EventSystem eventSystem = EventSystem.current;
+            if (eventSystem == null)
+            {
+                GameObject host = new GameObject("EventSystem");
+                eventSystem = host.AddComponent<EventSystem>();
+                host.AddComponent<InputSystemUIInputModule>();
+                Debug.Log("[GameOver] Created missing EventSystem for UI input.");
+                return;
+            }
+
+            InputSystemUIInputModule module = eventSystem.GetComponent<InputSystemUIInputModule>();
+            if (module == null)
+            {
+                module = eventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
+                Debug.Log("[GameOver] Added InputSystemUIInputModule to existing EventSystem.");
+            }
+
+            // Kick the module so pointer bindings reattach cleanly.
+            module.enabled = false;
+            module.enabled = true;
+        }
+
+        void RouteByLeaderboard(LeaderboardController.LeaderboardEntry[] entries, string playerName, long scoreValue, float survivalSeconds)
+        {
+            if (entries == null)
+            {
+                Debug.LogWarning("[GameOver] Leaderboard fetch failed; showing top-five layout without submission.", this);
+                PresentLayout(gameOverTopFiveDocument, scoreValue, survivalSeconds);
+                return;
+            }
+
+            bool madeTopFive = WouldEnterTopFive(entries, scoreValue);
+            long cutoff = entries.Length >= LeaderboardController.TopCount ? entries[LeaderboardController.TopCount - 1].score : 0L;
+            Debug.Log($"[GameOver] Leaderboard ready. entries={entries.Length} cutoff={cutoff} ourScore={scoreValue} madeTopFive={madeTopFive}", this);
+
+            UIDocument chosen = madeTopFive ? gameOverTopFiveDocument : gameOverNoTopFiveDocument;
+            UIDocument other = madeTopFive ? gameOverNoTopFiveDocument : gameOverTopFiveDocument;
+
+            HideDocument(other);
+            PresentLayout(chosen, scoreValue, survivalSeconds);
+
+            if (madeTopFive)
+            {
+                if (topFiveLeaderboard != null)
+                {
+                    LeaderboardController.LeaderboardEntry[] optimistic = OptimisticInsert(entries, playerName, scoreValue);
+                    topFiveLeaderboard.RenderTopFive(optimistic, playerName, scoreValue);
+                    Debug.Log("[GameOver] Rendered top-five layout optimistically. Submitting score...", this);
+                    BindGameOverButtons(chosen);
+
+                    topFiveLeaderboard.SubmitScore(playerName, scoreValue, updated =>
+                    {
+                        if (!gameOver)
+                        {
+                            Debug.Log("[GameOver] Submit returned after gameOver was reset; ignoring.", this);
+                            return;
+                        }
+
+                        LeaderboardController.LeaderboardEntry[] toRender = updated != null ? updated : optimistic;
+                        Debug.Log($"[GameOver] Submit complete. server-entries={(updated != null ? updated.Length : -1)}. Re-rendering.", this);
+                        topFiveLeaderboard.RenderTopFive(toRender, playerName, scoreValue);
+                        BindGameOverButtons(chosen);
+                    });
+                }
+                else
+                {
+                    Debug.LogWarning("[GameOver] topFiveLeaderboard not assigned.", this);
+                }
+            }
+            else
+            {
+                if (noTopFiveLeaderboard != null)
+                {
+                    noTopFiveLeaderboard.RenderMissedTopFive(entries, playerName, scoreValue);
+                    Debug.Log("[GameOver] Rendered missed-top-five layout.", this);
+                    BindGameOverButtons(chosen);
+                }
+                else
+                {
+                    Debug.LogWarning("[GameOver] noTopFiveLeaderboard not assigned.", this);
+                }
+            }
+        }
+
+        void PresentLayout(UIDocument document, long scoreValue, float survivalSeconds)
+        {
+            ActivateDocumentHost(document);
+            RefreshDocumentPanel(document);
+            ShowDocument(document);
+            UpdateGameOverLabels(document, scoreValue, survivalSeconds);
+            BindGameOverButtons(document);
+            EnsurePanelPickable(document);
+            Debug.Log($"[GameOver] Presented layout '{(document != null ? document.name : "null")}'.", this);
+        }
+
+        static void EnsurePanelPickable(UIDocument document)
+        {
+            if (document == null || document.rootVisualElement == null)
+                return;
+
+            VisualElement root = document.rootVisualElement;
+            root.pickingMode = PickingMode.Position;
+            // Make sure the root sits above other docs on the same panel.
+            root.BringToFront();
+        }
+
+        static void RefreshDocumentPanel(UIDocument document)
+        {
+            if (document == null)
+                return;
+
+            PanelSettings settings = document.panelSettings;
+            if (settings == null)
+                return;
+
+            // Re-assigning panelSettings forces UIDocument to rebuild the panel hierarchy,
+            // which re-attaches the runtime panel to InputSystemUIInputModule reliably.
+            document.panelSettings = null;
+            document.panelSettings = settings;
+        }
+
+        static bool WouldEnterTopFive(LeaderboardController.LeaderboardEntry[] entries, long score)
+        {
+            if (entries.Length < LeaderboardController.TopCount)
+                return true;
+            return score > entries[LeaderboardController.TopCount - 1].score;
+        }
+
+        static LeaderboardController.LeaderboardEntry[] OptimisticInsert(
+            LeaderboardController.LeaderboardEntry[] entries, string playerName, long playerScore)
+        {
+            int sourceCount = entries != null ? entries.Length : 0;
+            int total = sourceCount + 1;
+            LeaderboardController.LeaderboardEntry[] merged = new LeaderboardController.LeaderboardEntry[total];
+            for (int i = 0; i < sourceCount; i++)
+                merged[i] = entries[i];
+            merged[sourceCount] = new LeaderboardController.LeaderboardEntry(0, playerName, playerScore);
+
+            System.Array.Sort(merged, (a, b) => b.score.CompareTo(a.score));
+
+            int resultCount = Mathf.Min(merged.Length, LeaderboardController.TopCount);
+            LeaderboardController.LeaderboardEntry[] result = new LeaderboardController.LeaderboardEntry[resultCount];
+            for (int i = 0; i < resultCount; i++)
+                result[i] = new LeaderboardController.LeaderboardEntry(i + 1, merged[i].name, merged[i].score);
+            return result;
+        }
+
+        void UpdateGameOverLabels(UIDocument document, long scoreValue, float survivalSeconds)
+        {
+            VisualElement root = document != null ? document.rootVisualElement : null;
 
             if (UiDocumentQuery.TryGetLabel(root, "final-score-value", out Label finalScore))
                 finalScore.text = scoreValue.ToString("N0") + " PTS";
@@ -318,25 +483,14 @@ namespace MagnetPanic.Combat
                 survival.text = FormatTime(survivalSeconds) + " MIN";
         }
 
-        void SubmitLeaderboardScore(UIDocument document, RunStats stats)
-        {
-            LeaderboardController leaderboard = showTopFiveLayout ? topFiveLeaderboard : noTopFiveLeaderboard;
-            if (leaderboard == null && document != null)
-                leaderboard = document.GetComponent<LeaderboardController>();
-
-            if (leaderboard == null)
-                return;
-
-            long scoreValue = stats != null ? stats.FinalScore : scoring != null ? scoring.Score : 0;
-            if (scoreValue > 0)
-                leaderboard.SubmitScore(leaderboardPlayerName, scoreValue);
-            else
-                leaderboard.Refresh();
-        }
-
         void BindGameOverButtons(UIDocument document)
         {
             VisualElement root = document != null ? document.rootVisualElement : null;
+            if (root == null)
+            {
+                Debug.LogWarning("[GameOver] BindGameOverButtons: document root is null.", this);
+                return;
+            }
 
             if (UiDocumentQuery.TryGetButton(root, "retry-button", out Button retry))
             {
@@ -346,6 +500,11 @@ namespace MagnetPanic.Combat
                 retryButton = retry;
                 retryButton.clicked -= Retry;
                 retryButton.clicked += Retry;
+                Debug.Log("[GameOver] retry-button bound.", this);
+            }
+            else
+            {
+                Debug.LogWarning("[GameOver] retry-button NOT FOUND in document.", this);
             }
 
             if (UiDocumentQuery.TryGetButton(root, "main-menu-button", out Button menu))
@@ -356,6 +515,11 @@ namespace MagnetPanic.Combat
                 mainMenuButton = menu;
                 mainMenuButton.clicked -= MainMenu;
                 mainMenuButton.clicked += MainMenu;
+                Debug.Log("[GameOver] main-menu-button bound.", this);
+            }
+            else
+            {
+                Debug.LogWarning("[GameOver] main-menu-button NOT FOUND in document.", this);
             }
         }
 

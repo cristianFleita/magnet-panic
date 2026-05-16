@@ -9,7 +9,6 @@ let leaderboard = [
   { name: "CLAUDE", score: 82100 },
   { name: "JAMMER42", score: 55000 },
   { name: "PLAYER1", score: 32400 },
-  { name: "ANON_", score: 12000 }
 ];
 
 const server = http.createServer(async (request, response) => {
@@ -73,8 +72,8 @@ function normalizeEntry(payload) {
   const name = String(payload?.name ?? "")
     .trim()
     .toUpperCase()
-    .replace(/[^A-Z0-9_]/g, "")
-    .slice(0, 12);
+    .replace(/[^A-Z0-9_#]/g, "")
+    .slice(0, 16);
   const score = Number(payload?.score);
 
   if (!name || !Number.isFinite(score) || score < 0) {

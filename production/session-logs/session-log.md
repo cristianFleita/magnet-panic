@@ -1381,3 +1381,26 @@ MetalPanic/Assets/Scripts/UI/MainMenuController.cs
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260516_072801
+### Commits
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scripts/UI/LeaderboardController.cs
+leaderboard-server/src/server.js
+---
+
+## Session End: 20260516_074614
+### Commits
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/Scenes/GameScene.unity
+MetalPanic/Assets/Scripts/UI/LeaderboardController.cs
+leaderboard-server/src/server.js
+production/session-logs/session-log.md
+---
+
