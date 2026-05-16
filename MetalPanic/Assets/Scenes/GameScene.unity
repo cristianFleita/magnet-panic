@@ -1376,8 +1376,6 @@ MonoBehaviour:
   cameraController: {fileID: 0}
   retrySceneName: GameScene
   mainMenuSceneName: MainMenu
-  leaderboardPlayerName: PLAYER
-  showTopFiveLayout: 1
   freezeTimeWhilePaused: 1
   freezeTimeOnGameOver: 1
   topFiveLeaderboard: {fileID: 2000000114}
@@ -2390,7 +2388,6 @@ MonoBehaviour:
   leaderboardUrl: http://localhost:3000/leaderboard
   requestTimeoutSeconds: 3
   loadOnEnable: 0
-  playerName: PLAYER
 --- !u!1 &2000000121
 GameObject:
   m_ObjectHideFlags: 0
@@ -2462,7 +2459,6 @@ MonoBehaviour:
   leaderboardUrl: http://localhost:3000/leaderboard
   requestTimeoutSeconds: 3
   loadOnEnable: 0
-  playerName: PLAYER
 --- !u!1 &2067095500 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5332592522296601475, guid: 52a5d6268cc594e9097ae0d1caf86751, type: 3}
