@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 2
   displayName: Counterstorm
-  objective: Realiza 2 counters exitosos a ataques enemigos.
+  objective: Land 2 successful counters on enemy attacks.
   tier: 1
   gate: 0
   durationSeconds: 40

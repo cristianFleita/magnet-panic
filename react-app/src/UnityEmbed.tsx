@@ -1,13 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 
+declare const __UNITY_BUILD_VERSION__: string;
+
 const BUILD_PATH = "/unity-build/Build";
-const LOADER_FILE = `${BUILD_PATH}/unity-build.loader.js`;
-const DATA_FILE = `${BUILD_PATH}/unity-build.data.unityweb`;
-const FRAMEWORK_FILE = `${BUILD_PATH}/unity-build.framework.js.unityweb`;
-const WASM_FILE = `${BUILD_PATH}/unity-build.wasm.unityweb`;
 const LOGO_FILE = "/brand/magnet-panic-scrapstorm-logo.png";
 const LOCAL_BACKEND_URL = "http://localhost:3000";
 const LEADERBOARD_PATH = "/leaderboard";
+const UNITY_BUILD_VERSION =
+  typeof __UNITY_BUILD_VERSION__ === "string" && __UNITY_BUILD_VERSION__.trim()
+    ? __UNITY_BUILD_VERSION__.trim()
+    : "local";
+
+function versionedUnityFile(fileName: string): string {
+  return `${BUILD_PATH}/${fileName}?v=${encodeURIComponent(UNITY_BUILD_VERSION)}`;
+}
+
+const LOADER_FILE = versionedUnityFile("unity-build.loader.js");
+const DATA_FILE = versionedUnityFile("unity-build.data.unityweb");
+const FRAMEWORK_FILE = versionedUnityFile("unity-build.framework.js.unityweb");
+const WASM_FILE = versionedUnityFile("unity-build.wasm.unityweb");
+const EXPECTED_BUILD_FILES = [
+  "unity-build.loader.js",
+  "unity-build.data.unityweb",
+  "unity-build.framework.js.unityweb",
+  "unity-build.wasm.unityweb",
+].join(" / ");
+let unityLoaderPromise: Promise<void> | null = null;
 
 interface MagnetPanicConfig {
   leaderboardUrl?: string;
@@ -74,6 +92,30 @@ function errorMessage(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
 }
 
+function loadUnityLoader(): Promise<void> {
+  if (typeof window.createUnityInstance === "function") {
+    return Promise.resolve();
+  }
+
+  if (unityLoaderPromise) {
+    return unityLoaderPromise;
+  }
+
+  unityLoaderPromise = new Promise<void>((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = LOADER_FILE;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => {
+      unityLoaderPromise = null;
+      reject(new Error(`Failed to load Unity loader at ${LOADER_FILE}`));
+    };
+    document.body.appendChild(s);
+  });
+
+  return unityLoaderPromise;
+}
+
 interface UnityEmbedProps {
   width?: string | number;
   height?: string | number;
@@ -120,14 +162,11 @@ export default function UnityEmbed({
 
       configureUnityRuntime();
 
-      if (!document.querySelector(`script[src="${LOADER_FILE}"]`)) {
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement("script");
-          s.src = LOADER_FILE;
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error(`Failed to load: ${LOADER_FILE}`));
-          document.body.appendChild(s);
-        });
+      try {
+        await loadUnityLoader();
+      } catch (error: unknown) {
+        if (!cancelled) setError(errorMessage(error, "Failed to load Unity loader"));
+        return;
       }
 
       if (cancelled) return;
@@ -148,9 +187,17 @@ export default function UnityEmbed({
             dataUrl: DATA_FILE,
             frameworkUrl: FRAMEWORK_FILE,
             codeUrl: WASM_FILE,
+            streamingAssetsUrl: "/unity-build/StreamingAssets",
             companyName: "DefaultCompany",
             productName: "MagnetPanic",
             productVersion: "0.1",
+            showBanner: (message: string, type: string) => {
+              if (type === "error" && !cancelled) {
+                setError(message);
+              }
+              const log = type === "error" ? console.error : console.warn;
+              log(`[UnityEmbed] ${type}:`, message);
+            },
           },
           (p: number) => {
             if (!cancelled) setProgress(Math.round(p * 100));
@@ -258,7 +305,7 @@ export default function UnityEmbed({
             <div className="mp-loader__error-title">Unity link failed</div>
             <div className="mp-loader__error-message">{error}</div>
             <div className="mp-loader__error-code">
-              Expected build: unity-build.loader.js / .data / .framework.js / .wasm
+              Expected build: {EXPECTED_BUILD_FILES}
             </div>
           </section>
         </div>

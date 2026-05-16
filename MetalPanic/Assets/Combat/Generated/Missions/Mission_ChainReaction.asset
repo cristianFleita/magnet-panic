@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 8
   displayName: Chain Reaction
-  objective: Mata 2 o más enemigos con un solo repel de enemigo magnetizado.
+  objective: Kill 2 or more enemies with a single repel of a magnetized enemy.
   tier: 2
   gate: 0
   durationSeconds: 35

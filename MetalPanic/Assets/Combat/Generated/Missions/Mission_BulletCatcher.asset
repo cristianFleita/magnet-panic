@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 11
   displayName: Bullet Catcher
-  objective: Atrae 3 proyectiles enemigos a tu órbita.
+  objective: Pull 3 enemy projectiles into your orbit.
   tier: 3
   gate: 1
   durationSeconds: 40

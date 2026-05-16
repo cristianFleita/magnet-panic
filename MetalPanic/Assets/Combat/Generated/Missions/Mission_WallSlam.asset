@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 4
   displayName: Wall Slam
-  objective: Mata 2 enemigos estrellándolos contra una pared.
+  objective: Kill 2 enemies by slamming them into a wall.
   tier: 2
   gate: 0
   durationSeconds: 35

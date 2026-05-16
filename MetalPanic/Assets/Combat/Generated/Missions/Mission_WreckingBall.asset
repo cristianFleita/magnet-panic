@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagnetPanic.Combat.Missions.MissionDefinition
   id: 10
   displayName: Wrecking Ball
-  objective: Mata 3 enemigos con un solo repel (multi-kill en 1 acción).
+  objective: Kill 3 enemies with a single repel (multi-kill in 1 action).
   tier: 3
   gate: 0
   durationSeconds: 30
