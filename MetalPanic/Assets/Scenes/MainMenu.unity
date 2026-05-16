@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43be8c8c117a46f9b80844140fb4f38d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leaderboardUrl: http://localhost:3000/leaderboard
+  leaderboardUrlOverride: 
   requestTimeoutSeconds: 3
   loadOnEnable: 1
 --- !u!114 &690008861

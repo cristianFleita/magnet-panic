@@ -5,17 +5,24 @@ const LOADER_FILE = `${BUILD_PATH}/unity-build.loader.js`;
 const DATA_FILE = `${BUILD_PATH}/unity-build.data.unityweb`;
 const FRAMEWORK_FILE = `${BUILD_PATH}/unity-build.framework.js.unityweb`;
 const WASM_FILE = `${BUILD_PATH}/unity-build.wasm.unityweb`;
+const LOCAL_BACKEND_URL = "http://localhost:3000";
+const LEADERBOARD_PATH = "/leaderboard";
+
+interface MagnetPanicConfig {
+  leaderboardUrl?: string;
+}
 
 declare global {
   interface Window {
-    unityInstance: any;
+    unityInstance: unknown;
     onUnityReady?: () => void;
     BACKEND_URL?: string;
+    MAGNET_PANIC_CONFIG?: MagnetPanicConfig;
     createUnityInstance: (
       canvas: HTMLCanvasElement,
       config: object,
       onProgress?: (progress: number) => void
-    ) => Promise<any>;
+    ) => Promise<unknown>;
   }
 }
 
@@ -35,6 +42,35 @@ function waitForCreateUnityInstance(timeoutMs = 15000): Promise<void> {
     };
     check();
   });
+}
+
+function trimToValue(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function withLeaderboardPath(url: string): string {
+  const trimmed = url.trim();
+  if (trimmed.toLowerCase().endsWith(LEADERBOARD_PATH)) return trimmed;
+  if (trimmed.toLowerCase().endsWith(`${LEADERBOARD_PATH}/`)) return trimmed.slice(0, -1);
+  return `${trimmed.replace(/\/+$/, "")}${LEADERBOARD_PATH}`;
+}
+
+function configureUnityRuntime() {
+  const backendUrl = trimToValue(import.meta.env.VITE_BACKEND_URL) ?? LOCAL_BACKEND_URL;
+  const leaderboardUrl = withLeaderboardPath(
+    trimToValue(import.meta.env.VITE_LEADERBOARD_URL) ?? backendUrl
+  );
+
+  window.BACKEND_URL = backendUrl;
+  window.MAGNET_PANIC_CONFIG = {
+    ...window.MAGNET_PANIC_CONFIG,
+    leaderboardUrl,
+  };
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
 }
 
 interface UnityEmbedProps {
@@ -76,7 +112,7 @@ export default function UnityEmbed({
     async function loadUnity() {
       if (!canvasRef.current) return;
 
-      window.BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:3001";
+      configureUnityRuntime();
 
       if (!document.querySelector(`script[src="${LOADER_FILE}"]`)) {
         await new Promise<void>((resolve, reject) => {
@@ -92,8 +128,8 @@ export default function UnityEmbed({
 
       try {
         await waitForCreateUnityInstance();
-      } catch (e: any) {
-        if (!cancelled) setError(e.message);
+      } catch (error: unknown) {
+        if (!cancelled) setError(errorMessage(error, "Timed out waiting for Unity loader"));
         return;
       }
 
@@ -121,9 +157,9 @@ export default function UnityEmbed({
           console.log("[UnityEmbed] Unity loaded ✓");
           if (typeof window.onUnityReady === "function") window.onUnityReady();
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) {
-          setError(err?.message ?? "Unity failed to load");
+          setError(errorMessage(err, "Unity failed to load"));
           console.error("[UnityEmbed] error:", err);
         }
       }

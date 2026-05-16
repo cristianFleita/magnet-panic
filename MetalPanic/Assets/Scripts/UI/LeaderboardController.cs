@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -12,21 +13,25 @@ namespace MagnetPanic.UI
     public sealed class LeaderboardController : MonoBehaviour
     {
         public const int TopCount = 5;
+        public const string LocalLeaderboardUrl = "http://localhost:3000/leaderboard";
         const string TableElementName = "leaderboard-table";
         const string UnavailableLabelName = "leaderboard-unavailable-label";
+        const string LeaderboardPath = "/leaderboard";
 
-        [SerializeField] string leaderboardUrl = "http://localhost:3000/leaderboard";
+        [SerializeField] string leaderboardUrlOverride;
         [SerializeField, Min(0.1f)] float requestTimeoutSeconds = 3f;
         [SerializeField] bool loadOnEnable = true;
 
         UIDocument document;
         Coroutine activeRoutine;
+        string resolvedLeaderboardUrl;
 
-        public string LeaderboardUrl => leaderboardUrl;
+        public string LeaderboardUrl => CurrentLeaderboardUrl;
 
         void Awake()
         {
             document = GetComponent<UIDocument>();
+            ResolveConfiguredLeaderboardUrl();
         }
 
         void OnEnable()
@@ -34,9 +39,10 @@ namespace MagnetPanic.UI
             if (document == null)
                 document = GetComponent<UIDocument>();
 
+            ResolveConfiguredLeaderboardUrl();
             ClearTable();
 
-            if (loadOnEnable && !string.IsNullOrWhiteSpace(leaderboardUrl))
+            if (loadOnEnable && !string.IsNullOrWhiteSpace(CurrentLeaderboardUrl))
                 Refresh();
             else
                 ShowUnavailable();
@@ -166,7 +172,7 @@ namespace MagnetPanic.UI
 
         IEnumerator Fetch(Action<LeaderboardEntry[]> onResult)
         {
-            using UnityWebRequest request = UnityWebRequest.Get(leaderboardUrl);
+            using UnityWebRequest request = UnityWebRequest.Get(CurrentLeaderboardUrl);
             request.timeout = Mathf.Max(1, Mathf.CeilToInt(requestTimeoutSeconds));
             yield return request.SendWebRequest();
             activeRoutine = null;
@@ -190,7 +196,7 @@ namespace MagnetPanic.UI
             };
             byte[] body = Encoding.UTF8.GetBytes(JsonUtility.ToJson(submission));
 
-            using UnityWebRequest request = new UnityWebRequest(leaderboardUrl, "POST")
+            using UnityWebRequest request = new UnityWebRequest(CurrentLeaderboardUrl, "POST")
             {
                 uploadHandler = new UploadHandlerRaw(body),
                 downloadHandler = new DownloadHandlerBuffer(),
@@ -222,11 +228,78 @@ namespace MagnetPanic.UI
             activeRoutine = StartCoroutine(routine);
         }
 
+        string CurrentLeaderboardUrl
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(resolvedLeaderboardUrl))
+                    ResolveConfiguredLeaderboardUrl();
+
+                return resolvedLeaderboardUrl;
+            }
+        }
+
+        void ResolveConfiguredLeaderboardUrl()
+        {
+            resolvedLeaderboardUrl = ResolveLeaderboardUrl(TryGetBrowserLeaderboardUrl(), leaderboardUrlOverride);
+        }
+
         VisualElement ResolveTable()
         {
             VisualElement root = document != null ? document.rootVisualElement : null;
             return root?.Q<VisualElement>(TableElementName);
         }
+
+        public static string ResolveLeaderboardUrl(string browserLeaderboardUrl)
+        {
+            return ResolveLeaderboardUrl(browserLeaderboardUrl, null);
+        }
+
+        static string ResolveLeaderboardUrl(string browserLeaderboardUrl, string fallbackUrl)
+        {
+            string candidate = !string.IsNullOrWhiteSpace(browserLeaderboardUrl)
+                ? browserLeaderboardUrl
+                : fallbackUrl;
+
+            if (string.IsNullOrWhiteSpace(candidate))
+                candidate = LocalLeaderboardUrl;
+
+            return NormalizeLeaderboardUrl(candidate);
+        }
+
+        static string NormalizeLeaderboardUrl(string url)
+        {
+            string trimmed = url.Trim();
+            if (trimmed.EndsWith(LeaderboardPath, StringComparison.OrdinalIgnoreCase))
+                return trimmed;
+
+            if (trimmed.EndsWith(LeaderboardPath + "/", StringComparison.OrdinalIgnoreCase))
+                return trimmed.TrimEnd('/');
+
+            return trimmed.TrimEnd('/') + LeaderboardPath;
+        }
+
+        static string TryGetBrowserLeaderboardUrl()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            try
+            {
+                return MagnetPanicGetLeaderboardUrl();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[Leaderboard] Browser config lookup failed: {ex.Message}");
+                return null;
+            }
+#else
+            return null;
+#endif
+        }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        static extern string MagnetPanicGetLeaderboardUrl();
+#endif
 
         static int FindHighlightIndex(LeaderboardEntry[] entries, string name, long score)
         {
