@@ -56,15 +56,6 @@ namespace MagnetPanic.Combat
         [SerializeField, Tooltip("Maximum distance a pulled magnetized enemy may be from the player. If the player runs away (or the enemy is dragged past this radius) it demagnetizes and is released.")]
         float magnetizedMaxDistance = 5f;
 
-        [Header("Aim Assist")]
-        [SerializeField] bool autoCreateAimIndicator = true;
-        [SerializeField] LineRenderer aimLine;
-        [SerializeField] Transform aimTip;
-        [SerializeField] float aimIndicatorLength = 5f;
-        [SerializeField] float aimIndicatorHeight = 0.08f;
-        [SerializeField] float aimLineWidth = 0.08f;
-        [SerializeField] Color aimIndicatorColor = new Color(0.2f, 0.85f, 1f, 0.85f);
-
         [Header("Events")]
         public UnityEvent OnPullStarted = new UnityEvent();
         public UnityEvent OnPullStopped = new UnityEvent();
@@ -203,8 +194,6 @@ namespace MagnetPanic.Combat
 
             if (inputProvider == null)
                 inputProvider = GameInputProvider.EnsureOn(gameObject);
-
-            EnsureAimIndicator();
         }
 
         void Update()
@@ -215,7 +204,6 @@ namespace MagnetPanic.Combat
                 TickPull();
 
             TickOrbit();
-            UpdateAimIndicator();
             ApplyMovementPenalty();
         }
 
@@ -230,8 +218,6 @@ namespace MagnetPanic.Combat
 
             if (animator == null)
                 animator = GetComponentInChildren<Animator>();
-
-            EnsureAimIndicator();
         }
 
         void OnApplicationFocus(bool hasFocus)
@@ -299,7 +285,6 @@ namespace MagnetPanic.Combat
             pullHeld = false;
             StopPullAnimation();
             nextRepelTime = Time.time + repelCooldown;
-            UpdateAimIndicator();
         }
 
         void TogglePullRepel()
@@ -574,7 +559,6 @@ namespace MagnetPanic.Combat
             pulledEnemyHolds.Clear();
             SetCharge(0f);
             OnRepelFired.Invoke(empty);
-            UpdateAimIndicator();
         }
 
         void CancelAttractingPayload()
@@ -705,101 +689,6 @@ namespace MagnetPanic.Combat
             float ratio = capacity > 0f ? Mathf.Clamp01(currentCharge / capacity) : 0f;
             float effectivePenalty = chargePenaltyAtFull * chargeMobilityPenaltyMult;
             motor.Acceleration = Mathf.Max(0.25f, 1f - ratio * effectivePenalty);
-        }
-
-        void EnsureAimIndicator()
-        {
-            if (!autoCreateAimIndicator)
-                return;
-
-            Material indicatorMaterial = CreateIndicatorMaterial(aimIndicatorColor);
-
-            if (aimLine == null)
-            {
-                GameObject lineObject = new GameObject("Repel Aim Line");
-                lineObject.transform.SetParent(transform, false);
-                aimLine = lineObject.AddComponent<LineRenderer>();
-                aimLine.useWorldSpace = true;
-                aimLine.positionCount = 2;
-                aimLine.widthMultiplier = aimLineWidth;
-                aimLine.numCapVertices = 4;
-                aimLine.material = indicatorMaterial;
-                aimLine.enabled = false;
-            }
-
-            if (aimTip == null)
-            {
-                GameObject tip = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                tip.name = "Repel Aim Tip";
-                tip.transform.SetParent(transform, false);
-                tip.transform.localScale = new Vector3(0.28f, 0.04f, 0.55f);
-                Collider tipCollider = tip.GetComponent<Collider>();
-                if (tipCollider != null)
-                    DestroyLocalObject(tipCollider);
-
-                Renderer renderer = tip.GetComponent<Renderer>();
-                if (renderer != null)
-                    renderer.sharedMaterial = indicatorMaterial;
-
-                aimTip = tip.transform;
-                aimTip.gameObject.SetActive(false);
-            }
-        }
-
-        void UpdateAimIndicator()
-        {
-            bool visible = pullActive || HasOrbitingPayload;
-            if (aimLine != null)
-                aimLine.enabled = visible;
-
-            if (aimTip != null)
-                aimTip.gameObject.SetActive(visible);
-
-            if (!visible)
-                return;
-
-            Vector3 aim = AimDirection();
-            Vector3 start = transform.position + Vector3.up * aimIndicatorHeight;
-            Vector3 end = start + aim * aimIndicatorLength;
-
-            if (aimLine != null)
-            {
-                aimLine.SetPosition(0, start);
-                aimLine.SetPosition(1, end);
-            }
-
-            if (aimTip != null)
-            {
-                aimTip.position = end;
-                aimTip.rotation = Quaternion.LookRotation(aim, Vector3.up);
-            }
-        }
-
-        static Material CreateIndicatorMaterial(Color color)
-        {
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-            if (shader == null)
-                shader = Shader.Find("Standard");
-
-            Material material = new Material(shader)
-            {
-                color = color
-            };
-
-            return material;
-        }
-
-        static void DestroyLocalObject(Object target)
-        {
-            if (target == null)
-                return;
-
-            if (Application.isPlaying)
-                Destroy(target);
-            else
-                DestroyImmediate(target);
         }
 
         Vector3 ResolvePrimaryAutoAim(Vector3 fallback)

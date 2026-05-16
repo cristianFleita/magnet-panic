@@ -1483,3 +1483,23 @@ react-app/public/unity-build/Build/unity-build.loader.js
 react-app/public/unity-build/Build/unity-build.wasm.unityweb
 ---
 
+## Session End: 20260516_132558
+### Commits
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/Magnetism/MagnetismController.cs
+MetalPanic/Assets/Prefabs/MainCharacter.prefab
+MetalPanic/Assets/Scenes/SampleScene.unity
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.framework.js.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+
