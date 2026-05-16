@@ -1427,3 +1427,17 @@ c188b3f chore: adjust pause menu
 MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
 ---
 
+## Session End: 20260516_115320
+### Commits
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/UI/MainMenu/MainMenuGuideDocument.uss
+MetalPanic/Assets/UI/MainMenu/MainMenuGuideDocument.uxml
+MetalPanic/Assets/UI/Pause/PauseMenuDocument.uxml
+---
+

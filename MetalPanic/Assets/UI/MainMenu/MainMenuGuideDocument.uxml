@@ -35,20 +35,18 @@
                                 <ui:Label text="Move" class="row-copy" />
                             </ui:VisualElement>
                             <ui:VisualElement class="control-row">
-                                <ui:Label text="LEFT CLICK" class="key-chip wide-key" />
-                                <ui:Label text="Pull scrap" class="row-copy" />
+                                <ui:Label text="Q" class="key-chip" />
+                                <ui:Label text="Dodge / Roll" class="row-copy" />
                             </ui:VisualElement>
                             <ui:VisualElement class="control-row">
-                                <ui:Label text="DOUBLE CLICK" class="key-chip wide-key" />
-                                <ui:Label text="Repel held scrap" class="row-copy" />
+                                <ui:Label text="LEFT CLICK" class="key-chip wide-key" />
+                                <ui:Label text="F" class="key-chip key-chip-slim" />
+                                <ui:Label text="Pull · Repel (hold &amp; release)" class="row-copy" />
                             </ui:VisualElement>
                             <ui:VisualElement class="control-row">
                                 <ui:Label text="RIGHT CLICK" class="key-chip wide-key" />
-                                <ui:Label text="Mark / Strike" class="row-copy" />
-                            </ui:VisualElement>
-                            <ui:VisualElement class="control-row">
-                                <ui:Label text="SPACE" class="key-chip" />
-                                <ui:Label text="Counter" class="row-copy" />
+                                <ui:Label text="J" class="key-chip key-chip-slim" />
+                                <ui:Label text="Strike · Mark" class="row-copy" />
                             </ui:VisualElement>
                             <ui:VisualElement class="control-row">
                                 <ui:Label text="ESC" class="key-chip" />
@@ -60,51 +58,42 @@
                     <ui:VisualElement class="guide-divider" />
 
                     <ui:VisualElement name="upgrades-column" class="guide-column upgrades-column">
-                        <ui:Label text="UPGRADE GUIDE" class="column-title" />
+                        <ui:Label text="UPGRADE BRANCHES" class="column-title" />
                         <ui:VisualElement class="upgrade-list">
                             <ui:VisualElement class="upgrade-row">
-                                <ui:VisualElement class="upgrade-icon reach-icon">
+                                <ui:VisualElement class="upgrade-icon fever-icon">
                                     <ui:Label text="M" class="upgrade-icon-text" />
                                 </ui:VisualElement>
                                 <ui:VisualElement class="upgrade-copy-block">
-                                    <ui:Label text="Reach" class="upgrade-name" />
-                                    <ui:Label text="+2m Pull range" class="upgrade-copy" />
+                                    <ui:Label text="Magnetism" class="upgrade-name" />
+                                    <ui:Label text="Reach · Quick Coil · Chain" class="upgrade-copy" />
                                 </ui:VisualElement>
                             </ui:VisualElement>
                             <ui:VisualElement class="upgrade-row">
-                                <ui:VisualElement class="upgrade-icon cannon-icon">
-                                    <ui:Label text="R" class="upgrade-icon-text" />
+                                <ui:VisualElement class="upgrade-icon reach-icon">
+                                    <ui:Label text="C" class="upgrade-icon-text" />
                                 </ui:VisualElement>
                                 <ui:VisualElement class="upgrade-copy-block">
-                                    <ui:Label text="Cannon" class="upgrade-name" />
-                                    <ui:Label text="+1 Repel damage" class="upgrade-copy" />
+                                    <ui:Label text="Combat" class="upgrade-name" />
+                                    <ui:Label text="Scrap Cannon · Railgun" class="upgrade-copy" />
                                 </ui:VisualElement>
                             </ui:VisualElement>
                             <ui:VisualElement class="upgrade-row">
                                 <ui:VisualElement class="upgrade-icon meltdown-icon">
-                                    <ui:Label text="B" class="upgrade-icon-text" />
+                                    <ui:Label text="+" class="upgrade-icon-text" />
                                 </ui:VisualElement>
                                 <ui:VisualElement class="upgrade-copy-block">
-                                    <ui:Label text="Meltdown" class="upgrade-name" />
-                                    <ui:Label text="+3 Overload damage" class="upgrade-copy" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement class="upgrade-row">
-                                <ui:VisualElement class="upgrade-icon fever-icon">
-                                    <ui:Label text="x" class="upgrade-icon-text" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="upgrade-copy-block">
-                                    <ui:Label text="Magnet Fever" class="upgrade-name" />
-                                    <ui:Label text="Pull multiplier" class="upgrade-copy" />
+                                    <ui:Label text="Capacity" class="upgrade-name" />
+                                    <ui:Label text="Deep Pockets · Heavy Lifter (Wrecking Core)" class="upgrade-copy" />
                                 </ui:VisualElement>
                             </ui:VisualElement>
                             <ui:VisualElement class="upgrade-row">
                                 <ui:VisualElement class="upgrade-icon storm-icon">
-                                    <ui:Label text="S" class="upgrade-icon-text" />
+                                    <ui:Label text="V" class="upgrade-icon-text" />
                                 </ui:VisualElement>
                                 <ui:VisualElement class="upgrade-copy-block">
-                                    <ui:Label text="Scrap Storm" class="upgrade-name" />
-                                    <ui:Label text="Deadly orbit" class="upgrade-copy" />
+                                    <ui:Label text="Mobility" class="upgrade-name" />
+                                    <ui:Label text="Slide · Slam · Iron Stride" class="upgrade-copy" />
                                 </ui:VisualElement>
                             </ui:VisualElement>
                         </ui:VisualElement>

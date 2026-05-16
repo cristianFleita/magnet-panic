@@ -24,47 +24,41 @@
                         <ui:Label text="CONTROLS" class="column-title" />
                         <ui:VisualElement class="pause-list">
                             <ui:Label text="- WASD: Move" class="pause-list-item" />
-                            <ui:Label text="- Left Click: Pull" class="pause-list-item" />
-                            <ui:Label text="- Left Click (x2): Repel" class="pause-list-item" />
-                            <ui:Label text="- Right Click: Strike (Mark)" class="pause-list-item" />
-                            <ui:Label text="- Space: Counter" class="pause-list-item" />
+                            <ui:Label text="- Q: Dodge / Roll" class="pause-list-item" />
+                            <ui:Label text="- Left Click / F: Pull · Repel (hold &amp; release)" class="pause-list-item" />
+                            <ui:Label text="- Right Click / J: Strike · Mark" class="pause-list-item" />
+                            <ui:Label text="- Esc: Pause" class="pause-list-item" />
                         </ui:VisualElement>
                     </ui:VisualElement>
 
                     <ui:VisualElement class="pause-divider" />
 
                     <ui:VisualElement name="upgrades-column" class="pause-column upgrades-column">
-                        <ui:Label text="UPGRADE GUIDE" class="column-title" />
+                        <ui:Label text="UPGRADE BRANCHES" class="column-title" />
                         <ui:VisualElement class="pause-list">
                             <ui:VisualElement class="upgrade-guide-row">
-                                <ui:VisualElement class="upgrade-guide-icon reach-icon">
+                                <ui:VisualElement class="upgrade-guide-icon fever-icon">
                                     <ui:Label text="M" class="upgrade-guide-icon-text" />
                                 </ui:VisualElement>
-                                <ui:Label text="Reach: +2m Pull range" class="pause-list-item guide-copy" />
+                                <ui:Label text="Magnetism: Reach · Quick Coil · Chain" class="pause-list-item guide-copy" />
                             </ui:VisualElement>
                             <ui:VisualElement class="upgrade-guide-row">
-                                <ui:VisualElement class="upgrade-guide-icon cannon-icon">
-                                    <ui:Label text="R" class="upgrade-guide-icon-text" />
+                                <ui:VisualElement class="upgrade-guide-icon reach-icon">
+                                    <ui:Label text="C" class="upgrade-guide-icon-text" />
                                 </ui:VisualElement>
-                                <ui:Label text="Cannon: +1 Repel damage" class="pause-list-item guide-copy" />
+                                <ui:Label text="Combat: Scrap Cannon · Railgun" class="pause-list-item guide-copy" />
                             </ui:VisualElement>
                             <ui:VisualElement class="upgrade-guide-row">
                                 <ui:VisualElement class="upgrade-guide-icon meltdown-icon">
-                                    <ui:Label text="B" class="upgrade-guide-icon-text" />
+                                    <ui:Label text="+" class="upgrade-guide-icon-text" />
                                 </ui:VisualElement>
-                                <ui:Label text="Meltdown: +3 Overload damage" class="pause-list-item guide-copy" />
-                            </ui:VisualElement>
-                            <ui:VisualElement class="upgrade-guide-row">
-                                <ui:VisualElement class="upgrade-guide-icon fever-icon">
-                                    <ui:Label text="x" class="upgrade-guide-icon-text" />
-                                </ui:VisualElement>
-                                <ui:Label text="Magnet Fever: Pull multiplier" class="pause-list-item guide-copy" />
+                                <ui:Label text="Capacity: Deep Pockets · Heavy Lifter" class="pause-list-item guide-copy" />
                             </ui:VisualElement>
                             <ui:VisualElement class="upgrade-guide-row">
                                 <ui:VisualElement class="upgrade-guide-icon storm-icon">
-                                    <ui:Label text="S" class="upgrade-guide-icon-text" />
+                                    <ui:Label text="V" class="upgrade-guide-icon-text" />
                                 </ui:VisualElement>
-                                <ui:Label text="Scrap Storm: Deadly orbit" class="pause-list-item guide-copy" />
+                                <ui:Label text="Mobility: Slide · Slam · Iron Stride" class="pause-list-item guide-copy" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>

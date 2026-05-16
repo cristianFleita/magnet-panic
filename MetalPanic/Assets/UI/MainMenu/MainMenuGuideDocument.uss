@@ -249,6 +249,17 @@
     width: 116px;
 }
 
+.key-chip-slim {
+    width: 34px;
+    margin-left: -6px;
+    margin-right: 12px;
+    color: rgba(255, 213, 92, 0.78);
+    border-top-color: rgba(255, 208, 71, 0.32);
+    border-left-color: rgba(92, 210, 255, 0.32);
+    border-right-color: rgba(92, 210, 255, 0.32);
+    border-bottom-color: rgba(92, 210, 255, 0.32);
+}
+
 .row-copy {
     flex-grow: 1;
     font-size: 15px;
