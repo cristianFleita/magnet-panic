@@ -1404,3 +1404,15 @@ leaderboard-server/src/server.js
 production/session-logs/session-log.md
 ---
 
+## Session End: 20260516_111900
+### Commits
+4d23092 chore: adjust leaderboard and game over
+6de3947 chore: adjust leaderboard and game over
+c188b3f chore: adjust pause menu
+7254c44 chore: gui wip
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Scripts/UI/GameSceneUiController.cs
+MetalPanic/Assets/UI/HUD/HudDocument.uss
+MetalPanic/Assets/UI/HUD/HudDocument.uxml
+---
+

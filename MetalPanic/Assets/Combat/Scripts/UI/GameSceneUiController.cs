@@ -52,6 +52,7 @@ namespace MagnetPanic.Combat
             ResolveReferences();
             ActivateOverlayDocuments();
             ShowDocument(hudDocument);
+            EnsureHudBinders();
             CacheHudElements();
             HideDocument(pauseDocument);
             HideDocument(gameOverTopFiveDocument);
@@ -138,6 +139,23 @@ namespace MagnetPanic.Combat
         {
             VisualElement root = hudDocument != null ? hudDocument.rootVisualElement : null;
             UiDocumentQuery.TryGetLabel(root, "time-value", out timeLabel);
+        }
+
+        // Ensures the HUD UIDocument GameObject has the per-section binders
+        // attached. Lets the scene work with just the HudDocument + this
+        // controller — no extra inspector wiring required for the new sections.
+        void EnsureHudBinders()
+        {
+            if (hudDocument == null)
+                return;
+
+            GameObject host = hudDocument.gameObject;
+            if (host.GetComponent<ActivePowerupHud>() == null)
+                host.AddComponent<ActivePowerupHud>();
+            if (host.GetComponent<OverloadMeterHud>() == null)
+                host.AddComponent<OverloadMeterHud>();
+            if (host.GetComponent<UpgradeStripHud>() == null)
+                host.AddComponent<UpgradeStripHud>();
         }
 
         void UpdateHudTimer()
