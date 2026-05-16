@@ -1721,3 +1721,30 @@ MetalPanic/Assets/Prefabs/MainCharacter.prefab
 react-app/public/unity-build/Build/unity-build.data.unityweb
 ---
 
+## Session End: 20260516_185913
+### Commits
+bb48f53 chore: adjust scoring
+045c133 chore: hit sfx
+fee664a chore: adjust sfx
+61f4c0f chore: fix pull sfx
+5544191 chore: sfx
+f63af2b chore: i18n + fix load unity build error
+1efbadf chore: react loading + background execution
+6cea122 chore: add .env support for be url
+80cbaae fix: port be
+975b654 fix: deploy be
+62cb7d9 fix: fallback label for leaderboard
+9b6cf2d chore: remove aim predict line
+dd94104 chore: adjust cooldowns
+319fde9 chore: adjust keys on menu
+3eb34ed fix: dont pause on upgrade modal
+5accc25 chore: dynamic data on the Hud
+### Uncommitted Changes
+MetalPanic/Assets/Combat/Generated/ScoringConfig.asset
+MetalPanic/Assets/Combat/Scripts/Scoring/ScoringConfig.cs
+MetalPanic/Assets/Combat/Scripts/Scoring/ScoringRuntime.cs
+react-app/public/unity-build/Build/unity-build.data.unityweb
+react-app/public/unity-build/Build/unity-build.loader.js
+react-app/public/unity-build/Build/unity-build.wasm.unityweb
+---
+

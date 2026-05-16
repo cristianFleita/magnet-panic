@@ -23,10 +23,11 @@ MonoBehaviour:
   multiKillBonusXp: 5
   multiKillWindowSeconds: 1
   comboWindowSeconds: 3
-  comboScalingPerStep: 0.1
-  maxComboMultiplier: 3
-  baseXpPerLevel: 50
-  xpGrowthPerLevel: 15
+  comboScalingPerStep: 0.15
+  maxComboMultiplier: 4
+  missionXpMultiplier: 1.5
+  baseXpPerLevel: 140
+  xpGrowthPerLevel: 70
   survivalScorePerSecond: 2
   styleScorePerComboPoint: 10
   pauseOnLevelUp: 0

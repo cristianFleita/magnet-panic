@@ -262,7 +262,10 @@ namespace MagnetPanic.Combat.Scoring
 
             stats.MissionsCompleted++;
             if (xpReward > 0)
-                ApplyXp(xpReward);
+            {
+                int multiplied = Mathf.Max(1, Mathf.RoundToInt(xpReward * config.missionXpMultiplier));
+                ApplyXp(multiplied);
+            }
         }
 
         /// <summary>
